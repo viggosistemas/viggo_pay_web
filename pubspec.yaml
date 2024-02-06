@@ -37,6 +37,7 @@ dependencies:
   shared_preferences: ^2.2.2
   intl: ^0.18.1
   uuid: ^4.3.3
+  rxdart: ^0.27.7
   flutter_localization: ^0.2.0
 
   viggo_pay_core_frontend:
@@ -75,6 +76,10 @@ flutter:
     - assets/images/ic_logo.png
     - assets/images/login-bg.png
     - assets/images/icone.png
+    - assets/images/avatar.png
+    - assets/images/default-logo-login.png
+    - assets/images/logo.png
+    - assets/images/no-image.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
