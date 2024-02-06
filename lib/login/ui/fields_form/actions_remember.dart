@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
 
-class ActionsRememberForget extends StatefulWidget{
-  ActionsRememberForget({super.key});
-  
-  @override
-  State<StatefulWidget> createState() {
-    return _ActionsRememberForget();
-  }
-}
+class ActionsRememberForget extends StatelessWidget {
+  const ActionsRememberForget({
+    super.key,
+    required this.viewModel,
+  });
 
-class _ActionsRememberForget extends State<ActionsRememberForget> {
-  var _done = false;
-
+  final LoginViewModel viewModel;
   @override
   Widget build(context) {
     return Row(
@@ -21,13 +17,16 @@ class _ActionsRememberForget extends State<ActionsRememberForget> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Checkbox(
-              value: _done,
-              onChanged: (value) {
-                setState(() {
-                  _done = value ?? false;
-                });
-              },
+            StreamBuilder<bool>(
+              stream: viewModel.form.remember,
+              builder: (context, snapshot) {
+                return Checkbox(
+                  value: snapshot.data ?? false,
+                  onChanged: (value) {
+                    viewModel.form.onRememberChange(value!);
+                  },
+                );
+              }
             ),
             const SizedBox(width: 6),
             const Text('Lembrar-me'),

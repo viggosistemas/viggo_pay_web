@@ -3,12 +3,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/login/ui/login_form_fields.dart';
 import 'package:viggo_pay_admin/sync/domain/usecases/get_app_state_use_case.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domain_fom_settings_use_case.dart';
 import 'package:viggo_pay_core_frontend/domain/domain/usecases/search_domain_by_name_use_case.dart';
+import 'package:viggo_pay_core_frontend/domain/domain/usecases/set_domain_use_case.dart';
 import 'package:viggo_pay_core_frontend/image/domain/usecases/parse_image_url_use_case.dart';
+import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_remember_credential_use_case.dart';
+import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_remember_credential_use_case.dart';
+import 'package:viggo_pay_core_frontend/preferences/domain/usecases/set_remember_credential_use_case.dart';
 import 'package:viggo_pay_core_frontend/token/data/models/login_command.dart';
 import 'package:viggo_pay_core_frontend/token/domain/usecases/login_use_case.dart';
 import 'package:viggo_pay_core_frontend/token/domain/usecases/set_token_use_case.dart';
@@ -16,47 +21,86 @@ import 'package:viggo_pay_core_frontend/token/domain/usecases/set_token_use_case
 class LoginViewModel extends ChangeNotifier {
   final GetAppStateUseCase getAppState;
   final GetDomainFromSettingsUseCase getDomainFromSettings;
+  final GetRememberCredentialUseCase getRememberCredential;
+  final SetRememberCredentialUseCase setRememberCredential;
+  final ClearRememberCredentialUseCase clearRememberCredential;
   final LoginUseCase login;
   final SearchDomainByNameUseCase getDomainByName;
   final SetTokenUseCase setToken;
+  final SetDomainUseCase setDomain;
   final ParseImageUrlUseCase parseImage;
   bool isLoading = false;
-  DomainApiDto? domainDto;
 
-  final StreamController<bool> _streamCotroller = StreamController<bool>.broadcast();
-  final StreamController<String> _streamCotrollerError = StreamController<String>.broadcast();
+  final LoginFormFields form = LoginFormFields();
 
-  Stream<bool> get isLogged => _streamCotroller.stream;
-  Stream<String> get isError => _streamCotrollerError.stream;
+  final StreamController<DomainApiDto?> _streamControllerDomain =
+      StreamController<DomainApiDto?>.broadcast();
+
+  final StreamController<bool> _streamController =
+      StreamController<bool>.broadcast();
+
+  final StreamController<String> _streamControllerError =
+      StreamController<String>.broadcast();
+
+  Stream<bool> get isLogged => _streamController.stream;
+  Stream<String> get isError => _streamControllerError.stream;
+  Stream<DomainApiDto?> get domainDto => _streamControllerDomain.stream;
 
   LoginViewModel({
     required this.getAppState,
     required this.getDomainFromSettings,
     required this.login,
     required this.setToken,
+    required this.setDomain,
     required this.parseImage,
-    required this.getDomainByName
+    required this.getDomainByName,
+    required this.getRememberCredential,
+    required this.setRememberCredential,
+    required this.clearRememberCredential,
   }) {
-    domainDto = getDomainFromSettings.invoke();
-    
-    if(domainDto == null) funGetDomainByName();
-
+    getCredentials();
     getAppState.invoke().forEach((element) {
-      if (!_streamCotroller.isClosed) {
-        _streamCotroller.sink.add(element == AppStateConst.LOGGED);
+      if (!_streamController.isClosed) {
+        _streamController.sink.add(element == AppStateConst.LOGGED);
       }
     });
   }
 
-  Future<void> funGetDomainByName() async{
-    var result = await getDomainByName.invoke(name: 'viggo_pro');
-    if(result.isLeft){
-      if(!_streamCotrollerError.isClosed){
-        _streamCotrollerError.sink.add(result.left.message);
+  void getCredentials(){
+    var credentials = getRememberCredential.invoke();
+    if(credentials?['rememberCredentials'] == true){
+      form.onDomainChange(credentials?['domain_name']);
+      form.onEmailChange(credentials?['usernameOrEmail']);
+      form.onRememberChange(credentials?['rememberCredentials']);
+    }
+  }
+
+  void getDomain() {
+    var domainDto = getDomainFromSettings.invoke();
+
+    if (domainDto != null) {
+      _streamControllerDomain.sink.add(domainDto);
+      form.onDomainChange(domainDto.name);
+    }
+  }
+  
+  void onClearRememberCredential(){
+    clearRememberCredential.invoke();
+    _streamControllerDomain.sink.add(null);
+    form.onDomainChange('');
+    form.onEmailChange('');
+    form.onRememberChange(false);
+  }
+
+  Future<void> funGetDomainByName(String domainName) async {
+    var result = await getDomainByName.invoke(name: domainName);
+    if (result.isLeft) {
+      if (!_streamControllerError.isClosed) {
+        _streamControllerError.sink.add(result.left.message);
       }
-    }else{
-      domainDto = result.right;
-      notifyListeners();
+    } else {
+      _streamControllerDomain.sink.add(result.right);
+      setDomain.invoke(result.right);
     }
   }
 
@@ -66,26 +110,28 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   void onSearch(
-    String username,
-    String password,
     Function showMsg,
     BuildContext context,
   ) async {
-    _notifyLoading();
+    var formFields = form.getFields();
 
     LoginCommand loginCommand = LoginCommand();
-    loginCommand.domainName = domainDto?.name ?? '';
-    loginCommand.username = username;
-    loginCommand.password = password;
+    loginCommand.domainName = formFields?['domain'] ?? '';
+    loginCommand.username = formFields?['username'] ?? '';
+    loginCommand.password = formFields?['password'] ?? '';
 
     var result = await login.invoke(loginCommand: loginCommand);
-    _notifyLoading();
     if (result.isLeft) {
-      if(!_streamCotrollerError.isClosed){
-        _streamCotrollerError.sink.add(result.left.message);
+      if (!_streamControllerError.isClosed) {
+        _streamControllerError.sink.add(result.left.message);
       }
     } else {
+      var rememberCredentials = form.getRememberFields();
+      if(rememberCredentials != null){
+        setRememberCredential.invoke(rememberCredentials);
+      }
       setToken.invoke(result.right);
+      await funGetDomainByName(loginCommand.domainName);
     }
   }
 }

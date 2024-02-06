@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/app_bar.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/login/ui/login_form.dart';
 import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
-import 'package:viggo_pay_admin/widgets/app_bar.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -20,7 +20,9 @@ class LoginPage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => locator.get<LoginViewModel>(),
       child: Scaffold(
-        appBar: const AppBarPrivate(),
+        appBar: AppBarPrivate(
+          toolbarHeight: 60,
+        ),
         body: Stack(
           children: [
             Container(
