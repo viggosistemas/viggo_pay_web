@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
 
+// ignore: must_be_immutable
 class ActionsRememberForget extends StatelessWidget {
-  const ActionsRememberForget({
+  ActionsRememberForget({
     super.key,
     required this.viewModel,
+    required this.onForgetPassword,
   });
 
   final LoginViewModel viewModel;
+  void Function() onForgetPassword;
+
   @override
   Widget build(context) {
     return Row(
@@ -33,7 +37,7 @@ class ActionsRememberForget extends StatelessWidget {
           ],
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: onForgetPassword,
           child: const Text(
             'Esqueceu a senha?',
             style: TextStyle(

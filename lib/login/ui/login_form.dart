@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/login/ui/fields_form/actions_remember.dart';
 import 'package:viggo_pay_admin/login/ui/fields_form/fields_form.dart';
 import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
+import 'package:viggo_pay_admin/utils/constants.dart';
 import 'package:viggo_pay_admin/utils/showMsgSnackbar.dart';
 
 class LoginForm extends StatefulWidget {
@@ -18,6 +19,12 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
+
+  onForgetPassword() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.of(context).pushReplacementNamed(Routes.FORGET_PASSWORD);
+    });
+  }
 
   Widget showImageFromUrl(
     String placeholder,
@@ -130,7 +137,7 @@ class _LoginFormState extends State<LoginForm> {
       (value) {
         showInfoMessage(
           context,
-          20000,
+          2,
           Colors.red,
           value,
           'X',
@@ -174,6 +181,7 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                       ActionsRememberForget(
                         viewModel: viewModel,
+                        onForgetPassword: onForgetPassword,
                       ),
                       const SizedBox(height: 20),
                       if (viewModel.isLoading)

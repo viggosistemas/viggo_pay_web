@@ -2,9 +2,11 @@
 
 // CLASSE DE ROTAS QUE DECLARAM TODAS AS ROTAS DO PROJETO
 class Routes {
-  static const WORKSPACE = '/workspace';
-  static const LOGIN_PAGE = '/login';
   static const HOME = '/';
+  static const LOGIN_PAGE = '/login';
+  static const FORGET_PASSWORD = '/forget_password';
+  static const WORKSPACE = '/workspace';
+  static const DOMAINS = '/domains';
 }
 
 // CLASSE DE CONTANTS QUE DECLARAM TODAS AS VARIAVEIS COMUMENTE USADAS NO PROJETO
