@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:viggo_pay_admin/dashboard/ui/dashboard_page.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
+import 'package:viggo_pay_admin/domain/ui/list_domains/list_domains_page.dart';
+import 'package:viggo_pay_admin/forget_password/ui/forget_password_page.dart';
 import 'package:viggo_pay_admin/login/ui/login_page.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 
@@ -55,6 +57,9 @@ class _ViggoPayWebState extends State<ViggoPayWeb> {
           foregroundColor: kColorScheme.primaryContainer,
           titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
         ),
+        cardTheme: const CardTheme(
+          color: Colors.white,
+        )
       ),
       darkTheme: ThemeData.dark().copyWith(
         colorScheme: kColorSchemeDark,
@@ -63,11 +68,16 @@ class _ViggoPayWebState extends State<ViggoPayWeb> {
           foregroundColor: kColorSchemeDark.onPrimaryContainer,
           titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
         ),
+        cardTheme: const CardTheme(
+          color: Colors.white,
+        )
       ),
       routes: {
         Routes.HOME: (ctx) => const LoginPage(),
         Routes.LOGIN_PAGE: (ctx) => const LoginPage(),
+        Routes.FORGET_PASSWORD: (ctx) => const ForgetPassPage(),
         Routes.WORKSPACE: (ctx) => const DashboardPage(),
+        Routes.DOMAINS: (ctx) => const ListDomainsPage(),
       },
       themeMode: _themeMode,
       debugShowCheckedModeBanner: false,
