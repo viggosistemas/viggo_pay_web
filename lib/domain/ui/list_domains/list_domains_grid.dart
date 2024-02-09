@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
-import 'package:viggo_pay_admin/utils/showMsgSnackbar.dart';
+import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_core_frontend/domain/ui/list_domain_view_model.dart';
 
