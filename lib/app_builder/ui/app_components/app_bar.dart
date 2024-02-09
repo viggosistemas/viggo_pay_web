@@ -19,6 +19,7 @@ class AppBarPrivate extends StatelessWidget implements PreferredSizeWidget {
     this.toolbarHeight = 75,
     this.bottomHeight = 20,
     this.actions = const [],
+    this.showDrawerOrBack = false,
   }) : titleWidget = titleWidget ??
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -44,12 +45,13 @@ class AppBarPrivate extends StatelessWidget implements PreferredSizeWidget {
   double toolbarHeight;
   double bottomHeight;
   List<Widget> actions = [];
+  bool showDrawerOrBack = false;
 
   @override
   Widget build(context) {
     return AppBar(
       automaticallyImplyLeading:
-          false, // remove o botao de voltar que sempre é setado
+          showDrawerOrBack, // remove o botao de voltar que sempre é setado
       toolbarHeight: 70,
       title: titleWidget,
       shadowColor: Colors.black,

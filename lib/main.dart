@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:viggo_pay_admin/chaves_pix/ui/list_chaves_pix/list_chaves_pix_page.dart';
 import 'package:viggo_pay_admin/dashboard/ui/dashboard_page.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain/ui/list_domains/list_domains_page.dart';
+import 'package:viggo_pay_admin/empresas/ui/list_domain_accounts/list_domain_accounts_page.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_page.dart';
+import 'package:viggo_pay_admin/historico_transacoes/ui/list_historico_transacoes/list_historico_transacoes_page.dart';
 import 'package:viggo_pay_admin/login/ui/login_page.dart';
+import 'package:viggo_pay_admin/transacao_contas/ui/list_transacao_contas/list_transacao_contas_page.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 
 
@@ -43,7 +47,7 @@ class ViggoPayWeb extends StatefulWidget {
 }
 
 class _ViggoPayWebState extends State<ViggoPayWeb> {
-  var _themeMode = ThemeMode.light;
+  // var _themeMode = ThemeMode.light;
 
   // This widget is the root of your application.
   @override
@@ -77,9 +81,15 @@ class _ViggoPayWebState extends State<ViggoPayWeb> {
         Routes.LOGIN_PAGE: (ctx) => const LoginPage(),
         Routes.FORGET_PASSWORD: (ctx) => const ForgetPassPage(),
         Routes.WORKSPACE: (ctx) => const DashboardPage(),
+        //sysadmin
         Routes.DOMAINS: (ctx) => const ListDomainsPage(),
+        //admin
+        Routes.DOMAIN_ACCOUNTS: (ctx) => const ListDomainAccountPage(),
+        Routes.PIX: (ctx) => const ListChavesPixPage(),
+        Routes.TRANSACAO_CONTA: (ctx) => const ListTransacaoContaPage(),
+        Routes.HISTORICO: (ctx) => const ListHistoricoTransacoesPage(),
       },
-      themeMode: _themeMode,
+      themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -91,11 +101,5 @@ class _ViggoPayWebState extends State<ViggoPayWeb> {
         Locale('pt_BR'),
       ],
     );
-  }
-
-  void changeTheme(ThemeMode themeMode) {
-    setState(() {
-      _themeMode = themeMode;
-    });
   }
 }
