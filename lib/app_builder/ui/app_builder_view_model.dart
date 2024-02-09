@@ -5,6 +5,7 @@ import 'package:viggo_pay_admin/sync/domain/usecases/get_app_state_use_case.dart
 import 'package:viggo_pay_admin/utils/constants.dart';
 import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
+import 'package:viggo_pay_core_frontend/image/domain/usecases/parse_image_url_use_case.dart';
 import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_pay_core_frontend/route/domain/usecases/get_routes_use_case.dart';
 import 'package:viggo_pay_core_frontend/token/domain/usecases/get_token_use_case.dart';
@@ -15,6 +16,8 @@ import 'package:viggo_pay_core_frontend/user/domain/usecases/get_user_use_case.d
 class AppBuilderViewModel extends ChangeNotifier{
   final GetAppStateUseCase getAppState;
   final LogoutUseCase logout;
+  final ParseImageUrlUseCase parseImage;
+  
   final GetTokenUseCase getToken;
   final GetUserUseCase getUserFromSettings;
   final GetRoutesUseCase getRoutesFromSettings;
@@ -39,6 +42,7 @@ class AppBuilderViewModel extends ChangeNotifier{
   Stream<bool> get isLoggedMsg => getAppState.invoke().transform(showIsLoggedMsg);
 
   AppBuilderViewModel({
+    required this.parseImage,
     required this.getAppState,
     required this.logout,
     required this.getToken,
