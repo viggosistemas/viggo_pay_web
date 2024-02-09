@@ -4,7 +4,7 @@ import 'package:viggo_pay_admin/login/ui/fields_form/actions_remember.dart';
 import 'package:viggo_pay_admin/login/ui/fields_form/fields_form.dart';
 import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
-import 'package:viggo_pay_admin/utils/showMsgSnackbar.dart';
+import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 class LoginForm extends StatefulWidget {
   final Function onSucess;
@@ -147,7 +147,7 @@ class _LoginFormState extends State<LoginForm> {
       },
     );
 
-    return StreamBuilder<Object>(
+    return StreamBuilder<bool>(
       stream: viewModel.isLogged,
       builder: (context, snapshot) {
         if (snapshot.data != null && snapshot.data == true) {
@@ -197,12 +197,13 @@ class _LoginFormState extends State<LoginForm> {
                                     Icons.person_2_outlined,
                                     color: Colors.white,
                                   ),
-                                  onPressed: () => {
-                                    if (snapshot.data == true)
+                                  onPressed: () async {
+                                    if (snapshot.data == true){
                                       viewModel.onSearch(
                                         showInfoMessage,
                                         context,
-                                      )
+                                      );
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     fixedSize: const Size(double.maxFinite, 40),

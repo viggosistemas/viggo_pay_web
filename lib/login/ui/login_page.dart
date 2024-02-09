@@ -5,6 +5,7 @@ import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/login/ui/login_form.dart';
 import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
+import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -13,6 +14,15 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     navigateWorkspace() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        showInfoMessage(
+          context,
+          2,
+          Colors.green,
+          'Seja Bem-vindo!',
+          'X',
+          () {},
+          Colors.white,
+        );
         Navigator.of(context).pushReplacementNamed(Routes.WORKSPACE);
       });
     }

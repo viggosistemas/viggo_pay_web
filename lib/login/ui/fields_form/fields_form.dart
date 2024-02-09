@@ -5,11 +5,18 @@ import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 
 // ignore: must_be_immutable
 class FieldsForm extends StatefulWidget {
-  FieldsForm({super.key, required this.viewModel, required this.showImage});
+  FieldsForm({
+    super.key,
+    required this.viewModel,
+    required this.showImage,
+  });
 
   final LoginViewModel viewModel;
-  Widget? Function(String? logoId, String? domainName, LoginViewModel viewModel)
-      showImage;
+  Widget? Function(
+    String? logoId,
+    String? domainName,
+    LoginViewModel viewModel,
+  ) showImage;
 
   @override
   State<FieldsForm> createState() => _FieldsFormState();
@@ -136,7 +143,7 @@ class _FieldsFormState extends State<FieldsForm> {
               return TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Senha *',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   errorText: snapshot.error?.toString(),
                   suffixIcon: IconButton(
                     icon: Icon(
