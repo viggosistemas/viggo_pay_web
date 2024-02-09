@@ -18,7 +18,7 @@ class ForgetPasswordViewModel extends ChangeNotifier{
 
   ForgetPasswordViewModel();
 
-  void _notifyLoading() {
+  void notifyLoading() {
     isLoading = !isLoading;
     notifyListeners();
   }
@@ -27,8 +27,8 @@ class ForgetPasswordViewModel extends ChangeNotifier{
     Function showMsg,
     BuildContext context,
   ) async {
-    var formFields = form.getFields();
-    print(formFields);
+    // var formFields = form.getFields();
+    // print(formFields);
     // LoginCommand loginCommand = LoginCommand();
     // loginCommand.domainName = formFields?['domain'] ?? '';
     // loginCommand.username = formFields?['username'] ?? '';

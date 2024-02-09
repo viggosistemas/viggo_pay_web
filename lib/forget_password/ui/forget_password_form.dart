@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_view_model.dart';
-import 'package:viggo_pay_admin/utils/showMsgSnackbar.dart';
+import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 class ForgetPassForm extends StatefulWidget {
   final Function onSucess;

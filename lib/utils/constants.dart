@@ -6,7 +6,15 @@ class Routes {
   static const LOGIN_PAGE = '/login';
   static const FORGET_PASSWORD = '/forget_password';
   static const WORKSPACE = '/workspace';
+  static const DOMAIN_ACCOUNTS = '/empresas';
+  static const PIX = '/pix';
+  static const HISTORICO = '/historico_transacoes';
+  static const TRANSACAO_CONTA = '/transacoes_entre_contas';
+  static const USERS = '/users';
   static const DOMAINS = '/domains';
+  static const APPLICATIONS = '/applications';
+  static const ROUTES = '/routes';
+  static const ROLES = '/roles';
 }
 
 // CLASSE DE CONTANTS QUE DECLARAM TODAS AS VARIAVEIS COMUMENTE USADAS NO PROJETO
