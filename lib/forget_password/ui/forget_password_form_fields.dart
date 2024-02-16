@@ -11,24 +11,24 @@ class ForgetPassWordFormFields extends BaseForm
       _domainController.stream.transform(domainValidation);
   Function(String) get onDomainChange => _domainController.sink.add;
 
-  final _usernameController = BehaviorSubject<String>();
-  Stream<String> get username =>
-      _usernameController.stream.transform(usernameValidation);
-  Function(String) get onEmailChange => _usernameController.sink.add;
+  final _emailController = BehaviorSubject<String>();
+  Stream<String> get email =>
+      _emailController.stream.transform(emailValidation);
+  Function(String) get onEmailChange => _emailController.sink.add;
 
   @override
-  List<Stream<String>> getStreams() => [domain, username];
+  List<Stream<String>> getStreams() => [domain, email];
 
   @override
   Map<String, String>? getFields() {
     var domain = _domainController.valueOrNull;
-    var username = _usernameController.valueOrNull;
+    var email = _emailController.valueOrNull;
 
-    if (domain == null || username == null) return null;
+    if (domain == null || email == null) return null;
 
     return {
       'domain': domain,
-      'username': username,
+      'email': email,
     };
   }
 }
@@ -44,11 +44,11 @@ mixin ForgetPasswordFormFieldsValidation {
     },
   );
 
-  final usernameValidation = StreamTransformer<String, String>.fromHandlers(
+  final emailValidation = StreamTransformer<String, String>.fromHandlers(
     handleData: (value, sink) {
       List<Function(String)> validators = [
         Validator().isRequired,
-        // Validator().isEmailValid, FIXME: POR ALGUM MOTIVO ELE NAO PERMITE PREENCHER O CAMPO
+        Validator().isEmailValid,
       ];
       Validator().validateField(validators, value, sink.add, sink.addError);
     },

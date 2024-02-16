@@ -42,7 +42,7 @@ class _ForgetPassFormState extends State<ForgetPassForm> {
     viewModel.isSuccess.listen((value) {
       dialogs
           .showSimpleDialog(
-              'Email de recuperação de senha encaminhado!\n\nPor-favor, cheque seu SPAM, CAIXA DE ENTRADA\n e finalize o processo de recuperação da senha!')
+              'Email de recuperação de senha encaminhado!\n\nPor-favor, cheque seu SPAM ou CAIXA DE ENTRADA\n e finalize o processo de recuperação da senha!')
           .then((value) => widget.onSucess());
     });
 

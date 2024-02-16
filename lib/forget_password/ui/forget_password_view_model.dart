@@ -39,7 +39,7 @@ class ForgetPasswordViewModel extends ChangeNotifier {
     };
     var formFields = form.getFields();
     params['domain_name'] = formFields?['domain'] ?? '';
-    params['email'] = formFields?['username'] ?? '';
+    params['email'] = formFields?['email'] ?? '';
 
     var result = await restorePassword.invoke(body: params);
     if (result.isLeft) {

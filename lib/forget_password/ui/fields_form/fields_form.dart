@@ -16,7 +16,7 @@ class FieldsForm extends StatefulWidget {
 class _FieldsFormState extends State<FieldsForm> {
   final _domainController = TextEditingController();
 
-  final _userController = TextEditingController();
+  final _emailController = TextEditingController();
 
   @override
   Widget build(context) {
@@ -65,7 +65,7 @@ class _FieldsFormState extends State<FieldsForm> {
                 //   if (_validateForm()) {
                 //     widget.viewModel.onSearch(
                 //         _domainController.text,
-                //         _userController.text,
+                //         _emailController.text,
                 //         _passwordController.text,
                 //         showInfoMessage,
                 //         context);
@@ -75,17 +75,17 @@ class _FieldsFormState extends State<FieldsForm> {
             }),
         const SizedBox(height: 10),
         StreamBuilder<String>(
-            stream: widget.viewModel.form.username,
+            stream: widget.viewModel.form.email,
             builder: (context, snapshot) {
-              _userController.value =
-                  _userController.value.copyWith(text: snapshot.data ?? '');
+              _emailController.value =
+                  _emailController.value.copyWith(text: snapshot.data);
               return TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Email *',
                   border: const OutlineInputBorder(),
                   errorText: snapshot.error?.toString(),
                 ),
-                controller: _userController,
+                controller: _emailController,
                 onChanged: (value) {
                   widget.viewModel.form.onEmailChange(value);
                 },
@@ -93,7 +93,7 @@ class _FieldsFormState extends State<FieldsForm> {
                 //   if (_validateForm()) {
                 //     widget.viewModel.onSearch(
                 //         _domainController.text,
-                //         _userController.text,
+                //         _emailController.text,
                 //         _passwordController.text,
                 //         showInfoMessage,
                 //         context);
