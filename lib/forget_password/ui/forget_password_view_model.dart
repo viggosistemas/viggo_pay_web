@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_form_fields.dart';
+import 'package:viggo_pay_core_frontend/user/domain/usecases/restore_password_use_case.dart';
 
-class ForgetPasswordViewModel extends ChangeNotifier{
+class ForgetPasswordViewModel extends ChangeNotifier {
+  final RestorePasswordUseCase restorePassword;
   final ForgetPassWordFormFields form = ForgetPassWordFormFields();
   bool isLoading = false;
 
@@ -12,40 +14,44 @@ class ForgetPasswordViewModel extends ChangeNotifier{
 
   final StreamController<String> _streamControllerError =
       StreamController<String>.broadcast();
-      
-  Stream<bool> get isLogged => _streamController.stream;
+
+  Stream<bool> get isSuccess => _streamController.stream;
   Stream<String> get isError => _streamControllerError.stream;
 
-  ForgetPasswordViewModel();
+  ForgetPasswordViewModel({
+    required this.restorePassword,
+  });
 
   void notifyLoading() {
     isLoading = !isLoading;
     notifyListeners();
   }
 
-  void onSearch(
+  void onSubmit(
     Function showMsg,
     BuildContext context,
   ) async {
-    // var formFields = form.getFields();
-    // print(formFields);
-    // LoginCommand loginCommand = LoginCommand();
-    // loginCommand.domainName = formFields?['domain'] ?? '';
-    // loginCommand.username = formFields?['username'] ?? '';
-    // loginCommand.password = formFields?['password'] ?? '';
+    notifyLoading();
 
-    // var result = await login.invoke(loginCommand: loginCommand);
-    // if (result.isLeft) {
-    //   if (!_streamControllerError.isClosed) {
-    //     _streamControllerError.sink.add(result.left.message);
-    //   }
-    // } else {
-    //   var rememberCredentials = form.getRememberFields();
-    //   if(rememberCredentials != null){
-    //     setRememberCredential.invoke(rememberCredentials);
-    //   }
-    //   setToken.invoke(result.right);
-    //   await funGetDomainByName(loginCommand.domainName);
-    // }
+    Map<String, dynamic> params = {
+      'domain_name': '',
+      'email': '',
+    };
+    var formFields = form.getFields();
+    params['domain_name'] = formFields?['domain'] ?? '';
+    params['email'] = formFields?['username'] ?? '';
+
+    var result = await restorePassword.invoke(body: params);
+    if (result.isLeft) {
+      if (!_streamControllerError.isClosed) {
+        _streamControllerError.sink.add(result.left.message);
+        notifyLoading();
+      }
+    } else {
+      if (!_streamController.isClosed) {
+        _streamController.sink.add(result.right);
+        notifyLoading();
+      }
+    }
   }
 }

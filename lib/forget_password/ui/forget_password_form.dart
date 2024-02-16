@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:viggo_pay_admin/components/dialogs.dart';
+import 'package:viggo_pay_admin/forget_password/ui/fields_form/fields_form.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
@@ -16,14 +18,12 @@ class ForgetPassForm extends StatefulWidget {
 
 class _ForgetPassFormState extends State<ForgetPassForm> {
   final _formKey = GlobalKey<FormState>();
-  final _domainController = TextEditingController();
-
-  final _userController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     final viewModel = Provider.of<ForgetPasswordViewModel>(context);
+    final dialogs = Dialogs(context: context);
 
     viewModel.isError.listen(
       (value) {
@@ -39,13 +39,16 @@ class _ForgetPassFormState extends State<ForgetPassForm> {
       },
     );
 
-    return StreamBuilder<Object>(
-      stream: viewModel.isLogged,
-      builder: (context, snapshot) {
-        if (snapshot.data != null && snapshot.data == true) {
-          widget.onSucess();
-        }
+    viewModel.isSuccess.listen((value) {
+      dialogs
+          .showSimpleDialog(
+              'Email de recuperação de senha encaminhado!\n\nPor-favor, cheque seu SPAM, CAIXA DE ENTRADA\n e finalize o processo de recuperação da senha!')
+          .then((value) => widget.onSucess());
+    });
 
+    return StreamBuilder<bool>(
+      stream: viewModel.isSuccess,
+      builder: (context, snapshot) {
         return Column(
           children: [
             Card(
@@ -60,86 +63,9 @@ class _ForgetPassFormState extends State<ForgetPassForm> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      const Text(
-                        'Recuperação de senha',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 100, 94, 94),
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      FieldsForm(
+                        viewModel: viewModel,
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text(
-                        'Para recuperar sua senha, digite o domínio e seu e-mail nos campos abaixo e clique em recuperar senha.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 100, 94, 94),
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const SizedBox(height: 10),
-                      StreamBuilder<String>(
-                          stream: viewModel.form.domain,
-                          builder: (context, snapshot) {
-                            _domainController.value = _domainController.value
-                                .copyWith(text: snapshot.data ?? '');
-                            return TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'Domínio *',
-                                border: const OutlineInputBorder(),
-                                errorText: snapshot.error?.toString(),
-                              ),
-                              controller: _domainController,
-                              onChanged: (value) {
-                                viewModel.form.onDomainChange(value);
-                              },
-                              // onFieldSubmitted: (value) {
-                              //   if (_validateForm()) {
-                              //     viewModel.onSearch(
-                              //         _domainController.text,
-                              //         _userController.text,
-                              //         _passwordController.text,
-                              //         showInfoMessage,
-                              //         context);
-                              //   }
-                              // },
-                            );
-                          }),
-                      const SizedBox(height: 10),
-                      StreamBuilder<String>(
-                          stream: viewModel.form.username,
-                          builder: (context, snapshot) {
-                            _userController.value = _userController.value
-                                .copyWith(text: snapshot.data ?? '');
-                            return TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'Email *',
-                                border: const OutlineInputBorder(),
-                                errorText: snapshot.error?.toString(),
-                              ),
-                              controller: _userController,
-                              onChanged: (value) {
-                                viewModel.form.onEmailChange(value);
-                              },
-                              // onFieldSubmitted: (value) {
-                              //   if (_validateForm()) {
-                              //     viewModel.onSearch(
-                              //         _domainController.text,
-                              //         _userController.text,
-                              //         _passwordController.text,
-                              //         showInfoMessage,
-                              //         context);
-                              //   }
-                              // },
-                            );
-                          }),
-                      const SizedBox(height: 20),
                       if (viewModel.isLoading)
                         const CircularProgressIndicator()
                       else
@@ -155,7 +81,7 @@ class _ForgetPassFormState extends State<ForgetPassForm> {
                                 ),
                                 onPressed: () => {
                                   if (snapshot.data == true)
-                                    viewModel.onSearch(
+                                    viewModel.onSubmit(
                                       showInfoMessage,
                                       context,
                                     )

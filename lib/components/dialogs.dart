@@ -6,23 +6,28 @@ class Dialogs {
 
   Future<void> showSimpleDialog(message) {
     return showDialog(
-        context: context,
-        builder: (BuildContext ctx) {
-          return AlertDialog(
-            content: Padding(
-              padding: const EdgeInsets.only(top: 14),
-              child: Text(message),
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        content: Padding(
+          padding: const EdgeInsets.only(top: 14),
+          child: Text(
+            message,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.clip,
+          ),
+        ),
+        actions: <Widget>[
+          Center(
+            child: TextButton(
+              child: const Text('Entendi'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Voltar'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> showConfirmDialog(message) {
