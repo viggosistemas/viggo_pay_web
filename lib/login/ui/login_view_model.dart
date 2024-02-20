@@ -178,24 +178,27 @@ class LoginViewModel extends ChangeNotifier {
 
   void notifyLoading() {
     isLoading = !isLoading;
-    notifyListeners();
+    // notifyListeners();
   }
 
   void onSearch(
     Function showMsg,
     BuildContext context,
   ) async {
+    notifyLoading();
     var formFields = form.getFields();
 
     LoginCommand loginCommand = LoginCommand();
     loginCommand.domainName = formFields?['domain'] ?? '';
     loginCommand.username = formFields?['username'] ?? '';
     loginCommand.password = formFields?['password'] ?? '';
+    loginCommand.natureza = 'VIGGO_PAY_WEB';
 
     var result = await login.invoke(loginCommand: loginCommand);
     if (result.isLeft) {
       if (!_streamControllerError.isClosed) {
         _streamControllerError.sink.add(result.left.message);
+        notifyLoading();
       }
     } else {
       var rememberCredentials = form.getRememberFields();
@@ -206,6 +209,7 @@ class LoginViewModel extends ChangeNotifier {
       await funGetUserById(result.right.userId);
       await funGetRoutesFromUser();
       await funGetDomainByName(loginCommand.domainName);
+      notifyLoading();
     }
   }
 }

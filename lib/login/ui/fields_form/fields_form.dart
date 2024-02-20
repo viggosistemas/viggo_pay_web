@@ -41,7 +41,7 @@ class _FieldsFormState extends State<FieldsForm> {
           return Column(
             children: [
               Text(
-                'Bem-Vindo!',
+                'Bem-Vindo',
                 style: GoogleFonts.lato(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -91,7 +91,7 @@ class _FieldsFormState extends State<FieldsForm> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Bem-Vindo!',
+                'Bem-Vindo',
                 style: GoogleFonts.lato(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -111,7 +111,7 @@ class _FieldsFormState extends State<FieldsForm> {
             stream: widget.viewModel.form.username,
             builder: (context, snapshot) {
               _userController.value =
-                  _userController.value.copyWith(text: snapshot.data ?? '');
+                  _userController.value.copyWith(text: snapshot.data);
               return TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Usuário ou Email *',
