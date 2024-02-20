@@ -8,7 +8,10 @@ class AppBuilderMain extends StatelessWidget {
   const AppBuilderMain({
     super.key,
     required this.child,
+    required this.changeTheme,
   });
+
+  final void Function(ThemeMode themeMode) changeTheme;
 
   final Widget child;
 
@@ -17,6 +20,7 @@ class AppBuilderMain extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => locator.get<AppBuilderViewModel>(),
       child: AppBuilder(
+        changeTheme: changeTheme,
         child: child,
       ),
     );

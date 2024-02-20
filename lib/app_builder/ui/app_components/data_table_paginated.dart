@@ -40,9 +40,7 @@ class DataSource extends DataTableSource {
     if (index >= sortedData.length) return null;
     final row = sortedData[index];
     return DataRow(
-      cells: <DataCell>[
-        for (var key in fieldsData) cellFor(row[key])
-      ],
+      cells: <DataCell>[for (var key in fieldsData) cellFor(row[key])],
       selected: row['selected'],
       onSelectChanged: (value) {
         if (row['selected'] != value) {
@@ -76,18 +74,26 @@ class DataTablePaginated extends StatefulWidget {
     required this.columnsDef,
     required this.fieldsData,
     required this.viewModel,
-  });
+    List<Widget>? actions,
+  }) {
+    if (actions != null) {
+      this.actions.addAll(actions);
+    }
+  }
 
   late dynamic viewModel;
   List<dynamic> items;
   List<DataColumn> columnsDef;
   List<String> fieldsData;
+  List<Widget> actions = [];
 
   @override
   State<DataTablePaginated> createState() => _DataTablePaginatedState();
 }
 
 class _DataTablePaginatedState extends State<DataTablePaginated> {
+  int _currentPage = 0;
+  int _pageSize = 10;
   DataSource dataSource = DataSource();
   // int _columnIndex = 0;
   // bool _columnAscending = true;
@@ -105,26 +111,141 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
     dataSource.viewModel = widget.viewModel;
     dataSource.setData(widget.items);
     dataSource.fieldsData = widget.fieldsData;
+    widget.actions = [
+      IconButton.outlined(
+        onPressed: () => onAddEntity(),
+        tooltip: 'Adicionar',
+        icon: const Icon(
+          Icons.add,
+        ),
+      ),
+      const SizedBox(
+        width: 10,
+      ),
+      IconButton.outlined(
+        onPressed: () => onEditEntity(),
+        tooltip: 'Editar',
+        icon: const Icon(
+          Icons.edit,
+        ),
+      ),
+      const SizedBox(
+        width: 10,
+      ),
+      IconButton.outlined(
+        onPressed: () => onChangeActive(),
+        tooltip: 'Alterar status',
+        icon: const Icon(
+          Icons.change_circle,
+        ),
+      ),
+      const SizedBox(
+        width: 10,
+      ),
+      IconButton.outlined(
+        onPressed: () => onReloadData(),
+        tooltip: 'Recarregar',
+        icon: const Icon(
+          Icons.replay,
+        ),
+      ),
+    ];
     super.initState();
   }
 
+  void onAddEntity() {}
+
+  void onEditEntity() {
+    var len =
+        dataSource.sortedData.where((element) => element['selected']).length;
+    if (len == 1) {
+      var entity =
+          dataSource.sortedData.firstWhere((element) => element['selected']);
+      print(entity);
+    }
+  }
+
+  void onChangeActive() {
+    var selecteds =
+        dataSource.sortedData.where((element) => element['selected']);
+    var isActiveOnly = selecteds.where((element) => element['active'] == true);
+    var isInactiveOnly =
+        selecteds.where((element) => element['active'] == false);
+
+    if (isActiveOnly.isNotEmpty && isInactiveOnly.isEmpty) {
+      print(isActiveOnly);
+    } else if (isActiveOnly.isEmpty && isInactiveOnly.isNotEmpty) {
+      print(isInactiveOnly);
+    }
+  }
+
+  void onReloadData() {
+  //   setState(() {
+  //     widget.viewModel.loadData(0, 10, true);
+  //     widget.viewModel.domains.listen((value) {
+  //       dataSource.setData(value.map((e) {
+  //         return e.toJson();
+  //       }).toList());
+  //     });
+  //   });
+  }
+
+// FIXME: A PAGINAÇÃO NÃO ESTA SENDO VIA REQUISIÇÃO ATÉ O MOMENTO, ELA ESTA SENDO SOMENTE VIA COMPONENTE
   @override
   Widget build(BuildContext context) {
     return PaginatedDataTable(
       // sortColumnIndex: _columnIndex,
       // sortAscending: _columnAscending,
-      actions: [
-        IconButton.outlined(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.search,
-          ),
-        ),
-      ],
+      // actions: [
+      //   IconButton.outlined(
+      //     onPressed: () {},
+      //     icon: const Icon(
+      //       Icons.search,
+      //     ),
+      //   ),
+      // ],
       availableRowsPerPage: const [5, 10, 25, 50],
-      header: const Text('Header'),
-      rowsPerPage: widget.items.length > 10 ? 10 : widget.items.length,
-      initialFirstRowIndex: 0,
+      onRowsPerPageChanged: (value) {
+        setState(() {
+          _pageSize = value!;
+          // widget.viewModel.loadData(_currentPage, _pageSize, true);
+          // widget.viewModel.domains.listen((value) {
+          //   dataSource.setData(value.map((e) {
+          //     return e.toJson();
+          //   }).toList());
+          // });
+        });
+      },
+      headingRowColor: MaterialStateColor.resolveWith(
+        (states) => Colors.grey.withOpacity(0.7),
+      ),
+      header: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          ...widget.actions.toList(),
+        ],
+      ),
+      rowsPerPage: _pageSize,
+      arrowHeadColor: Theme.of(context).colorScheme.primary,
+      onPageChanged: (value) {
+        setState(() {
+          //COMPARA OS INDEX DA PRIMEIRA LINHA SE FOREM IGUAIS SOMO UMA PAGINA
+          var last = dataSource.sortedData.last;
+          var lastIndex = dataSource.sortedData.lastIndexOf(last);
+          if (value == lastIndex) {
+            _currentPage++;
+          } else {
+            _currentPage--;
+          }
+          // widget.viewModel.loadData(_currentPage, _pageSize, true);
+          // widget.viewModel.domains.listen((value) {
+          //   dataSource.setData(value.map((e) {
+          //     return e.toJson();
+          //   }).toList());
+          // });
+        });
+      },
+      initialFirstRowIndex: _currentPage,
       showFirstLastButtons: true,
       showCheckboxColumn: true,
       columns: widget.columnsDef,

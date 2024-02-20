@@ -1,24 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/models/destination.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/main.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
+import 'package:viggo_pay_core_frontend/user/domain/usecases/get_user_use_case.dart';
 
 class MenuViewModel {
   MenuViewModel({
-    required this.menuItems,
-  });
+    getUserFromSettings,
+    menuItems,
+  }) {
+    if (menuItems != null) {
+      this.menuItems = menuItems;
+    }
+    if (getUserFromSettings != null) {
+      this.getUserFromSettings = getUserFromSettings;
+    }
+  }
 
+  GetUserUseCase getUserFromSettings = locator.get<GetUserUseCase>();
   List<Destination> menuItems = [];
 
   List<Destination> createMenu(
     List<RouteApiDto> routes,
   ) {
     List<Destination> menu = [];
+    var userDto = getUserFromSettings.invoke();
 
     menu.add(Destination(
       'Início',
       const Icon(Icons.home_outlined),
+      0,
       const Icon(Icons.home_outlined),
       Routes.WORKSPACE,
       null,
@@ -27,10 +40,19 @@ class MenuViewModel {
     ));
 
     List<Destination> dymamicsMenus = buildMenu(routes, menuItems);
+
+    if (userDto != null && userDto.name == 'sysadmin') {
+      menu.addAll(createSysadminMenu(routes));
+    }
+
+    menu.addAll(createAdminMenu(routes));
+
     if (dymamicsMenus.isNotEmpty) {
-      dymamicsMenus.sort((a, b) => a.label.compareTo(b.label));
+      dymamicsMenus.sort((a, b) => a.index.compareTo(b.index));
       menu.addAll(dymamicsMenus);
     }
+    
+    menu.sort((a, b) => a.index.compareTo(b.index));
 
     return menu;
   }
@@ -46,7 +68,7 @@ class MenuViewModel {
       false,
     );
     for (var rota in grantURLs) {
-      int itemIndex = itens.indexWhere((v) => v.backEndUrl == rota);
+      int itemIndex = itens.indexWhere((v) => v.backEndUrl!.contains(rota));
       if (itemIndex >= 0) menu.add(itens[itemIndex]);
     }
     return menu;
@@ -68,8 +90,11 @@ class MenuViewModel {
       }
     } else {
       for (var route in routes) {
-        if (urls.contains(route.url) && !grantURLs.contains(route.url)) {
-          grantURLs.add(route.url);
+        for (var urlCompare in urls) {
+          if (urlCompare.contains(route.url) &&
+              !grantURLs.contains(route.url)) {
+            grantURLs.add(route.url);
+          }
         }
       }
     }
@@ -84,58 +109,62 @@ class MenuViewModel {
           Icons.domain_outlined,
           color: kColorScheme.primary,
         ),
+        2,
         Icon(
           Icons.domain_outlined,
           color: kColorScheme.primary,
         ),
         Routes.APPLICATIONS,
-        '/applications',
-        '/GET',
+        ['/applications'],
+        ['/GET'],
         null,
       ),
       Destination(
         'Rota',
         Icon(
-          Icons.domain_outlined,
+          Icons.route_outlined,
           color: kColorScheme.primary,
         ),
+        3,
         Icon(
-          Icons.domain_outlined,
+          Icons.route_outlined,
           color: kColorScheme.primary,
         ),
         Routes.ROUTES,
-        '/routes',
-        '/GET',
+        ['/routes'],
+        ['/GET'],
         null,
       ),
       Destination(
         'Papéis de Usuário',
         Icon(
-          Icons.domain_outlined,
+          Icons.supervisor_account_outlined,
           color: kColorScheme.primary,
         ),
+        4,
         Icon(
-          Icons.domain_outlined,
+          Icons.supervisor_account_outlined,
           color: kColorScheme.primary,
         ),
         Routes.ROLES,
-        '/roles/<id>',
-        '/GET',
+        ['/roles/<id>'],
+        ['/GET'],
         null,
       ),
       Destination(
         'Organização',
         Icon(
-          Icons.domain_outlined,
+          Icons.cases_outlined,
           color: kColorScheme.primary,
         ),
+        5,
         Icon(
-          Icons.domain_outlined,
+          Icons.cases_outlined,
           color: kColorScheme.primary,
         ),
         Routes.DOMAINS,
-        '/domains',
-        '/GET',
+        ['/domains'],
+        ['/GET'],
         null,
       ),
     ]);
@@ -147,16 +176,17 @@ class MenuViewModel {
       Destination(
         'Usuários',
         Icon(
-          Icons.domain_outlined,
+          Icons.person_outline,
           color: kColorScheme.primary,
         ),
+        1,
         Icon(
-          Icons.domain_outlined,
+          Icons.person_outline,
           color: kColorScheme.primary,
         ),
         Routes.USERS,
-        '/users',
-        '/GET',
+        ['/users'],
+        ['/GET'],
         null,
       ),
     ]);

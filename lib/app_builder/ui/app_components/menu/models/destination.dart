@@ -4,6 +4,7 @@ class Destination {
   Destination(
     this.label,
     this.icon,
+    this.index,
     this.selectedIcon,
     this.route,
     this.backEndUrl,
@@ -13,9 +14,10 @@ class Destination {
 
   final String label;
   final String route;
+  final int index;
   Widget? icon;
   Widget? selectedIcon;
-  String? backEndUrl;
-  String? methodUrl;
+  List<String>? backEndUrl;
+  List<String>? methodUrl;
   IconData? iconName;
 }

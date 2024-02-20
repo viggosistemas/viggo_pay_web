@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/menu_view_model.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/models/destination.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/ui/menu_view_model.dart';
 import 'package:viggo_pay_admin/main.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
@@ -23,9 +23,7 @@ class _MainRailState extends State<MainRail> {
   List<Destination> destinations = <Destination>[];
   List<NavigationRailDestination> navDestinations =
       <NavigationRailDestination>[];
-  final viewModel = MenuViewModel(
-    menuItems: menuItems,
-  );
+  final viewModel = MenuViewModel(menuItems: menuItems);
 
   var screenIndex = 0;
 
@@ -91,13 +89,14 @@ List<Destination> menuItems = [
       Icons.domain_outlined,
       color: kColorScheme.primary,
     ),
+    2,
     Icon(
       Icons.domain_outlined,
       color: kColorScheme.primary,
     ),
     Routes.DOMAIN_ACCOUNTS,
-    '/domain_accounts',
-    '/GET',
+    ['/domain_accounts'],
+    ['/GET'],
     null,
   ),
   Destination(
@@ -106,13 +105,14 @@ List<Destination> menuItems = [
       Icons.key_outlined,
       color: kColorScheme.primary,
     ),
+    3,
     Icon(
       Icons.key_outlined,
       color: kColorScheme.primary,
     ),
     Routes.PIX,
-    '/pix_to_sends',
-    '/GET',
+    ['/pix_to_sends'],
+    ['/GET'],
     null,
   ),
   Destination(
@@ -121,13 +121,14 @@ List<Destination> menuItems = [
       Icons.transfer_within_a_station_outlined,
       color: kColorScheme.primary,
     ),
+    4,
     Icon(
       Icons.transfer_within_a_station_outlined,
       color: kColorScheme.primary,
     ),
     Routes.TRANSACAO_CONTA,
-    '/pay_facs/get_transacoes',
-    '/POST',
+    ['/pay_facs/cashout_via_pix'],
+    ['/POST'],
     null,
   ),
   Destination(
@@ -136,13 +137,14 @@ List<Destination> menuItems = [
       Icons.history_outlined,
       color: kColorScheme.primary,
     ),
+    5,
     Icon(
       Icons.history_outlined,
       color: kColorScheme.primary,
     ),
     Routes.HISTORICO,
-    '/roles',
-    '/GET',
+    ['/pay_facs/get_transacoes'],
+    ['/GET'],
     null,
   ),
 ];

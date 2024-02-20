@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
-import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_bottom_action.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_items/alterar_senha.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_items/info_user/info_user.dart';
 
 enum SampleItem { itemOne, itemTwo, itemThree }
 
-class PopMenuActionsUser extends StatefulWidget {
-  const PopMenuActionsUser({
+class PopUpMenuUser extends StatefulWidget {
+  const PopUpMenuUser({
     super.key,
     required this.onSelectScreen,
   });
@@ -15,17 +16,18 @@ class PopMenuActionsUser extends StatefulWidget {
   final void Function(String identifier) onSelectScreen;
 
   @override
-  State<PopMenuActionsUser> createState() {
+  State<PopUpMenuUser> createState() {
     return _PopMenuActionUser();
   }
 }
 
-class _PopMenuActionUser extends State<PopMenuActionsUser> {
+class _PopMenuActionUser extends State<PopUpMenuUser> {
   SampleItem? selectedMenu;
 
   @override
   Widget build(context) {
     final viewModel = Provider.of<AppBuilderViewModel>(context);
+
     return PopupMenuButton<SampleItem>(
       onSelected: (value) {
         setState(() {
@@ -36,9 +38,14 @@ class _PopMenuActionUser extends State<PopMenuActionsUser> {
       position: PopupMenuPosition.under,
       color: Theme.of(context).cardTheme.color,
       itemBuilder: (context) => <PopupMenuEntry<SampleItem>>[
-        const PopupMenuItem<SampleItem>(
+        PopupMenuItem<SampleItem>(
           value: SampleItem.itemOne,
-          child: Row(
+          onTap: () {
+            InfoUserDialog(
+              context: context,
+            ).showFormDialog();
+          },
+          child: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Informações do usuário'),
@@ -49,9 +56,15 @@ class _PopMenuActionUser extends State<PopMenuActionsUser> {
             ],
           ),
         ),
-        const PopupMenuItem<SampleItem>(
+        //
+        PopupMenuItem<SampleItem>(
           value: SampleItem.itemOne,
-          child: Row(
+          onTap: () {
+            AlterarSenhaDialog(
+              context: context,
+            ).showFormDialog('alterar senha');
+          },
+          child: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Alterar senha'),
@@ -62,6 +75,7 @@ class _PopMenuActionUser extends State<PopMenuActionsUser> {
             ],
           ),
         ),
+        //
         PopupMenuItem<SampleItem>(
           value: SampleItem.itemOne,
           onTap: () {
@@ -79,46 +93,8 @@ class _PopMenuActionUser extends State<PopMenuActionsUser> {
           ),
         ),
       ],
-      child: Expanded(
-        child: Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                StreamBuilder<UserApiDto?>(
-                    stream: viewModel.userDto,
-                    builder: (context, snapshot) {
-                      if (snapshot.data == null) viewModel.getUser();
-                      return Text(
-                        snapshot.data?.name ?? '',
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      );
-                    }),
-                StreamBuilder<DomainApiDto?>(
-                    stream: viewModel.domainDto,
-                    builder: (context, snapshot) {
-                      if (snapshot.data == null) viewModel.getDomain();
-                      return Text(
-                        snapshot.data?.name ?? snapshot.data?.displayName ?? '',
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      );
-                    }),
-              ],
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            const Icon(
-              Icons.arrow_drop_down,
-              color: Colors.white,
-            ),
-          ],
-        ),
+      child: PopMenuBottomAction(
+        viewModel: viewModel,
       ),
     );
   }

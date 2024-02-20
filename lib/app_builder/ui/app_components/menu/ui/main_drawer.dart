@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/menu_view_model.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/models/destination.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/ui/menu_view_model.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
 
@@ -23,9 +23,7 @@ class _MainDrawerState extends State<MainDrawer> {
   List<Destination> destinations = <Destination>[];
   List<ListTile> navDestinations = <ListTile>[];
 
-  final viewModel = MenuViewModel(
-    menuItems: menuItems,
-  );
+  final viewModel = MenuViewModel(menuItems: menuItems);
 
   var screenIndex = 0;
 
@@ -123,37 +121,41 @@ List<Destination> menuItems = [
   Destination(
     'Empresas',
     null,
+    2,
     null,
     Routes.DOMAINS,
-    '/domains',
-    '/GET',
+    ['/domain_accounts'],
+    ['/GET'],
     Icons.domain_outlined,
   ),
   Destination(
     'Chaves pix',
     null,
+    3,
     null,
     Routes.PIX,
-    '/applications',
-    '/GET',
+    ['/pix_to_sends'],
+    ['/GET'],
     Icons.key_outlined,
   ),
   Destination(
     'Transação entre contas',
     null,
+    4,
     null,
     Routes.TRANSACAO_CONTA,
-    '/routes',
-    '/GET',
+    ['/pay_facs/cashout_via_pix'],
+    ['/POST'],
     Icons.transfer_within_a_station_outlined,
   ),
   Destination(
     'Histórico de transações',
     null,
+    5,
     null,
     Routes.HISTORICO,
-    '/roles',
-    '/GET',
+    ['/pay_facs/get_transacoes'],
+    ['/GET'],
     Icons.history_outlined,
   ),
 ];
