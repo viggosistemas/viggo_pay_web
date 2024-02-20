@@ -4,19 +4,21 @@ import 'package:viggo_pay_admin/chaves_pix/ui/list_chaves_pix/list_chaves_pix_pa
 import 'package:viggo_pay_admin/dashboard/ui/dashboard_page.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain/ui/list_domains/list_domains_page.dart';
-import 'package:viggo_pay_admin/empresas/ui/list_domain_accounts/list_domain_accounts_page.dart';
+import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_page.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_page.dart';
 import 'package:viggo_pay_admin/historico_transacoes/ui/list_historico_transacoes/list_historico_transacoes_page.dart';
 import 'package:viggo_pay_admin/login/ui/login_page.dart';
 import 'package:viggo_pay_admin/transacao_contas/ui/list_transacao_contas/list_transacao_contas_page.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 
+//CONFIGURACAO DOS CARDS DO DASHBOARD
+const defaultPadding = 16.0;
 
-// PRIMEIRO CRIEI O LOCATOR QUE INSTANCIA O LOCATOR DO CORE
-// DEPOIS CRIEI A CLASSE DE CONTANTS COM AS ROTAS E VARIAVEIS CONSTS
-// DEPOIS CRIEI O PACOTE SYNC
-// DEPOIS CRIEI O PACOTE DOMAIN
-// E POR FIM O PACOTE USER
+const kLightBlue = Color(0xffEBF6FF);
+const kDarkBlue = Color(0xff369FFF);
+const kGreen = Color(0xff8AC53E);
+const kOrange = Color(0xffFF993A);
+const kYellow = Color(0xffFFD143);
 
 var kColorScheme = ColorScheme.fromSeed(
   seedColor: const Color(0xFF324581),
@@ -47,7 +49,7 @@ class ViggoPayWeb extends StatefulWidget {
 }
 
 class _ViggoPayWebState extends State<ViggoPayWeb> {
-  // var _themeMode = ThemeMode.light;
+  var _themeMode = ThemeMode.light;
 
   // This widget is the root of your application.
   @override
@@ -63,7 +65,26 @@ class _ViggoPayWebState extends State<ViggoPayWeb> {
         ),
         cardTheme: const CardTheme(
           color: Colors.white,
-        )
+          surfaceTintColor: Colors.white,
+        ),
+        dataTableTheme: const DataTableThemeData(
+          dataRowColor: MaterialStatePropertyAll(
+            Colors.white,
+          ),
+          headingRowColor: MaterialStatePropertyAll(
+            Colors.white,
+          ),
+        ),
+        iconButtonTheme: IconButtonThemeData(
+          style: IconButton.styleFrom(
+            foregroundColor: kColorScheme.primary,
+            focusColor: kColorScheme.primary,
+            surfaceTintColor: kColorScheme.primary,
+          ),
+        ),
+        iconTheme: const IconThemeData().copyWith(
+          color: kColorScheme.primary,
+        ),
       ),
       darkTheme: ThemeData.dark().copyWith(
         colorScheme: kColorSchemeDark,
@@ -74,22 +95,44 @@ class _ViggoPayWebState extends State<ViggoPayWeb> {
         ),
         cardTheme: const CardTheme(
           color: Colors.white,
-        )
+        ),
+        dataTableTheme: const DataTableThemeData(
+          dataRowColor: MaterialStatePropertyAll(
+            Colors.white,
+          ),
+          headingRowColor: MaterialStatePropertyAll(
+            Colors.white,
+          ),
+        ),
+        iconButtonTheme: IconButtonThemeData(
+          style: IconButton.styleFrom(
+            foregroundColor: kColorScheme.primary,
+            focusColor: kColorScheme.primary,
+            surfaceTintColor: kColorScheme.primary,
+          ),
+        ),
+        iconTheme: const IconThemeData().copyWith(
+          color: kColorScheme.primary,
+        ),
       ),
       routes: {
-        Routes.HOME: (ctx) => const LoginPage(),
-        Routes.LOGIN_PAGE: (ctx) => const LoginPage(),
-        Routes.FORGET_PASSWORD: (ctx) => const ForgetPassPage(),
-        Routes.WORKSPACE: (ctx) => const DashboardPage(),
+        Routes.HOME: (ctx) => LoginPage(changeTheme: changeTheme),
+        Routes.LOGIN_PAGE: (ctx) => LoginPage(changeTheme: changeTheme),
+        Routes.FORGET_PASSWORD: (ctx) =>
+            ForgetPassPage(changeTheme: changeTheme),
+        Routes.WORKSPACE: (ctx) => DashboardPage(changeTheme: changeTheme),
         //sysadmin
-        Routes.DOMAINS: (ctx) => const ListDomainsPage(),
+        Routes.DOMAINS: (ctx) => ListDomainsPage(changeTheme: changeTheme),
         //admin
-        Routes.DOMAIN_ACCOUNTS: (ctx) => const ListDomainAccountPage(),
-        Routes.PIX: (ctx) => const ListChavesPixPage(),
-        Routes.TRANSACAO_CONTA: (ctx) => const ListTransacaoContaPage(),
-        Routes.HISTORICO: (ctx) => const ListHistoricoTransacoesPage(),
+        Routes.DOMAIN_ACCOUNTS: (ctx) =>
+            ListDomainAccountPage(changeTheme: changeTheme),
+        Routes.PIX: (ctx) => ListChavesPixPage(changeTheme: changeTheme),
+        Routes.TRANSACAO_CONTA: (ctx) =>
+            ListTransacaoContaPage(changeTheme: changeTheme),
+        Routes.HISTORICO: (ctx) =>
+            ListHistoricoTransacoesPage(changeTheme: changeTheme),
       },
-      themeMode: ThemeMode.light,
+      themeMode: _themeMode,
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -101,5 +144,11 @@ class _ViggoPayWebState extends State<ViggoPayWeb> {
         Locale('pt_BR'),
       ],
     );
+  }
+
+  void changeTheme(ThemeMode themeMode) {
+    setState(() {
+      _themeMode = themeMode;
+    });
   }
 }
