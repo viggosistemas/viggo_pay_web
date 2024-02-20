@@ -24,7 +24,7 @@ class ForgetPasswordViewModel extends ChangeNotifier {
 
   void notifyLoading() {
     isLoading = !isLoading;
-    notifyListeners();
+    // notifyListeners();
   }
 
   void onSubmit(
