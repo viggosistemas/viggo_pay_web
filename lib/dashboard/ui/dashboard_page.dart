@@ -22,11 +22,17 @@ class Course {
 }
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key});
+  const DashboardPage({
+    super.key,
+    required this.changeTheme,
+  });
+
+  final void Function(ThemeMode themeMode) changeTheme;
 
   @override
   Widget build(BuildContext context) {
     return AppBuilderMain(
+      changeTheme: changeTheme,
       child: Expanded(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -111,7 +117,7 @@ final List<Course> course = [
     text: "Card 1",
     lessons: "10 Values",
     imageUrl: "assets/images/img1.png",
-    percent: (12/80)*100,
+    percent: (12 / 80) * 100,
     backImage: "assets/images/box1.png",
     color: kDarkBlue,
   ),
@@ -119,7 +125,7 @@ final List<Course> course = [
     text: "Card 2",
     lessons: "20 Values",
     imageUrl: "assets/images/img2.png",
-    percent: (18/80)*100,
+    percent: (18 / 80) * 100,
     backImage: "assets/images/box2.png",
     color: kOrange,
   ),
@@ -127,7 +133,7 @@ final List<Course> course = [
     text: "Card 3",
     lessons: "30 Values",
     imageUrl: "assets/images/img3.png",
-    percent: (20/80)*100,
+    percent: (20 / 80) * 100,
     backImage: "assets/images/box3.png",
     color: kGreen,
   ),
@@ -135,7 +141,7 @@ final List<Course> course = [
     text: "Card 4",
     lessons: "40 Values",
     imageUrl: "assets/images/img4.png",
-    percent: (65/80)*100,
+    percent: (65 / 80) * 100,
     backImage: "assets/images/box4.png",
     color: kYellow,
   ),

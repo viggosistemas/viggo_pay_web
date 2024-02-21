@@ -5,10 +5,8 @@ import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain/ui/list_domains/list_domains_page.dart';
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_page.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_page.dart';
-import 'package:viggo_pay_admin/historico_transacoes/ui/list_historico_transacoes/list_historico_transacoes_page.dart';
 import 'package:viggo_pay_admin/login/ui/login_page.dart';
 import 'package:viggo_pay_admin/pix_to_send/ui/list_pix_to_send/list_pix_to_send_page.dart';
-import 'package:viggo_pay_admin/transacao_contas/ui/list_transacao_contas/list_transacao_contas_page.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 
 //CONFIGURACAO DOS CARDS DO DASHBOARD
@@ -126,11 +124,7 @@ class _ViggoPayWebState extends State<ViggoPayWeb> {
         //admin
         Routes.DOMAIN_ACCOUNTS: (ctx) =>
             ListDomainAccountPage(changeTheme: changeTheme),
-        Routes.PIX: (ctx) => ListChavesPixPage(changeTheme: changeTheme),
-        Routes.TRANSACAO_CONTA: (ctx) =>
-            ListTransacaoContaPage(changeTheme: changeTheme),
-        Routes.HISTORICO: (ctx) =>
-            ListHistoricoTransacoesPage(changeTheme: changeTheme),
+        Routes.PIX: (ctx) => ListPixToSendPage(changeTheme: changeTheme),
       },
       themeMode: _themeMode,
       debugShowCheckedModeBanner: false,
