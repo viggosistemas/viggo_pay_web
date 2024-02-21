@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 
 class ListDomainAccountsGrid extends StatefulWidget {
   const ListDomainAccountsGrid({super.key});
@@ -52,8 +52,8 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
             ],
           );
         } else if (snapshot.data != null &&
-            (snapshot.data as List<DomainApiDto>).isNotEmpty) {
-          List<DomainApiDto> items = (snapshot.data as List<DomainApiDto>);
+            (snapshot.data as List<DomainAccountApiDto>).isNotEmpty) {
+          List<DomainAccountApiDto> items = (snapshot.data as List<DomainAccountApiDto>);
           return SizedBox(
             height: double.maxFinite,
             child: SingleChildScrollView(
@@ -80,13 +80,13 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                       viewModel: viewModel,
                       columnsDef: const [
                         DataColumn(label: Center(child: Text('Id', style: TextStyle(fontWeight: FontWeight.bold),))),
-                        DataColumn(label: Center(child: Text('Name', style: TextStyle(fontWeight: FontWeight.bold),))),
-                        DataColumn(label: Center(child: Text('ApplicationId', style: TextStyle(fontWeight: FontWeight.bold),))),
+                        DataColumn(label: Center(child: Text('Cliente', style: TextStyle(fontWeight: FontWeight.bold),))),
+                        DataColumn(label: Center(child: Text('Matera', style: TextStyle(fontWeight: FontWeight.bold),))),
                       ],
                       fieldsData: const [
                         'id',
-                        'name',
-                        'application_id',
+                        'client_name',
+                        'matera_id',
                       ],
                       items: items.map((e) {
                         return e.toJson();

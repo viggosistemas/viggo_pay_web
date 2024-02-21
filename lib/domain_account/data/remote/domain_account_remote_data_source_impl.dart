@@ -25,7 +25,7 @@ class DomainAccountRemoteDataSourceImpl
 
     return safeApiCall(api.getEntitiesByParams, params: params).mapRight(
       (right) => DomainAccountDtoPagination(
-        domainAccounts: (right as DomainAccountsResponse).domain_accounts,
+        domainAccounts: (right as DomainAccountsResponse).domainAccounts,
         pagination: (right as DomainAccountsResponse).pagination,
       ),
     );

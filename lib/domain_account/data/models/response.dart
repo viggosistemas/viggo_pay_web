@@ -11,11 +11,11 @@ class DomainAccountResponse {
 }
 
 class DomainAccountsResponse {
-  late List<DomainAccountApiDto> domain_accounts;
+  late List<DomainAccountApiDto> domainAccounts;
   late PaginationApiDto? pagination;
 
   DomainAccountsResponse.fromJson(Map<String, dynamic> json) {
-    domain_accounts = List<DomainAccountApiDto>.from(
+    domainAccounts = List<DomainAccountApiDto>.from(
         json['domain_accounts'].map((val) => DomainAccountApiDto.fromJson(val)).toList());
     pagination = json['pagination'] != null
         ? PaginationApiDto.fromJson(json['pagination'])

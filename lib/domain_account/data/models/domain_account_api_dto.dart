@@ -30,7 +30,7 @@ class DomainAccountApiDto extends EntityDto {
     clientName = json['client_name'];
     clientTaxIdentifierTaxId = json['client_tax_identifier_tax_id'];
     clientTaxIdentifierCountry = json['client_tax_identifier_country'];
-    clientMobilePhone = json['client_mobile_phone'];
+    clientMobilePhone = json['client_mobile_phone_phone_number'];
     clientMobilePhoneCountry = json['client_mobile_phone_country'];
     clientEmail = json['client_email'];
 
@@ -54,7 +54,7 @@ class DomainAccountApiDto extends EntityDto {
     result['client_name'] = clientName;
     result['client_tax_identifier_tax_id'] = clientTaxIdentifierTaxId;
     result['client_tax_identifier_country'] = clientTaxIdentifierCountry;
-    result['client_mobile_phone'] = clientMobilePhone;
+    result['client_mobile_phone_phone_number'] = clientMobilePhone;
     result['client_mobile_phone_country'] = clientMobilePhoneCountry;
     result['client_email'] = clientEmail;
 
