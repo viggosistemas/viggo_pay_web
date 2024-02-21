@@ -14,7 +14,6 @@ class ListDomainAccountsGrid extends StatefulWidget {
 }
 
 class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
-  //TODO: COLOCAR DINAMICA DE LIST NO VIEW MODEL DA DOMAIN ACCOUNTS
   late ListDomainAccountViewModel viewModel;
 
   @override
