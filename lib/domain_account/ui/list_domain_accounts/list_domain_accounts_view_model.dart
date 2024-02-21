@@ -43,8 +43,7 @@ class ListDomainAccountViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> loadData() async {
-    Map<String, String> filters = {'order_by': 'client_name'};
+  Future<void> loadData(Map<String, String> filters) async {
     Map<String, String>? formFields = form.getFields();
 
     if (formFields != null) {

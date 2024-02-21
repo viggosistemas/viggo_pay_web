@@ -8,7 +8,7 @@ abstract class DomainAccountRemoteDataSource {
   
   Future<Either<NetworkException, DomainAccountDtoPagination>> getEntitiesByParams({
     required Map<String, String> filters,
-    ListOptions listOptions = ListOptions.ACTIVE_ONLY,
+    ListOptions? listOptions,
     String? include,
   });
   

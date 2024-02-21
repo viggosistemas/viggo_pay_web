@@ -14,7 +14,7 @@ class DomainAccountRepositoryImpl implements DomainAccountRepository {
   @override
   Future<Either<NetworkException, DomainAccountDtoPagination>> getEntitiesByParams({
     Map<String, String> filters = const {},
-    ListOptions listOptions = ListOptions.ACTIVE_ONLY,
+    ListOptions? listOptions,
     String? include,
   }) =>
       remoteDataSource.getEntitiesByParams(

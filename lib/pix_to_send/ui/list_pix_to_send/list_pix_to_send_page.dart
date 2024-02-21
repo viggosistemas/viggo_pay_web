@@ -5,8 +5,8 @@ import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/pix_to_send/ui/list_pix_to_send/list_pix_to_send_grid.dart';
 import 'package:viggo_pay_admin/pix_to_send/ui/list_pix_to_send/list_pix_to_send_view_model.dart';
 
-class ListChavesPixPage extends StatelessWidget {
-  const ListChavesPixPage({
+class ListPixToSendPage extends StatelessWidget {
+  const ListPixToSendPage({
     Key? key,
     required this.changeTheme,
   }) : super(key: key);
@@ -20,7 +20,7 @@ class ListChavesPixPage extends StatelessWidget {
       child: AppBuilderMain(
         changeTheme: changeTheme,
         child: const Expanded(
-          child: ListChavesPixGrid(),
+          child: ListPixToSendGrid(),
         ),
       ),
     );

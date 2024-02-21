@@ -11,7 +11,7 @@ class GetDomainAccountsByParamsUseCase {
 
   Future<Either<NetworkException, DomainAccountDtoPagination>> invoke({
     Map<String, String> filters = const {},
-    ListOptions listOptions = ListOptions.ACTIVE_ONLY,
+    ListOptions? listOptions,
     String? include,
   }) =>
       repository.getEntitiesByParams(

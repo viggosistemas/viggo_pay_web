@@ -5,14 +5,14 @@ import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart
 import 'package:viggo_pay_admin/pix_to_send/ui/list_pix_to_send/list_pix_to_send_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
-class ListChavesPixGrid extends StatefulWidget {
-  const ListChavesPixGrid({super.key});
+class ListPixToSendGrid extends StatefulWidget {
+  const ListPixToSendGrid({super.key});
 
   @override
-  State<ListChavesPixGrid> createState() => _ListChavesPixGridState();
+  State<ListPixToSendGrid> createState() => _ListPixToSendGridState();
 }
 
-class _ListChavesPixGridState extends State<ListChavesPixGrid> {
+class _ListPixToSendGridState extends State<ListPixToSendGrid> {
   late ListPixToSendViewModel viewModel;
 
   @override

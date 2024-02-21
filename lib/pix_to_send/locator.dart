@@ -10,7 +10,7 @@ import 'package:viggo_pay_admin/pix_to_send/ui/list_pix_to_send/list_pix_to_send
 import 'package:viggo_pay_core_frontend/preferences/domain/preferences_settings.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
-class ChavePixLocator {
+class PixToSendLocator {
   void setup() {
       // api
     locator.registerFactory(

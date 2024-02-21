@@ -1,4 +1,5 @@
 import 'package:viggo_pay_core_frontend/base/entity_api_dto.dart';
+import 'package:viggo_pay_core_frontend/util/date_converter.dart';
 
 class DomainAccountApiDto extends EntityDto {
   late String? materaId;
@@ -18,8 +19,11 @@ class DomainAccountApiDto extends EntityDto {
   late String billingAddressEstado;
   late String billingAddressCep;
   late String billingAddressPais;
+  late String? macMaquina;
+  late DateTime? aceitacaoTermoDh;
+  late double? lat;
+  late double? lon;
   bool selected = false;
-  
 
   DomainAccountApiDto.fromJson(Map<String, dynamic> json) {
     super.entityFromJson(json);
@@ -42,6 +46,13 @@ class DomainAccountApiDto extends EntityDto {
     billingAddressEstado = json['billing_address_estado'];
     billingAddressCep = json['billing_address_cep'];
     billingAddressPais = json['billing_address_pais'];
+
+    macMaquina = json['mac_maquina'];
+    aceitacaoTermoDh = json['aceitacao_termo_dh'] != null
+        ? DateConverter().deserializeDateTime(json['aceitacao_termo_dh'])
+        : null;
+    lat = json['lat'];
+    lon = json['lon'];
   }
 
   @override
@@ -68,10 +79,18 @@ class DomainAccountApiDto extends EntityDto {
     result['billing_address_pais'] = billingAddressPais;
 
     result['selected'] = selected;
-    
+
     result['client_name'] = clientName;
     result['client_tax_identifier_tax_id'] = clientTaxIdentifierTaxId;
-    if(clientTaxIdentifierCountry != null) result['client_tax_identifier_country'] = clientTaxIdentifierCountry;
+    if (clientTaxIdentifierCountry != null)
+      result['client_tax_identifier_country'] = clientTaxIdentifierCountry;
+
+    if (macMaquina != null) result['mac_maquina'] = macMaquina;
+    if (aceitacaoTermoDh != null)
+      result['aceitacao_termo_dh'] =
+          DateConverter().serializeDateTime(aceitacaoTermoDh!);
+    if (lat != null) result['lat'] = lat;
+    if (lon != null) result['lon'] = lon;
 
     return result;
   }
