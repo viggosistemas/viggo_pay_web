@@ -139,6 +139,7 @@ class LoginViewModel extends ChangeNotifier {
     _streamControllerDomain.sink.add(null);
     form.onDomainChange('');
     form.onEmailChange('');
+    form.onPasswordChange('');
     form.onRememberChange(false);
   }
 

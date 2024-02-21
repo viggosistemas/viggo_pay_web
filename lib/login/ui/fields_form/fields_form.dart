@@ -111,7 +111,7 @@ class _FieldsFormState extends State<FieldsForm> {
             stream: widget.viewModel.form.username,
             builder: (context, snapshot) {
               _userController.value =
-                  _userController.value.copyWith(text: snapshot.data);
+                  _userController.value.copyWith(text: snapshot.data ?? '');
               return TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Usuário ou Email *',

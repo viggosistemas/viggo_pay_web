@@ -60,21 +60,30 @@ class LoginFormFields extends BaseForm with LoginFormFieldsValidation {
 mixin LoginFormFieldsValidation {
   final domainValidation = StreamTransformer<String, String>.fromHandlers(
     handleData: (value, sink) {
-      List<Function(String)> validators = [Validator().isRequired];
+      List<Function(String)> validators = [
+        Validator().isRequired,
+        Validator().isEmptyValue,
+      ];
       Validator().validateField(validators, value, sink.add, sink.addError);
     },
   );
 
   final usernameValidation = StreamTransformer<String, String>.fromHandlers(
     handleData: (value, sink) {
-      List<Function(String)> validators = [Validator().isRequired];
+      List<Function(String)> validators = [
+        Validator().isRequired,
+        Validator().isEmptyValue,
+      ];
       Validator().validateField(validators, value, sink.add, sink.addError);
     },
   );
 
   final passwordValidation = StreamTransformer<String, String>.fromHandlers(
     handleData: (value, sink) {
-      List<Function(String)> validators = [Validator().isRequired];
+      List<Function(String)> validators = [
+        Validator().isRequired,
+        Validator().isEmptyValue,
+      ];
       Validator().validateField(validators, value, sink.add, sink.addError);
     },
   );

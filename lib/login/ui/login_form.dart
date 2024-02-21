@@ -44,15 +44,29 @@ class _LoginFormState extends State<LoginForm> {
         children: [
           Tooltip(
             message: domainName,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: FadeInImage(
-                image: NetworkImage(url),
-                placeholder: AssetImage(placeholder),
-                imageErrorBuilder: (context, error, stackTrace) {
-                  return Image.asset(placeholder, fit: BoxFit.fitWidth);
-                },
-                fit: BoxFit.fitWidth,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.7),
+                    blurRadius: 8,
+                    spreadRadius: 6,
+                    offset: const Offset(0, 0),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: FadeInImage(
+                  image: NetworkImage(url),
+                  placeholder: AssetImage(placeholder),
+                  imageErrorBuilder: (context, error, stackTrace) {
+                    return Image.asset(placeholder, fit: BoxFit.fitWidth);
+                  },
+                  fit: BoxFit.fitWidth,
+                ),
               ),
             ),
           ),
@@ -83,11 +97,25 @@ class _LoginFormState extends State<LoginForm> {
       children: [
         Tooltip(
           message: domainName,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: Image(
-              image: AssetImage(placeholder),
-              fit: BoxFit.fitWidth,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.7),
+                  blurRadius: 8,
+                  spreadRadius: 6,
+                  offset: const Offset(0, 0),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Image(
+                image: AssetImage(placeholder),
+                fit: BoxFit.fitWidth,
+              ),
             ),
           ),
         ),
@@ -198,7 +226,7 @@ class _LoginFormState extends State<LoginForm> {
                                     color: Colors.white,
                                   ),
                                   onPressed: () async {
-                                    if (snapshot.data == true){
+                                    if (snapshot.data == true) {
                                       viewModel.onSearch(
                                         showInfoMessage,
                                         context,
