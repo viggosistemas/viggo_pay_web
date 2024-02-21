@@ -38,6 +38,7 @@ dependencies:
   intl: ^0.18.1
   uuid: ^4.3.3
   rxdart: ^0.27.7
+  http: ^1.1.2
   flutter_localization: ^0.2.0
   fl_chart: ^0.36.1
   ternav_icons: ^1.0.0
@@ -53,6 +54,7 @@ dependencies:
   google_fonts: ^6.1.0
   flutter_localizations:
     sdk: flutter
+  flutter_bloc: ^8.1.4
 
 dev_dependencies:
   flutter_test:
