@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
+import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
+import 'package:viggo_pay_admin/pix_to_send/ui/list_pix_to_send/list_pix_to_send_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
-import 'package:viggo_pay_core_frontend/domain/ui/list_domain_view_model.dart';
 
 class ListChavesPixGrid extends StatefulWidget {
   const ListChavesPixGrid({super.key});
@@ -13,11 +13,11 @@ class ListChavesPixGrid extends StatefulWidget {
 }
 
 class _ListChavesPixGridState extends State<ListChavesPixGrid> {
-  late ListDomainViewModel viewModel; //TODO: COLOCAR DINAMICA DE LIST NO VIEW MODEL DA CHAVE PIX
+  late ListPixToSendViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
-    viewModel = Provider.of<ListDomainViewModel>(context);
+    viewModel = Provider.of<ListPixToSendViewModel>(context);
     viewModel.loadData();
 
     viewModel.error.listen(
@@ -34,7 +34,7 @@ class _ListChavesPixGridState extends State<ListChavesPixGrid> {
       },
     );
     return StreamBuilder<Object>(
-      stream: viewModel.domains,
+      stream: viewModel.pixToSends,
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           viewModel.loadData();
@@ -50,22 +50,18 @@ class _ListChavesPixGridState extends State<ListChavesPixGrid> {
             ],
           );
         } else if (snapshot.data != null &&
-            (snapshot.data as List<DomainApiDto>).isNotEmpty) {
-          List<DomainApiDto> items = (snapshot.data as List<DomainApiDto>);
+            (snapshot.data as List<PixToSendApiDto>).isNotEmpty) {
+          List<PixToSendApiDto> items =
+              (snapshot.data as List<PixToSendApiDto>);
           return SizedBox(
             height: double.maxFinite,
             child: DataTablePaginated(
               viewModel: viewModel,
               columnsDef: const [
-                DataColumn(label: Text('Id')),
-                DataColumn(label: Text('Name')),
-                DataColumn(label: Text('ApplicationId')),
+                DataColumn(label: Text('Psp ID')),
+                DataColumn(label: Text('Alias'))
               ],
-              fieldsData: const [
-                'id',
-                'name',
-                'application_id',
-              ],
+              fieldsData: const ['psp_id', 'alias'],
               items: items.map((e) {
                 return e.toJson();
               }).toList(),
@@ -76,8 +72,22 @@ class _ListChavesPixGridState extends State<ListChavesPixGrid> {
             // ),
           );
         } else {
-          return const Center(
-            child: Text('Nenhum resultado encontrado!'),
+          return const SizedBox(
+            height: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  color: Colors.black,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text('Nenhum resultado encontrado!')
+              ],
+            ),
           );
         }
       },

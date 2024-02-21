@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:viggo_pay_admin/chaves_pix/ui/list_chaves_pix/list_chaves_pix_page.dart';
 import 'package:viggo_pay_admin/dashboard/ui/dashboard_page.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain/ui/list_domains/list_domains_page.dart';
@@ -8,6 +7,7 @@ import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_doma
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_page.dart';
 import 'package:viggo_pay_admin/historico_transacoes/ui/list_historico_transacoes/list_historico_transacoes_page.dart';
 import 'package:viggo_pay_admin/login/ui/login_page.dart';
+import 'package:viggo_pay_admin/pix_to_send/ui/list_pix_to_send/list_pix_to_send_page.dart';
 import 'package:viggo_pay_admin/transacao_contas/ui/list_transacao_contas/list_transacao_contas_page.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 
