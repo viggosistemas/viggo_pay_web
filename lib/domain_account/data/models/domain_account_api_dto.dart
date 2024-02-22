@@ -82,13 +82,15 @@ class DomainAccountApiDto extends EntityDto {
 
     result['client_name'] = clientName;
     result['client_tax_identifier_tax_id'] = clientTaxIdentifierTaxId;
-    if (clientTaxIdentifierCountry != null)
+    if (clientTaxIdentifierCountry != null) {
       result['client_tax_identifier_country'] = clientTaxIdentifierCountry;
+    }
 
     if (macMaquina != null) result['mac_maquina'] = macMaquina;
-    if (aceitacaoTermoDh != null)
+    if (aceitacaoTermoDh != null) {
       result['aceitacao_termo_dh'] =
           DateConverter().serializeDateTime(aceitacaoTermoDh!);
+    }
     if (lat != null) result['lat'] = lat;
     if (lon != null) result['lon'] = lon;
 

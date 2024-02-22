@@ -58,4 +58,30 @@ class DomainAccountApi extends BaseApi {
         );
     }
   }
+
+  Future<DomainAccountResponse> updateEntity(Map<String, dynamic> params) async {
+    String id = params['id'];
+    Map<String, dynamic> body = params['body'];
+    Map<String, String> headers = getHeaders();
+
+    body = cleanEntity(body);
+    String url = '$baseUrl$ENDPOINT/$id';
+
+    var response = await http.put(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+    switch (response.statusCode) {
+      case 200:
+        Map<String, dynamic> json = jsonDecode(response.body);
+        return DomainAccountResponse.fromJson(json);
+      default:
+        throw NetworkException(
+          message: response.body,
+          isRetryAble: false,
+          code: response.statusCode,
+        );
+    }
+  }
 }

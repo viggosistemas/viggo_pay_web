@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
+import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/config_domain_accounts/config_domain_accounts.dart';
+import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts.dart';
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 import 'package:viggo_pay_core_frontend/util/list_options.dart';
@@ -16,6 +18,7 @@ class ListDomainAccountsGrid extends StatefulWidget {
 
 class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
   late ListDomainAccountViewModel viewModel;
+
   List<Map<String, dynamic>> searchFields = [
     {
       'label': 'Cliente',
@@ -61,11 +64,14 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
   }
 
   buildContent(List<DomainAccountApiDto> items) {
+    final dialogs = EditDomainAccounts(context: context);
     if (items.isNotEmpty) {
       return SizedBox(
         width: double.infinity,
         child: DataTablePaginated(
           viewModel: viewModel,
+          entityNames: 'domain_accounts',
+          initialFilters: filters,
           columnsDef: const [
             DataColumn(
                 label: Center(
@@ -91,9 +97,29 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
             'client_name',
             'matera_id',
           ],
+          dialogs: dialogs,
           items: items.map((e) {
             return e.toJson();
           }).toList(),
+          actions: [
+            const SizedBox(
+              width: 10,
+            ),
+            IconButton.outlined(
+              onPressed: () {
+                var selecteds = viewModel.selectedItemsList
+                    .where((e) => e.selected == true)
+                    .toList();
+                if (selecteds.length == 1) {
+                  ConfigDomainAccounts(context: context).configDialog(selecteds[0]);
+                }
+              },
+              tooltip: 'Configurações',
+              icon: const Icon(
+                Icons.settings,
+              ),
+            )
+          ],
         ),
       );
       // DataTableNotPaginated(

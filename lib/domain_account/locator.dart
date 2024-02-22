@@ -6,6 +6,8 @@ import 'package:viggo_pay_admin/domain_account/data/remote/domain_account_remote
 import 'package:viggo_pay_admin/domain_account/domain/domain_account_repository.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_accounts_by_params_use_case.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/update_domain_account_use_case.dart';
+import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_view_model.dart';
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_view_model.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/preferences_settings.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
@@ -46,6 +48,11 @@ class DomainAccountLocator {
         repository: locator.get<DomainAccountRepository>(),
       ),
     );
+    locator.registerFactory(
+      () => UpdateDomainAccountUseCase(
+        repository: locator.get<DomainAccountRepository>(),
+      ),
+    );
 
 
     // ViewModels
@@ -54,6 +61,11 @@ class DomainAccountLocator {
         getDomainAccounts: locator.get<GetDomainAccountsByParamsUseCase>(),
         updateSelected: locator.get<UpdateSelectedItemUsecase>(),
         getSelectedItems: locator.get<GetSelectedItemsUseCase>(),
+      ),
+    );
+    locator.registerFactory(
+      () => EditDomainAccountViewModel(
+        updateDomainAccount: locator.get<UpdateDomainAccountUseCase>(),
       ),
     );
   }

@@ -17,4 +17,9 @@ abstract class DomainAccountRepository {
     String? include,
   });
 
+  Future<Either<NetworkException, DomainAccountApiDto>> updateEntity({
+    required String id,
+    required Map<String, dynamic> body,
+  });
+
 }

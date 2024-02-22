@@ -16,4 +16,10 @@ abstract class DomainAccountRemoteDataSource {
     required String id,
     String? include,
   });
+
+  Future<Either<NetworkException, DomainAccountApiDto>> updateEntity({
+    required String id,
+    required Map<String, dynamic> body,
+  });
+
 }

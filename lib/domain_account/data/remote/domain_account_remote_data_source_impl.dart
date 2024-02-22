@@ -41,4 +41,14 @@ class DomainAccountRemoteDataSourceImpl
     return safeApiCall(api.getEntityById, params: params)
         .mapRight((right) => (right as DomainAccountResponse).domainAccount);
   }
+
+  @override
+  Future<Either<NetworkException, DomainAccountApiDto>> updateEntity({
+    required String id,
+    required Map<String, dynamic> body,
+  }) {
+    Map<String, dynamic> params = {'id': id, 'body': body};
+    return safeApiCall(api.updateEntity, params: params)
+        .mapRight((right) => (right as DomainAccountResponse).domainAccount);
+  }
 }

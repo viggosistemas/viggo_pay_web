@@ -14,6 +14,8 @@ class ListDomainAccountViewModel extends ChangeNotifier {
 
   final ListDomainFormFields form = ListDomainFormFields();
 
+  List<DomainAccountApiDto> selectedItemsList = [];
+
   ListDomainAccountViewModel({
     required this.getDomainAccounts,
     required this.updateSelected,
@@ -38,9 +40,14 @@ class ListDomainAccountViewModel extends ChangeNotifier {
   void _updateDomainsList(List<DomainAccountApiDto> items) {
     if (!domainsController.isClosed) {
       _items = items;
+      selectedItemsList = _mapSelected(items, getSelectedItems.invoke());
       domainsController.sink
-          .add(_mapSelected(items, getSelectedItems.invoke()));
+          .add(selectedItemsList);
     }
+  }
+
+  fromJson(Map<String, dynamic> entity){
+    return DomainAccountApiDto.fromJson(entity);
   }
 
   Future<void> loadData(Map<String, String> filters) async {

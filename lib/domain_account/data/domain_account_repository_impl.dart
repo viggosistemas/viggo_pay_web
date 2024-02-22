@@ -30,4 +30,12 @@ class DomainAccountRepositoryImpl implements DomainAccountRepository {
     String? include,
   }) =>
       remoteDataSource.getEntityById(id: id, include: include);
+
+  @override
+  Future<Either<NetworkException, DomainAccountApiDto>> updateEntity({
+    required String id,
+    required Map<String, dynamic> body,
+  }) =>
+      remoteDataSource.updateEntity(id: id, body: body);
+
 }
