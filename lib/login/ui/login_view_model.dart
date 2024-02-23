@@ -182,7 +182,7 @@ class LoginViewModel extends ChangeNotifier {
     // notifyListeners();
   }
 
-  void onSearch(
+  void onSubmit(
     Function showMsg,
     BuildContext context,
   ) async {

@@ -5,6 +5,7 @@ import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain/ui/list_domains/list_domains_page.dart';
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_page.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_page.dart';
+import 'package:viggo_pay_admin/historico/ui/timeline_historico_transacao.dart';
 import 'package:viggo_pay_admin/login/ui/login_page.dart';
 import 'package:viggo_pay_admin/pix_to_send/ui/list_pix_to_send/list_pix_to_send_page.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
@@ -64,6 +65,8 @@ class _ViggoPayWebState extends State<ViggoPayWeb> {
         cardTheme: const CardTheme(
           color: Colors.white,
           surfaceTintColor: Colors.white,
+          shadowColor: Colors.black,
+          elevation: 10,
         ),
         dataTableTheme: const DataTableThemeData(
           dataRowColor: MaterialStatePropertyAll(
@@ -125,6 +128,7 @@ class _ViggoPayWebState extends State<ViggoPayWeb> {
         Routes.DOMAIN_ACCOUNTS: (ctx) =>
             ListDomainAccountPage(changeTheme: changeTheme),
         Routes.PIX: (ctx) => ListPixToSendPage(changeTheme: changeTheme),
+        Routes.HISTORICO: (ctx) => TimelineTransacaoPage(changeTheme: changeTheme),
       },
       themeMode: _themeMode,
       debugShowCheckedModeBanner: false,

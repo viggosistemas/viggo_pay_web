@@ -227,7 +227,7 @@ class _LoginFormState extends State<LoginForm> {
                                   ),
                                   onPressed: () async {
                                     if (snapshot.data == true) {
-                                      viewModel.onSearch(
+                                      viewModel.onSubmit(
                                         showInfoMessage,
                                         context,
                                       );

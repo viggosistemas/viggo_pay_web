@@ -4,6 +4,7 @@ import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/loca
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/locator.dart';
 import 'package:viggo_pay_admin/domain_account/locator.dart';
 import 'package:viggo_pay_admin/forget_password/locator.dart';
+import 'package:viggo_pay_admin/historico/locator.dart';
 import 'package:viggo_pay_admin/lazy_loading/locator.dart';
 import 'package:viggo_pay_admin/login/locator.dart';
 import 'package:viggo_pay_admin/pix_to_send/locator.dart';
@@ -18,10 +19,12 @@ Future<void> setupLocator() async {
   //pages
   LazyLoadingLocator().setup();
   LoginLocator().setup();
+  ForgetPasswordLocator().setup();
   SyncLocator().setup();
+
   DomainAccountLocator().setup();
   PixToSendLocator().setup();
-  ForgetPasswordLocator().setup();
+  HistoricoTransacaoLocator().setup();
   
   //appBuilder
   AppBuilderLocator().setup();
