@@ -6,8 +6,11 @@ import 'package:viggo_pay_admin/pix_to_send/data/remote/pix_to_send_remote_data_
 import 'package:viggo_pay_admin/pix_to_send/domain/pix_to_send_repository.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_id_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_params_use_case.dart';
+import 'package:viggo_pay_admin/pix_to_send/domain/usecases/update_pix_to_send_use_case.dart';
+import 'package:viggo_pay_admin/pix_to_send/ui/edit_pix_to_send/edit_pix_to_sends_view_model.dart';
 import 'package:viggo_pay_admin/pix_to_send/ui/list_pix_to_send/list_pix_to_send_view_model.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/preferences_settings.dart';
+import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
 class PixToSendLocator {
@@ -45,6 +48,11 @@ class PixToSendLocator {
         repository: locator.get<PixToSendRepository>(),
       ),
     );
+    locator.registerFactory(
+      () => UpdatePixToSendUseCase(
+        repository: locator.get<PixToSendRepository>(),
+      ),
+    );
 
 
     // ViewModels
@@ -53,6 +61,13 @@ class PixToSendLocator {
         getPixToSends: locator.get<GetPixToSendsByParamsUseCase>(),
         updateSelected: locator.get<UpdateSelectedItemUsecase>(),
         getSelectedItems: locator.get<GetSelectedItemsUseCase>(),
+        clearSelectedItems: locator.get<ClearSelectedItemsUseCase>(),
+      ),
+    );
+
+    locator.registerFactory(
+      () => EditPixToSendViewModel(
+        updatePixToSend: locator.get<UpdatePixToSendUseCase>(),
       ),
     );
   }

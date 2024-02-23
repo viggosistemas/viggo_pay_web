@@ -23,11 +23,17 @@ class PixToSendRepositoryImpl implements PixToSendRepository {
         include: include,
       );
 
-
   @override
   Future<Either<NetworkException, PixToSendApiDto>> getEntityById({
     required String id,
     String? include,
   }) =>
       remoteDataSource.getEntityById(id: id, include: include);
+
+  @override
+  Future<Either<NetworkException, PixToSendApiDto>> updateEntity({
+    required String id,
+    required Map<String, dynamic> body,
+  }) =>
+      remoteDataSource.updateEntity(id: id, body: body);
 }

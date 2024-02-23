@@ -17,4 +17,8 @@ abstract class PixToSendRepository {
     String? include,
   });
 
+  Future<Either<NetworkException, PixToSendApiDto>> updateEntity({
+    required String id,
+    required Map<String, dynamic> body,
+  });
 }

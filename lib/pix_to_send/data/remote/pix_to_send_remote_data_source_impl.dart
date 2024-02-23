@@ -42,4 +42,14 @@ class PixToSendRemoteDataSourceImpl
     return safeApiCall(api.getEntityById, params: params)
         .mapRight((right) => (right as PixToSendResponse).pixToSend);
   }
+
+  @override
+  Future<Either<NetworkException, PixToSendApiDto>> updateEntity({
+    required String id,
+    required Map<String, dynamic> body,
+  }) {
+    Map<String, dynamic> params = {'id': id, 'body': body};
+    return safeApiCall(api.updateEntity, params: params)
+        .mapRight((right) => (right as PixToSendResponse).pixToSend);
+  }
 }

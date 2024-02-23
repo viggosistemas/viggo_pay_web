@@ -16,4 +16,10 @@ abstract class PixToSendRemoteDataSource {
     required String id,
     String? include,
   });
+
+  Future<Either<NetworkException, PixToSendApiDto>> updateEntity({
+    required String id,
+    required Map<String, dynamic> body,
+  });
+
 }
