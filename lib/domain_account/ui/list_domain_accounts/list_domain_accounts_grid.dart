@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
+import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/config_domain_accounts/config_domain_accounts.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts.dart';
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_view_model.dart';
@@ -63,6 +64,10 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
     viewModel.loadData(newFilters);
   }
 
+  onReload(){
+    viewModel.loadData(filters);
+  }
+
   buildContent(List<DomainAccountApiDto> items) {
     final dialogs = EditDomainAccounts(context: context);
     if (items.isNotEmpty) {
@@ -70,7 +75,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
         width: double.infinity,
         child: DataTablePaginated(
           viewModel: viewModel,
-          entityNames: 'domain_accounts',
+          streamList: viewModel.domainAccounts,
           initialFilters: filters,
           columnsDef: const [
             DataColumn(
@@ -105,20 +110,39 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
             const SizedBox(
               width: 10,
             ),
-            IconButton.outlined(
-              onPressed: () {
-                var selecteds = viewModel.selectedItemsList
-                    .where((e) => e.selected == true)
-                    .toList();
-                if (selecteds.length == 1) {
-                  ConfigDomainAccounts(context: context).configDialog(selecteds[0]);
-                }
-              },
-              tooltip: 'Configurações',
-              icon: const Icon(
-                Icons.settings,
-              ),
-            )
+            StreamBuilder<DomainAccountConfigApiDto?>(
+                stream: viewModel.configDomainAccount,
+                builder: (context, snapshot) {
+                  var selecteds = viewModel.selectedItemsList
+                      .where((e) => e.selected == true)
+                      .toList();
+
+                  if (selecteds.isEmpty || selecteds.length > 1) {
+                    viewModel.clearSelectionConfig();
+                  }
+
+                  if (snapshot.data == null && selecteds.length == 1) {
+                    viewModel.getConfigInfo(selecteds[0].id);
+                  }
+
+                  return IconButton.outlined(
+                    onPressed: () {
+                      if (selecteds.length == 1) {
+                        if (snapshot.data == null) {
+                          ConfigDomainAccounts(context: context).configDialog(
+                              viewModel.getEmptyConfigInfo(selecteds[0].id));
+                        } else {
+                          ConfigDomainAccounts(context: context)
+                              .configDialog(snapshot.data!);
+                        }
+                      }
+                    },
+                    tooltip: 'Configurações',
+                    icon: const Icon(
+                      Icons.settings,
+                    ),
+                  );
+                })
           ],
         ),
       );
@@ -150,7 +174,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
   @override
   Widget build(BuildContext context) {
     viewModel = Provider.of<ListDomainAccountViewModel>(context);
-    viewModel.loadData(filters);
+    onReload();
 
     viewModel.error.listen(
       (value) {
@@ -169,7 +193,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
       stream: viewModel.domainAccounts,
       builder: (context, snapshot) {
         if (snapshot.data == null) {
-          viewModel.loadData(filters);
+          onReload();
           return const Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -194,6 +218,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                   ),
                   HeaderSearchMain(
                     onSearch: onSearch,
+                    onReload: onReload,
                     searchFields: searchFields,
                   ),
                   const SizedBox(

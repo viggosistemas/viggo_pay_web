@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
-import 'package:viggo_pay_admin/domain_account/domain/usecases/update_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_form/edit_domain_accounts_form.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
@@ -10,9 +9,7 @@ class EditDomainAccounts {
   EditDomainAccounts({required this.context});
 
   final BuildContext context;
-  final viewModel = EditDomainAccountViewModel(
-    updateDomainAccount: locator<UpdateDomainAccountUseCase>(),
-  );
+  final viewModel = locator.get<EditDomainAccountViewModel>();
 
   Future<void> addDialog() {
     return showDialog(
@@ -139,7 +136,7 @@ class EditDomainAccounts {
               title: Row(
                 children: [
                   Text(
-                    'Editando conta: ${entity.clientName}',
+                    'Editando conta',
                     style: Theme.of(ctx).textTheme.titleMedium!.copyWith(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,

@@ -12,17 +12,17 @@ class DomainAccountRepositoryImpl implements DomainAccountRepository {
   DomainAccountRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<NetworkException, DomainAccountDtoPagination>> getEntitiesByParams({
+  Future<Either<NetworkException, DomainAccountDtoPagination>>
+      getEntitiesByParams({
     Map<String, String> filters = const {},
     ListOptions? listOptions,
     String? include,
   }) =>
-      remoteDataSource.getEntitiesByParams(
-        filters: filters,
-        listOptions: listOptions,
-        include: include,
-      );
-
+          remoteDataSource.getEntitiesByParams(
+            filters: filters,
+            listOptions: listOptions,
+            include: include,
+          );
 
   @override
   Future<Either<NetworkException, DomainAccountApiDto>> getEntityById({
@@ -37,5 +37,4 @@ class DomainAccountRepositoryImpl implements DomainAccountRepository {
     required Map<String, dynamic> body,
   }) =>
       remoteDataSource.updateEntity(id: id, body: body);
-
 }

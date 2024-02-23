@@ -15,12 +15,13 @@ class EditDomainAccountsForm extends StatelessWidget {
   }
 
   final EditDomainAccountViewModel viewModel;
-  late DomainAccountApiDto entity;
+  // ignore: avoid_init_to_null
+  late DomainAccountApiDto? entity = null;
 
   @override
   Widget build(context) {
     final clientNameFieldControll = TextEditingController();
-    clientNameFieldControll.text = entity.clientName;
+    if(entity != null) viewModel.form.onClientNameChange(entity!.clientName);
 
     return StreamBuilder<String>(
         stream: viewModel.form.clientName,
