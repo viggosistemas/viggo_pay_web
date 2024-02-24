@@ -84,4 +84,29 @@ class PixToSendApi extends BaseApi {
         );
     }
   }
+
+  Future<PixToSendResponse> createEntity(Map<String, dynamic> params) async {
+    Map<String, dynamic> body = params['body'];
+    Map<String, String> headers = getHeaders();
+
+    body = cleanEntity(body);
+    String url = '$baseUrl$ENDPOINT';
+
+    var response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+    switch (response.statusCode) {
+      case 201:
+        Map<String, dynamic> json = jsonDecode(response.body);
+        return PixToSendResponse.fromJson(json);
+      default:
+        throw NetworkException(
+          message: response.body,
+          isRetryAble: false,
+          code: response.statusCode,
+        );
+    }
+  }
 }

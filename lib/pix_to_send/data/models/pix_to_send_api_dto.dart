@@ -1,6 +1,7 @@
 import 'package:viggo_pay_core_frontend/base/entity_api_dto.dart';
 
 class PixToSendApiDto extends EntityDto {
+  late String domainAccountId;
   late String pspId;
   late String taxIdentifierTaxId;
   late String taxIdentifierCountry;
@@ -13,6 +14,7 @@ class PixToSendApiDto extends EntityDto {
 
   PixToSendApiDto.fromJson(Map<String, dynamic> json) {
     super.entityFromJson(json);
+    domainAccountId = json['domain_account_id'];
     pspId = json['psp_id'];
     taxIdentifierTaxId = json['tax_identifier_tax_id'];
     taxIdentifierCountry = json['tax_identifier_country'];
@@ -26,6 +28,7 @@ class PixToSendApiDto extends EntityDto {
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> result = super.toJson();
+    result['domain_account_id'] = domainAccountId;
     result['psp_id'] = pspId;
     result['tax_identifier_tax_id'] = taxIdentifierTaxId;
     result['tax_identifier_country'] = taxIdentifierCountry;

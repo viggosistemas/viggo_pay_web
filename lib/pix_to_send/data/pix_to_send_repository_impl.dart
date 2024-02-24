@@ -36,4 +36,10 @@ class PixToSendRepositoryImpl implements PixToSendRepository {
     required Map<String, dynamic> body,
   }) =>
       remoteDataSource.updateEntity(id: id, body: body);
+
+  @override
+  Future<Either<NetworkException, PixToSendApiDto>> createEntity({
+    required Map<String, dynamic> body,
+  }) =>
+      remoteDataSource.createEntity(body: body);
 }

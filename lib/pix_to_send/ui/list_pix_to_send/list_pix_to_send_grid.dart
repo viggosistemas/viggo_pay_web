@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
+import 'package:viggo_pay_admin/pix_to_send/ui/edit_pix_to_send/edit_pix_to_sends.dart';
 import 'package:viggo_pay_admin/pix_to_send/ui/list_pix_to_send/list_pix_to_send_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 import 'package:viggo_pay_core_frontend/util/list_options.dart';
@@ -61,68 +62,14 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
     viewModel.loadData(newFilters);
   }
 
-  onReload(){
+  onReload() {
     viewModel.loadData(filters);
-  }
-
-  buildContent(List<PixToSendApiDto> items) {
-    // final dialogs = EditDomainAccounts(context: context);
-    if (items.isNotEmpty) {
-      return SizedBox(
-        width: double.infinity,
-        child: DataTablePaginated(
-          viewModel: viewModel,
-          streamList: viewModel.pixToSends,
-          initialFilters: filters,
-          columnsDef: const [
-            DataColumn(
-                label: Center(
-                    child: Text(
-              'Psp ID',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ))),
-            DataColumn(
-                label: Center(
-                    child: Text(
-              'Alias',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ))),
-          ],
-          fieldsData: const ['psp_id', 'alias'],
-          dialogs: null,
-          items: items.map((e) {
-            return e.toJson();
-          }).toList(),
-        ),
-      );
-      // DataTableNotPaginated(
-      //   viewModel: viewModel,
-      //   items: items,
-      // ),
-    } else {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.5,
-        child: const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.info_outline,
-              color: Colors.black,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text('Nenhum resultado encontrado!')
-          ],
-        ),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     viewModel = Provider.of<ListPixToSendViewModel>(context);
+    final dialogs = EditPixToSends(context: context);
     onReload();
 
     viewModel.error.listen(
@@ -173,7 +120,45 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
                   const SizedBox(
                     height: 10,
                   ),
-                  buildContent(items),
+                  SizedBox(
+                    width: double.infinity,
+                    child: DataTablePaginated(
+                      viewModel: viewModel,
+                      streamList: viewModel.pixToSends,
+                      initialFilters: filters,
+                      columnsDef: const [
+                        DataColumn(
+                          label: Center(
+                            child: Text(
+                              'Psp ID',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Center(
+                            child: Text(
+                              'Alias',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                      fieldsData: const ['psp_id', 'alias'],
+                      dialogs: dialogs,
+                      items: items.map((e) {
+                        return e.toJson();
+                      }).toList(),
+                    ),
+                  ),
+                  // DataTableNotPaginated(
+                  //   viewModel: viewModel,
+                  //   items: items,
+                  // ),
                 ],
               ),
             ),

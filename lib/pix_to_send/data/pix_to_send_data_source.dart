@@ -22,4 +22,7 @@ abstract class PixToSendRemoteDataSource {
     required Map<String, dynamic> body,
   });
 
+  Future<Either<NetworkException, PixToSendApiDto>> createEntity({
+    required Map<String, dynamic> body,
+  });
 }
