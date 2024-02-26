@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/change_active_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_config_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_accounts_by_params_use_case.dart';
 import 'package:viggo_pay_core_frontend/domain/ui/list_domain_form_fields.dart';
@@ -16,12 +17,14 @@ class ListDomainAccountViewModel extends ChangeNotifier {
   final UpdateSelectedItemUsecase updateSelected;
   final GetSelectedItemsUseCase getSelectedItems;
   final ClearSelectedItemsUseCase clearSelectedItems;
+  final ChangeActiveDomainAccountUseCase changeActive;
 
   final ListDomainFormFields form = ListDomainFormFields();
 
   List<DomainAccountApiDto> selectedItemsList = [];
 
   ListDomainAccountViewModel({
+    required this.changeActive,
     required this.getDomainAccounts,
     required this.getConfigDomainAccount,
     required this.updateSelected,

@@ -64,116 +64,14 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
     viewModel.loadData(newFilters);
   }
 
-  onReload(){
+  onReload() {
     viewModel.loadData(filters);
-  }
-
-  buildContent(List<DomainAccountApiDto> items) {
-    final dialogs = EditDomainAccounts(context: context);
-    if (items.isNotEmpty) {
-      return SizedBox(
-        width: double.infinity,
-        child: DataTablePaginated(
-          viewModel: viewModel,
-          streamList: viewModel.domainAccounts,
-          initialFilters: filters,
-          columnsDef: const [
-            DataColumn(
-                label: Center(
-                    child: Text(
-              'Id',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ))),
-            DataColumn(
-                label: Center(
-                    child: Text(
-              'Cliente',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ))),
-            DataColumn(
-                label: Center(
-                    child: Text(
-              'Matera',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ))),
-          ],
-          fieldsData: const [
-            'id',
-            'client_name',
-            'matera_id',
-          ],
-          dialogs: dialogs,
-          items: items.map((e) {
-            return e.toJson();
-          }).toList(),
-          actions: [
-            const SizedBox(
-              width: 10,
-            ),
-            StreamBuilder<DomainAccountConfigApiDto?>(
-                stream: viewModel.configDomainAccount,
-                builder: (context, snapshot) {
-                  var selecteds = viewModel.selectedItemsList
-                      .where((e) => e.selected == true)
-                      .toList();
-
-                  if (selecteds.isEmpty || selecteds.length > 1) {
-                    viewModel.clearSelectionConfig();
-                  }
-
-                  if (snapshot.data == null && selecteds.length == 1) {
-                    viewModel.getConfigInfo(selecteds[0].id);
-                  }
-
-                  return IconButton.outlined(
-                    onPressed: () {
-                      if (selecteds.length == 1) {
-                        if (snapshot.data == null) {
-                          ConfigDomainAccounts(context: context).configDialog(
-                              viewModel.getEmptyConfigInfo(selecteds[0].id));
-                        } else {
-                          ConfigDomainAccounts(context: context)
-                              .configDialog(snapshot.data!);
-                        }
-                      }
-                    },
-                    tooltip: 'Configurações',
-                    icon: const Icon(
-                      Icons.settings,
-                    ),
-                  );
-                })
-          ],
-        ),
-      );
-      // DataTableNotPaginated(
-      //   viewModel: viewModel,
-      //   items: items,
-      // ),
-    } else {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.5,
-        child: const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.info_outline,
-              color: Colors.black,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text('Nenhum resultado encontrado!')
-          ],
-        ),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     viewModel = Provider.of<ListDomainAccountViewModel>(context);
+    final dialogs = EditDomainAccounts(context: context);
     onReload();
 
     viewModel.error.listen(
@@ -224,7 +122,88 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                   const SizedBox(
                     height: 10,
                   ),
-                  buildContent(items),
+                  SizedBox(
+                    width: double.infinity,
+                    child: DataTablePaginated(
+                      viewModel: viewModel,
+                      streamList: viewModel.domainAccounts,
+                      initialFilters: filters,
+                      columnsDef: const [
+                        DataColumn(
+                            label: Center(
+                                child: Text(
+                          'Id',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ))),
+                        DataColumn(
+                            label: Center(
+                                child: Text(
+                          'Cliente',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ))),
+                        DataColumn(
+                            label: Center(
+                                child: Text(
+                          'Matera',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ))),
+                      ],
+                      fieldsData: const [
+                        'id',
+                        'client_name',
+                        'matera_id',
+                      ],
+                      dialogs: dialogs,
+                      items: items.map((e) {
+                        return e.toJson();
+                      }).toList(),
+                      actions: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        StreamBuilder<DomainAccountConfigApiDto?>(
+                            stream: viewModel.configDomainAccount,
+                            builder: (context, snapshot) {
+                              var selecteds = viewModel.selectedItemsList
+                                  .where((e) => e.selected == true)
+                                  .toList();
+
+                              if (selecteds.isEmpty || selecteds.length > 1) {
+                                viewModel.clearSelectionConfig();
+                              }
+
+                              if (snapshot.data == null &&
+                                  selecteds.length == 1) {
+                                viewModel.getConfigInfo(selecteds[0].id);
+                              }
+
+                              return IconButton.outlined(
+                                onPressed: () {
+                                  if (selecteds.length == 1) {
+                                    if (snapshot.data == null) {
+                                      ConfigDomainAccounts(context: context)
+                                          .configDialog(
+                                              viewModel.getEmptyConfigInfo(
+                                                  selecteds[0].id));
+                                    } else {
+                                      ConfigDomainAccounts(context: context)
+                                          .configDialog(snapshot.data!);
+                                    }
+                                  }
+                                },
+                                tooltip: 'Configurações',
+                                icon: const Icon(
+                                  Icons.settings,
+                                ),
+                              );
+                            })
+                      ],
+                    ),
+                  ),
+                  // DataTableNotPaginated(
+                  //   viewModel: viewModel,
+                  //   items: items,
+                  // ),
                 ],
               ),
             ),

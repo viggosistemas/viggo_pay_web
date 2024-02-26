@@ -8,7 +8,7 @@ abstract class PixToSendRemoteDataSource {
   
   Future<Either<NetworkException, PixToSendDtoPagination>> getEntitiesByParams({
     required Map<String, String> filters,
-    ListOptions listOptions = ListOptions.ACTIVE_ONLY,
+    ListOptions? listOptions,
     String? include,
   });
   

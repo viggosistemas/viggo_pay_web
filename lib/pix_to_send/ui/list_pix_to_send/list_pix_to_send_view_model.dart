@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
+import 'package:viggo_pay_admin/pix_to_send/domain/usecases/change_active_pix_to_send_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_params_use_case.dart';
 import 'package:viggo_pay_core_frontend/domain/ui/list_domain_form_fields.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
@@ -11,6 +12,7 @@ import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selec
 class ListPixToSendViewModel extends ChangeNotifier {
   final GetPixToSendsByParamsUseCase getPixToSends;
   final UpdateSelectedItemUsecase updateSelected;
+  final ChangeActivePixToSendUseCase changeActive;
   final GetSelectedItemsUseCase getSelectedItems;
   final ClearSelectedItemsUseCase clearSelectedItems;
 
@@ -18,6 +20,7 @@ class ListPixToSendViewModel extends ChangeNotifier {
   List<PixToSendApiDto> selectedItemsList = [];
 
   ListPixToSendViewModel({
+    required this.changeActive,
     required this.getPixToSends,
     required this.updateSelected,
     required this.getSelectedItems,

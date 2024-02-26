@@ -17,11 +17,11 @@ class PixToSendRemoteDataSourceImpl
   @override
   Future<Either<NetworkException, PixToSendDtoPagination>> getEntitiesByParams({
     required Map<String, String> filters,
-    ListOptions listOptions = ListOptions.ACTIVE_ONLY,
+    ListOptions? listOptions,
     String? include,
   }) {
     Map<String, dynamic> params = filters;
-    params['list_options'] = listOptions.name;
+    if (listOptions != null) params['list_options'] = listOptions.name;
     if (include != null) params['include'] = include;
 
     return safeApiCall(api.getEntitiesByParams, params: params).mapRight(

@@ -13,7 +13,7 @@ abstract class PixToSendRepository {
 
   Future<Either<NetworkException, PixToSendDtoPagination>> getEntitiesByParams({
     Map<String, String> filters = const {},
-    ListOptions listOptions = ListOptions.ACTIVE_ONLY,
+    ListOptions? listOptions,
     String? include,
   });
 

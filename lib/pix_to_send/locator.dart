@@ -4,6 +4,7 @@ import 'package:viggo_pay_admin/pix_to_send/data/pix_to_send_repository_impl.dar
 import 'package:viggo_pay_admin/pix_to_send/data/remote/pix_to_send_api.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/remote/pix_to_send_remote_data_source_impl.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/pix_to_send_repository.dart';
+import 'package:viggo_pay_admin/pix_to_send/domain/usecases/change_active_pix_to_send_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/create_pix_to_send_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_id_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_params_use_case.dart';
@@ -60,11 +61,17 @@ class PixToSendLocator {
         repository: locator.get<PixToSendRepository>(),
       ),
     );
+    locator.registerFactory(
+      () => ChangeActivePixToSendUseCase(
+        repository: locator.get<PixToSendRepository>(),
+      ),
+    );
 
 
     // ViewModels
     locator.registerFactory(
       () => ListPixToSendViewModel(
+        changeActive: locator.get<ChangeActivePixToSendUseCase>(),
         getPixToSends: locator.get<GetPixToSendsByParamsUseCase>(),
         updateSelected: locator.get<UpdateSelectedItemUsecase>(),
         getSelectedItems: locator.get<GetSelectedItemsUseCase>(),
