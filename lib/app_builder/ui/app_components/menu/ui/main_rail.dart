@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/models/destination.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/ui/menu_view_model.dart';
-import 'package:viggo_pay_admin/main.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
 
@@ -60,21 +59,30 @@ class _MainRailState extends State<MainRail> {
         } else {
           _buildMenu(snapshot.data!);
         }
-        return NavigationRail(
-          minWidth: 50,
-          destinations: navDestinations,
-          selectedIndex: screenIndex,
-          useIndicator: true,
-          groupAlignment: -1,
-          selectedIconTheme: IconThemeData(
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
-          indicatorColor: Theme.of(context).colorScheme.primary,
-          onDestinationSelected: (int index) {
-            setState(() {
-              screenIndex = index;
-            });
-            widget.onSelectScreen(destinations[index].route);
+        return StreamBuilder<int>(
+          stream: viewModel.indexSelected,
+          builder: (context, snapshot) {
+            if (snapshot.data == null) {
+              viewModel.getScreenIndex();
+            }
+            return NavigationRail(
+              minWidth: 50,
+              destinations: navDestinations,
+              selectedIndex: snapshot.data,
+              useIndicator: true,
+              groupAlignment: -1,
+              selectedIconTheme: IconThemeData(
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+              indicatorColor: Theme.of(context).colorScheme.primary,
+              onDestinationSelected: (int index) {
+                // setState(() {
+                //   screenIndex = index;
+                // });
+                viewModel.setScreenIndex(index);
+                widget.onSelectScreen(destinations[index].route);
+              },
+            );
           },
         );
       },
@@ -85,15 +93,9 @@ class _MainRailState extends State<MainRail> {
 List<Destination> menuItems = [
   Destination(
     'Empresas',
-    Icon(
-      Icons.domain_outlined,
-      color: kColorScheme.primary,
-    ),
+    const Icon(Icons.domain_outlined),
     2,
-    Icon(
-      Icons.domain_outlined,
-      color: kColorScheme.primary,
-    ),
+    const Icon(Icons.domain_outlined),
     Routes.DOMAIN_ACCOUNTS,
     ['/domain_accounts'],
     ['/GET'],
@@ -101,50 +103,40 @@ List<Destination> menuItems = [
   ),
   Destination(
     'Chaves pix',
-    Icon(
-      Icons.key_outlined,
-      color: kColorScheme.primary,
-    ),
+    const Icon(Icons.key_outlined),
     3,
-    Icon(
-      Icons.key_outlined,
-      color: kColorScheme.primary,
-    ),
+    const Icon(Icons.key_outlined),
     Routes.PIX,
     ['/pix_to_sends'],
     ['/GET'],
     null,
   ),
-  Destination(
-    'Transação entre contas',
-    Icon(
-      Icons.transfer_within_a_station_outlined,
-      color: kColorScheme.primary,
-    ),
-    4,
-    Icon(
-      Icons.transfer_within_a_station_outlined,
-      color: kColorScheme.primary,
-    ),
-    Routes.TRANSACAO_CONTA,
-    ['/pay_facs/cashout_via_pix'],
-    ['/POST'],
-    null,
-  ),
+  // Destination(
+  //   'Transação entre contas',
+  //   Icon(
+  //     Icons.transfer_within_a_station_outlined,
+  //   ),
+  //   4,
+  //   Icon(
+  //     Icons.transfer_within_a_station_outlined,
+  //   ),
+  //   Routes.TRANSACAO_CONTA,
+  //   ['/pay_facs/cashout_via_pix'],
+  //   ['/POST'],
+  //   null,
+  // ),
   Destination(
     'Histórico de transações',
-    Icon(
+    const Icon(
       Icons.history_outlined,
-      color: kColorScheme.primary,
     ),
     5,
-    Icon(
+    const Icon(
       Icons.history_outlined,
-      color: kColorScheme.primary,
     ),
     Routes.HISTORICO,
     ['/pay_facs/get_transacoes'],
-    ['/GET'],
+    ['/POST'],
     null,
   ),
 ];

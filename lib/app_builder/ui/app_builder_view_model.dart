@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_pay_admin/sync/domain/usecases/get_app_state_use_case.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
@@ -13,11 +15,13 @@ import 'package:viggo_pay_core_frontend/token/domain/usecases/logout_use_case.da
 import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_pay_core_frontend/user/domain/usecases/get_user_use_case.dart';
 
-class AppBuilderViewModel extends ChangeNotifier{
+class AppBuilderViewModel extends ChangeNotifier {
+  SharedPreferences sharedPrefs;
+  
   final GetAppStateUseCase getAppState;
   final LogoutUseCase logout;
   final ParseImageUrlUseCase parseImage;
-  
+
   final GetTokenUseCase getToken;
   final GetUserUseCase getUserFromSettings;
   final GetRoutesUseCase getRoutesFromSettings;
@@ -39,9 +43,16 @@ class AppBuilderViewModel extends ChangeNotifier{
   Stream<DomainApiDto?> get domainDto => _streamControllerDomain.stream;
   Stream<UserApiDto?> get userDto => _streamControllerUser.stream;
   Stream<List<RouteApiDto>?> get routesDto => _streamControllerRoutes.stream;
-  Stream<bool> get isLoggedMsg => getAppState.invoke().transform(showIsLoggedMsg);
+  Stream<bool> get isLoggedMsg =>
+      getAppState.invoke().transform(showIsLoggedMsg);
+
+  final StreamController<int> _streamScreenIndexController =
+      StreamController<int>.broadcast();
+
+  Stream<int> get indexSelected => _streamScreenIndexController.stream;
 
   AppBuilderViewModel({
+    required this.sharedPrefs,
     required this.parseImage,
     required this.getAppState,
     required this.logout,
@@ -49,7 +60,7 @@ class AppBuilderViewModel extends ChangeNotifier{
     required this.getUserFromSettings,
     required this.getRoutesFromSettings,
     required this.getDomainFromSettings,
-  }){
+  }) {
     getAppState.invoke().forEach((element) {
       if (!_streamController.isClosed) {
         _streamController.sink.add(element == AppStateConst.LOGGED);
@@ -81,8 +92,9 @@ class AppBuilderViewModel extends ChangeNotifier{
     }
   }
 
-  Future<void> onLogout(Function onSelectScreen) async{
+  Future<void> onLogout(Function onSelectScreen) async {
     await logout.invoke(tokenId: getToken.invoke()!.id);
+    sharedPrefs.setString('SELECTED_INDEX', jsonEncode(0));
     onSelectScreen(Routes.LOGIN_PAGE);
   }
 
@@ -91,4 +103,22 @@ class AppBuilderViewModel extends ChangeNotifier{
       sink.add(value == AppStateConst.LOGGED);
     },
   );
+
+  void setScreenIndex(int index) {
+    if (!_streamScreenIndexController.isClosed) {
+      _streamScreenIndexController.sink.add(index);
+      sharedPrefs.setString('SELECTED_INDEX', jsonEncode(index));
+    }
+  }
+
+  void getScreenIndex() {
+    String? index = sharedPrefs.getString('SELECTED_INDEX');
+
+    if (index != null) {
+      _streamScreenIndexController.sink.add(jsonDecode(index));
+    }else{
+      _streamScreenIndexController.sink.add(jsonDecode('0'));
+    }
+  }
+
 }

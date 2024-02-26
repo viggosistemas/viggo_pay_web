@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/models/destination.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
-import 'package:viggo_pay_admin/main.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_pay_core_frontend/user/domain/usecases/get_user_use_case.dart';
@@ -51,7 +50,7 @@ class MenuViewModel {
       dymamicsMenus.sort((a, b) => a.index.compareTo(b.index));
       menu.addAll(dymamicsMenus);
     }
-    
+
     menu.sort((a, b) => a.index.compareTo(b.index));
 
     return menu;
@@ -105,15 +104,9 @@ class MenuViewModel {
     List<Destination> submenu = buildMenu(routes, [
       Destination(
         'Aplicação',
-        Icon(
-          Icons.domain_outlined,
-          color: kColorScheme.primary,
-        ),
+        const Icon(Icons.domain_outlined),
         2,
-        Icon(
-          Icons.domain_outlined,
-          color: kColorScheme.primary,
-        ),
+        const Icon(Icons.domain_outlined),
         Routes.APPLICATIONS,
         ['/applications'],
         ['/GET'],
@@ -121,15 +114,9 @@ class MenuViewModel {
       ),
       Destination(
         'Rota',
-        Icon(
-          Icons.route_outlined,
-          color: kColorScheme.primary,
-        ),
+        const Icon(Icons.route_outlined),
         3,
-        Icon(
-          Icons.route_outlined,
-          color: kColorScheme.primary,
-        ),
+        const Icon(Icons.route_outlined),
         Routes.ROUTES,
         ['/routes'],
         ['/GET'],
@@ -137,15 +124,9 @@ class MenuViewModel {
       ),
       Destination(
         'Papéis de Usuário',
-        Icon(
-          Icons.supervisor_account_outlined,
-          color: kColorScheme.primary,
-        ),
+        const Icon(Icons.supervisor_account_outlined),
         4,
-        Icon(
-          Icons.supervisor_account_outlined,
-          color: kColorScheme.primary,
-        ),
+        const Icon(Icons.supervisor_account_outlined),
         Routes.ROLES,
         ['/roles/<id>'],
         ['/GET'],
@@ -153,15 +134,9 @@ class MenuViewModel {
       ),
       Destination(
         'Organização',
-        Icon(
-          Icons.cases_outlined,
-          color: kColorScheme.primary,
-        ),
+        const Icon(Icons.cases_outlined),
         5,
-        Icon(
-          Icons.cases_outlined,
-          color: kColorScheme.primary,
-        ),
+        const Icon(Icons.cases_outlined),
         Routes.DOMAINS,
         ['/domains'],
         ['/GET'],
@@ -175,15 +150,9 @@ class MenuViewModel {
     List<Destination> submenu = buildMenu(routes, [
       Destination(
         'Usuários',
-        Icon(
-          Icons.person_outline,
-          color: kColorScheme.primary,
-        ),
+        const Icon(Icons.person_outline),
         1,
-        Icon(
-          Icons.person_outline,
-          color: kColorScheme.primary,
-        ),
+        const Icon(Icons.person_outline),
         Routes.USERS,
         ['/users'],
         ['/GET'],
