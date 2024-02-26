@@ -1,58 +1,157 @@
+import 'package:file_picker/_internal/file_picker_web.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_view_model.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
+import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 class InfoUserDialog {
-  final BuildContext context;
-
   InfoUserDialog({required this.context});
+
+  final BuildContext context;
+  final viewModel = locator.get<PopMenuViewModel>();
+
+  Widget? getImagem() {
+    if (viewModel.user!.photoId != null &&
+        viewModel.user!.photoId!.isNotEmpty) {
+      return CircleAvatar(
+        backgroundImage: NetworkImage(
+          viewModel.parseImage.invoke(viewModel.user!.photoId!),
+        ),
+      );
+    } else {
+      return const CircleAvatar(
+        backgroundImage: NetworkImage(
+          'assets/images/avatar.png',
+        ),
+      );
+    }
+  }
 
   Future<void> showFormDialog() {
     final formKey = GlobalKey<FormState>();
     final nickNameController = TextEditingController();
-    final viewModel = Provider.of<PopMenuViewModel>(context);
+    viewModel.form.onNickNameChange(viewModel.user!.nickname!);
+
+    actionUpload(PlatformFile file) {
+      viewModel.uploadPhoto(file, showInfoMessage, context);
+    }
+
+    onUploadPhoto() async {
+      var picked = await FilePickerWeb.platform.pickFiles(type: FileType.image);
+
+      if (picked != null) {
+        actionUpload(picked.files.first);
+      }
+    }
+
+    onSubmit() {
+      viewModel.onSubmit(showInfoMessage, context);
+      // Navigator.of(context).pop();
+    }
+
+    viewModel.isSuccess.listen((value) {
+      showInfoMessage(
+        context,
+        2,
+        Colors.green,
+        'Usuário alterado com sucesso!',
+        'X',
+        () {},
+        Colors.white,
+      );
+      Navigator.pop(context, true);
+    });
+
+    viewModel.isError.listen(
+      (value) {
+        showInfoMessage(
+          context,
+          2,
+          Colors.red,
+          value,
+          'X',
+          () {},
+          Colors.white,
+        );
+      },
+    );
 
     return showDialog(
         context: context,
         builder: (BuildContext ctx) {
-          Widget dialog = AlertDialog(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Informações do usuário',
-                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                        fontSize: 18,
-                      ),
-                ),
-                // IconButton(
-                //   onPressed: () => Navigator.pop(context),
-                //   icon: const Icon(
-                //     Icons.close,
-                //     color: Colors.red,
-                //   ),
-                // )
-              ],
-            ),
-            content: Padding(
-              padding: const EdgeInsets.only(top: 14),
-              child: Expanded(
-                flex: 1,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  child: Form(
-                    key: formKey,
+          return PopScope(
+            canPop: false,
+            onPopInvoked: (bool didPop) {
+              if (didPop) return;
+              Navigator.pop(context, true);
+            },
+            child: AlertDialog(
+              insetPadding: const EdgeInsets.all(10),
+              title: Row(
+                children: [
+                  Text(
+                    'Informações do usuário',
+                    style: Theme.of(ctx).textTheme.titleMedium!.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  Icon(
+                    Icons.person_outline,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ],
+              ),
+              content: Form(
+                key: formKey,
+                child: SizedBox(
+                  child: SingleChildScrollView(
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const SizedBox(
-                          height: 100,
-                          width: 100,
-                          child: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              'assets/images/avatar.png',
-                            ),
+                        Center(
+                          child: SizedBox(
+                            height: 100,
+                            width: 100,
+                            child: getImagem(),
                           ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                if (viewModel.user!.photoId != null)
+                                  return null;
+                              },
+                              icon: const Icon(Icons.delete_outline),
+                              style: IconButton.styleFrom(
+                                backgroundColor: viewModel.user!.photoId != null
+                                    ? Colors.red
+                                    : Colors.grey,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            IconButton(
+                              onPressed: () => onUploadPhoto(),
+                              icon: const Icon(Icons.camera_alt_outlined),
+                              style: IconButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.primary),
+                            ),
+                          ],
                         ),
                         const SizedBox(
                           height: 20,
@@ -98,7 +197,7 @@ class InfoUserDialog {
                             const SizedBox(
                               width: 20,
                             ),
-                            const Text('user.name'),
+                            Text(viewModel.user!.name),
                           ],
                         ),
                         const SizedBox(
@@ -113,7 +212,7 @@ class InfoUserDialog {
                             const SizedBox(
                               width: 20,
                             ),
-                            const Text('data'),
+                            Text(viewModel.user!.email),
                           ],
                         ),
                       ],
@@ -121,47 +220,41 @@ class InfoUserDialog {
                   ),
                 ),
               ),
-            ),
-            actions: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton.icon(
-                    icon: const Icon(
-                      Icons.cancel_outlined,
-                      size: 20,
-                    ),
-                    label: const Text('Cancelar'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.red,
-                    ),
-                  ),
-                  Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: TextButton.icon(
+              actions: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton.icon(
                       icon: const Icon(
-                        Icons.save_alt_outlined,
+                        Icons.cancel_outlined,
                         size: 20,
                       ),
-                      label: const Text('Salvar'),
+                      label: const Text('Cancelar'),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
                       style: TextButton.styleFrom(
-                        foregroundColor: Colors.green,
+                        foregroundColor: Colors.red,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          );
-          return Provider<PopMenuViewModel>.value(
-            value: viewModel,
-            child: dialog,
+                    Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: TextButton.icon(
+                        icon: const Icon(
+                          Icons.save_alt_outlined,
+                          size: 20,
+                        ),
+                        label: const Text('Salvar'),
+                        onPressed: () => onSubmit(),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.green,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           );
         });
   }

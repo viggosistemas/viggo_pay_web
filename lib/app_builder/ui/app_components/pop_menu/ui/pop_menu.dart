@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_bottom_action.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_items/alterar_senha.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_items/alterar_senha/alterar_senha.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_items/info_user/info_user.dart';
 
 enum SampleItem { itemOne, itemTwo, itemThree }
@@ -58,11 +58,11 @@ class _PopMenuActionUser extends State<PopUpMenuUser> {
         ),
         //
         PopupMenuItem<SampleItem>(
-          value: SampleItem.itemOne,
+          value: SampleItem.itemTwo,
           onTap: () {
-            AlterarSenhaDialog(
+            AlterarSenha(
               context: context,
-            ).showFormDialog('alterar senha');
+            ).showFormDialog();
           },
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -77,7 +77,7 @@ class _PopMenuActionUser extends State<PopUpMenuUser> {
         ),
         //
         PopupMenuItem<SampleItem>(
-          value: SampleItem.itemOne,
+          value: SampleItem.itemThree,
           onTap: () {
             viewModel.onLogout(widget.onSelectScreen);
           },
