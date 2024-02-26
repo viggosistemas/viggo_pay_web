@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_pay_admin/login/ui/login_form_fields.dart';
 import 'package:viggo_pay_admin/sync/domain/usecases/get_app_state_use_case.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
@@ -27,6 +28,7 @@ import 'package:viggo_pay_core_frontend/user/domain/usecases/get_user_use_case.d
 import 'package:viggo_pay_core_frontend/user/domain/usecases/set_user_use_case.dart';
 
 class LoginViewModel extends ChangeNotifier {
+  SharedPreferences sharedPrefs;
   final GetAppStateUseCase getAppState;
 
   final GetDomainFromSettingsUseCase getDomainFromSettings;
@@ -75,6 +77,7 @@ class LoginViewModel extends ChangeNotifier {
   Stream<List<RouteApiDto>?> get routesDto => _streamControllerRoutes.stream;
 
   LoginViewModel({
+    required this.sharedPrefs,
     required this.login,
     required this.parseImage,
     required this.clearRememberCredential,
@@ -210,6 +213,7 @@ class LoginViewModel extends ChangeNotifier {
       await funGetUserById(result.right.userId);
       await funGetRoutesFromUser();
       await funGetDomainByName(loginCommand.domainName);
+      sharedPrefs.setString('SHOW_MSG_LOGGED', 'true');
       notifyLoading();
     }
   }

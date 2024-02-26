@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
 import 'package:viggo_pay_admin/sync/domain/usecases/get_app_state_use_case.dart';
@@ -22,6 +23,7 @@ class LoginLocator {
     // ViewModel
     locator.registerFactory(
       () => LoginViewModel(
+        sharedPrefs: locator.get<SharedPreferences>(),
         clearRememberCredential: locator.get<ClearRememberCredentialUseCase>(),
         getRememberCredential: locator.get<GetRememberCredentialUseCase>(),
         setRememberCredential: locator.get<SetRememberCredentialUseCase>(),

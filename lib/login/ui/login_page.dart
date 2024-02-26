@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/app_bar.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/login/ui/login_form.dart';
@@ -17,6 +18,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  late SharedPreferences sharedPrefs = locator.get<SharedPreferences>();
   var iconMode = Icons.dark_mode_outlined;
   dynamic colorIconMode = Colors.white;
   bool isActioned = false;
@@ -35,15 +37,18 @@ class _LoginPageState extends State<LoginPage> {
 
     navigateWorkspace() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        showInfoMessage(
-          context,
-          2,
-          Colors.green,
-          'Seja Bem-vindo!',
-          'X',
-          () {},
-          Colors.white,
-        );
+        if (sharedPrefs.getString('SHOW_MSG_LOGGED') == 'true') {
+          sharedPrefs.setString('SHOW_MSG_LOGGED', 'false');
+          showInfoMessage(
+            context,
+            2,
+            Colors.green,
+            'Seja Bem-vindo!',
+            'X',
+            () {},
+            Colors.white,
+          );
+        }
         Navigator.of(context).pushReplacementNamed(Routes.WORKSPACE);
       });
     }
