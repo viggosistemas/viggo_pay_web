@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/add_config_domain_account_use_case.dart';
-import 'package:viggo_pay_admin/domain_account/domain/usecases/update_config_domain_account_use_case%20copy.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/update_config_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/update_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/config_domain_accounts/config_domain_accounts_form_fields.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_form/edit_form_fields.dart';

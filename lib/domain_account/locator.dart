@@ -14,7 +14,7 @@ import 'package:viggo_pay_admin/domain_account/domain/usecases/change_active_dom
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_config_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_accounts_by_params_use_case.dart';
-import 'package:viggo_pay_admin/domain_account/domain/usecases/update_config_domain_account_use_case%20copy.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/update_config_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/update_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_view_model.dart';
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_view_model.dart';
