@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/dialogs.dart';
 
 class DataSource extends DataTableSource {
   late dynamic viewModel;
+  late String labelInclude;
 
   // static const List<int> _displayIndexToRawIndex = <int>[0, 3, 4, 5, 6];
 
   late List<dynamic> sortedData;
   late List<String> fieldsData;
-  int _selectedCount = 0;
+  // int _selectedCount = 0;
 
   void setData(
     dynamic rawData,
@@ -23,13 +27,22 @@ class DataSource extends DataTableSource {
     notifyListeners();
   }
 
-  static DataCell cellFor(Object data) {
+  DataCell cellFor(dynamic data) {
     String value;
     if (data is DateTime) {
       value =
           '${data.day.toString().padLeft(2, '0')}/${data.month.toString().padLeft(2, '0')}/${data.year}';
     } else {
-      value = data.toString();
+      if (data == null) {
+        value = '-';
+      } else {
+        if(data is String){
+          value = data.toString();
+        }else{
+          var dataString = jsonEncode(data);
+          value = jsonDecode(dataString)[labelInclude].toString();
+        }
+      }
     }
     return DataCell(Text(value));
   }
@@ -40,18 +53,22 @@ class DataSource extends DataTableSource {
     if (index >= sortedData.length) return null;
     final row = sortedData[index];
     return DataRow(
-      cells: <DataCell>[for (var key in fieldsData) cellFor(row[key])],
+      cells: <DataCell>[for (var key in fieldsData)cellFor(row[key])],
       selected: row['selected'],
+      color: MaterialStateColor.resolveWith(
+        (states) =>
+            row['active'] == false ? Colors.red.withOpacity(0.7) : Colors.white,
+      ),
       onSelectChanged: (value) {
-        if (row['selected'] != value) {
-          _selectedCount += value! ? 1 : -1;
-          assert(_selectedCount >= 0);
-          row['selected'] = value;
-          notifyListeners();
-        }
-        // row['selected'] = value!;
-        // viewModel.checkItem(row.id);
-        // notifyListeners();
+        // if (row['selected'] != value) {
+        // _selectedCount += value! ? 1 : -1;
+        // assert(_selectedCount >= 0);
+        //   row['selected'] = value;
+        //   notifyListeners();
+        // }
+        viewModel.checkItem(row['id']);
+        row['selected'] = value;
+        notifyListeners();
       },
     );
   }
@@ -74,18 +91,31 @@ class DataTablePaginated extends StatefulWidget {
     required this.columnsDef,
     required this.fieldsData,
     required this.viewModel,
+    required this.initialFilters,
+    required this.streamList,
+    required this.dialogs,
+    labelInclude,
     List<Widget>? actions,
   }) {
     if (actions != null) {
+      appendActions = true;
       this.actions.addAll(actions);
+    }
+    if(labelInclude != null){
+      this.labelInclude = labelInclude;
     }
   }
 
   late dynamic viewModel;
-  List<dynamic> items;
-  List<DataColumn> columnsDef;
-  List<String> fieldsData;
-  List<Widget> actions = [];
+  late dynamic dialogs;
+  late dynamic labelInclude = '';
+  late Stream<dynamic> streamList;
+  late Map<String, String> initialFilters;
+  late List<dynamic> items;
+  late List<DataColumn> columnsDef;
+  late List<String> fieldsData;
+  late List<Widget> actions = [];
+  var appendActions = false;
 
   @override
   State<DataTablePaginated> createState() => _DataTablePaginatedState();
@@ -95,6 +125,7 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
   int _currentPage = 0;
   int _pageSize = 10;
   DataSource dataSource = DataSource();
+  bool isLoading = true;
   // int _columnIndex = 0;
   // bool _columnAscending = true;
 
@@ -106,104 +137,156 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
   //   });
   // }
 
-  @override
-  void initState() {
+  initializeTable() {
+    if (widget.actions.isEmpty || widget.appendActions) {
+      widget.appendActions = false;
+      List<Widget> actionsDefault = [
+        IconButton.outlined(
+          onPressed: () => onAddEntity(),
+          tooltip: 'Adicionar',
+          icon: const Icon(
+            Icons.add,
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        IconButton.outlined(
+          onPressed: () => onEditEntity(),
+          tooltip: 'Editar',
+          icon: const Icon(
+            Icons.edit,
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        IconButton.outlined(
+          onPressed: () => onChangeActive(),
+          tooltip: 'Alterar status',
+          icon: const Icon(
+            Icons.change_circle,
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        IconButton.outlined(
+          onPressed: () => onReloadData(),
+          tooltip: 'Recarregar',
+          icon: const Icon(
+            Icons.replay,
+          ),
+        ),
+      ];
+      actionsDefault.addAll(widget.actions);
+      widget.actions = actionsDefault;
+    }
+    dataSource.labelInclude = widget.labelInclude;
     dataSource.viewModel = widget.viewModel;
     dataSource.setData(widget.items);
     dataSource.fieldsData = widget.fieldsData;
-    widget.actions = [
-      IconButton.outlined(
-        onPressed: () => onAddEntity(),
-        tooltip: 'Adicionar',
-        icon: const Icon(
-          Icons.add,
-        ),
-      ),
-      const SizedBox(
-        width: 10,
-      ),
-      IconButton.outlined(
-        onPressed: () => onEditEntity(),
-        tooltip: 'Editar',
-        icon: const Icon(
-          Icons.edit,
-        ),
-      ),
-      const SizedBox(
-        width: 10,
-      ),
-      IconButton.outlined(
-        onPressed: () => onChangeActive(),
-        tooltip: 'Alterar status',
-        icon: const Icon(
-          Icons.change_circle,
-        ),
-      ),
-      const SizedBox(
-        width: 10,
-      ),
-      IconButton.outlined(
-        onPressed: () => onReloadData(),
-        tooltip: 'Recarregar',
-        icon: const Icon(
-          Icons.replay,
-        ),
-      ),
-    ];
-    super.initState();
+    isLoading = false;
   }
 
-  void onAddEntity() {}
+  void onAddEntity() async {
+    var result = await widget.dialogs.addDialog();
+    if (result != null && result == true) {
+      onReloadData();
+    }
+  }
 
-  void onEditEntity() {
+  void onEditEntity(){
     var len =
         dataSource.sortedData.where((element) => element['selected']).length;
     if (len == 1) {
       var entity =
           dataSource.sortedData.firstWhere((element) => element['selected']);
-      print(entity);
+      var catchEntity = widget.viewModel.catchEntity(entity['id']) as Future;
+      catchEntity.then((value) async {
+        var result = await widget.dialogs.editDialog(value);
+        if (result != null && result == true) {
+          onReloadData();
+        }
+      });
     }
   }
 
-  void onChangeActive() {
+  void onChangeActive() async {
+    List<Map<String, dynamic>> entities = [];
     var selecteds =
         dataSource.sortedData.where((element) => element['selected']);
-    var isActiveOnly = selecteds.where((element) => element['active'] == true);
+    var isActiveOnly =
+        selecteds.where((element) => element['active'] == true).toList();
     var isInactiveOnly =
-        selecteds.where((element) => element['active'] == false);
+        selecteds.where((element) => element['active'] == false).toList();
 
     if (isActiveOnly.isNotEmpty && isInactiveOnly.isEmpty) {
-      print(isActiveOnly);
+      for (var e in isActiveOnly) {
+        entities.add({
+          'id': e['id'],
+          'body': {
+            'id': e['id'],
+            'active': !e['active'],
+          }
+        });
+      }
+      var result = await Dialogs(context: context).showConfirmDialog({
+        'title_text': 'Inativando itens',
+        'title_icon': Icons.person_add_disabled_outlined,
+        'message':
+            'Você tem certeza que deseja executar essa ação?\n${entities.length.toString() + ' itens'.toUpperCase()} serão inativados.'
+      });
+      if (result != null && result == true) {
+        widget.viewModel.changeActive.invoke(entities: entities);
+        onReloadData();
+      }
     } else if (isActiveOnly.isEmpty && isInactiveOnly.isNotEmpty) {
-      print(isInactiveOnly);
+      for (var e in isInactiveOnly) {
+        entities.add({
+          'id': e['id'],
+          'body': {
+            'id': e['id'],
+            'active': !e['active'],
+          }
+        });
+      }
+      var result = await Dialogs(context: context).showConfirmDialog({
+        'title_text': 'Ativando itens',
+        'title_icon': Icons.person_add_outlined,
+        'message':
+            'Você tem certeza que deseja executar essa ação?\n${entities.length.toString() + ' itens'.toUpperCase()} serão ativados.'
+      });
+      if (result != null && result == true) {
+        widget.viewModel.changeActive.invoke(entities: entities);
+        onReloadData();
+      }
     }
   }
 
   void onReloadData() {
-  //   setState(() {
-  //     widget.viewModel.loadData(0, 10, true);
-  //     widget.viewModel.domains.listen((value) {
-  //       dataSource.setData(value.map((e) {
-  //         return e.toJson();
-  //       }).toList());
-  //     });
-  //   });
+    isLoading = true;
+    setState(() {
+      widget.viewModel.loadData(widget.initialFilters);
+      widget.streamList.listen((value) {
+        dataSource.setData(value.map((e) {
+          return e.toJson();
+        }).toList());
+      });
+      widget.viewModel.clearSelectedItems.invoke();
+      isLoading = false;
+    });
   }
 
 // FIXME: A PAGINAÇÃO NÃO ESTA SENDO VIA REQUISIÇÃO ATÉ O MOMENTO, ELA ESTA SENDO SOMENTE VIA COMPONENTE
   @override
   Widget build(BuildContext context) {
-    return PaginatedDataTable(
+    initializeTable();
+
+    return //widget.items.isNotEmpty ?
+        PaginatedDataTable(
       // sortColumnIndex: _columnIndex,
       // sortAscending: _columnAscending,
-      // actions: [
-      //   IconButton.outlined(
-      //     onPressed: () {},
-      //     icon: const Icon(
-      //       Icons.search,
-      //     ),
-      //   ),
-      // ],
       availableRowsPerPage: const [5, 10, 25, 50],
       onRowsPerPageChanged: (value) {
         setState(() {
@@ -251,5 +334,22 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
       columns: widget.columnsDef,
       source: dataSource,
     );
+    // : SizedBox(
+    //     height: MediaQuery.of(context).size.height * 0.5,
+    //     child: const Column(
+    //       mainAxisAlignment: MainAxisAlignment.center,
+    //       crossAxisAlignment: CrossAxisAlignment.center,
+    //       children: [
+    //         Icon(
+    //           Icons.info_outline,
+    //           color: Colors.black,
+    //         ),
+    //         SizedBox(
+    //           height: 10,
+    //         ),
+    //         Text('Nenhum resultado encontrado!')
+    //       ],
+    //     ),
+    //   );
   }
 }
