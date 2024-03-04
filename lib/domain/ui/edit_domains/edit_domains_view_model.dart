@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/domain/ui/edit_domains/edit_domains_form/edit_form_fields.dart';
+import 'package:viggo_pay_admin/domain/ui/edit_domains/edit_domains_form/register_form_fields.dart';
 import 'package:viggo_pay_core_frontend/application/data/models/application_api_dto.dart';
 import 'package:viggo_pay_core_frontend/application/domain/usecases/get_applications_by_params_use_case.dart';
 import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
@@ -20,6 +21,7 @@ class EditDomainsViewModel extends ChangeNotifier {
   final GetApplicationsByParamsUseCase getApplications;
 
   final EditDomainFormFields form = EditDomainFormFields();
+  final RegisterFormFields formRegister = RegisterFormFields();
 
   final StreamController<String> _streamControllerError =
       StreamController<String>.broadcast();
@@ -103,6 +105,7 @@ class EditDomainsViewModel extends ChangeNotifier {
     notifyLoading();
     dynamic result;
     var formFields = form.getFields();
+    var formRegisterFields = formRegister.getFields();
 
     Map<String, dynamic> data = {
       'id': id,
@@ -113,11 +116,10 @@ class EditDomainsViewModel extends ChangeNotifier {
     };
 
     Map<String, String> dataRegister = {
-      'domain_name': formFields['name'].toString(),
-      'domain_display_name': formFields['display_name'].toString(),
-      'email': formFields['email'].toString(),
-      'password': formFields['password'].toString(),
-      'application_id': formFields['application_id'].toString(),
+      'domain_name': formRegisterFields!['name'].toString(),
+      'domain_display_name': formRegisterFields['display_name'].toString(),
+      'email': formRegisterFields['email'].toString(),
+      'password': formRegisterFields['password'].toString(),
       'parent_id': matriz.id,
     };
     

@@ -16,8 +16,11 @@ class EditDomains {
     viewModel.form.onDisplayNameChange('');
     viewModel.form.onDescriptionChange('');
     viewModel.form.onApplicationIdChange('');
-    viewModel.form.onEmailChange('');
-    viewModel.form.onPasswordChange('');
+
+    viewModel.formRegister.onNameChange('');
+    viewModel.formRegister.onDisplayNameChange('');
+    viewModel.formRegister.onEmailChange('');
+    viewModel.formRegister.onPasswordChange('');
   }
 
   Future<void> addDialog() {
@@ -107,8 +110,8 @@ class EditDomains {
                         foregroundColor: Colors.red,
                       ),
                     ),
-                    StreamBuilder<Object>(
-                        stream: viewModel.form.isValid,
+                    StreamBuilder<bool>(
+                        stream: viewModel.formRegister.isValid,
                         builder: (context, snapshot) {
                           return Directionality(
                             textDirection: TextDirection.rtl,
