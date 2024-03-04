@@ -49,7 +49,7 @@ class ForgetPasswordViewModel extends ChangeNotifier {
       }
     } else {
       if (!_streamController.isClosed) {
-        _streamController.sink.add(result.right);
+        _streamController.sink.add(true);
         notifyLoading();
       }
     }

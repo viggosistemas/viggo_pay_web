@@ -71,6 +71,7 @@ class PixToSendLocator {
     // ViewModels
     locator.registerFactory(
       () => ListPixToSendViewModel(
+        getPixToSend: locator.get<GetPixToSendByIdUseCase>(),
         changeActive: locator.get<ChangeActivePixToSendUseCase>(),
         getPixToSends: locator.get<GetPixToSendsByParamsUseCase>(),
         updateSelected: locator.get<UpdateSelectedItemUsecase>(),

@@ -34,6 +34,7 @@ class EditDomainAccounts {
                 ],
               ),
               content: SizedBox(
+                width: 500,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -149,6 +150,7 @@ class EditDomainAccounts {
                 ],
               ),
               content: SizedBox(
+                width: 500,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

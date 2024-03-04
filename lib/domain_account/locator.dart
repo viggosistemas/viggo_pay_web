@@ -106,6 +106,7 @@ class DomainAccountLocator {
     // ViewModels
     locator.registerFactory(
       () => ListDomainAccountViewModel(
+        getDomainAccount: locator.get<GetDomainAccountByIdUseCase>(),
         changeActive: locator.get<ChangeActiveDomainAccountUseCase>(),
         getConfigDomainAccount: locator.get<GetDomainAccountConfigByIdUseCase>(),
         getDomainAccounts: locator.get<GetDomainAccountsByParamsUseCase>(),

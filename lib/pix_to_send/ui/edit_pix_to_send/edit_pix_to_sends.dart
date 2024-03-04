@@ -82,6 +82,7 @@ class EditPixToSends {
                 ],
               ),
               content: SizedBox(
+                width: 500,
                 child: SingleChildScrollView(
                   child: EditPixToSendsForm(
                     viewModel: viewModel,
@@ -190,6 +191,7 @@ class EditPixToSends {
                 ],
               ),
               content: SizedBox(
+                width: 500,
                 child: SingleChildScrollView(
                   child: EditPixToSendsForm(
                     entity: entity,

@@ -91,7 +91,7 @@ class ConfigDomainAccounts {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       StreamBuilder<String>(
-                        stream: viewModel.form.clientName,
+                        stream: viewModel.formConfig.taxa,
                         builder: (context, snapshot) {
                           taxaFieldControll.value = taxaFieldControll.value
                               .copyWith(text: snapshot.data);
