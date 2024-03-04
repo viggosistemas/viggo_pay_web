@@ -33,7 +33,7 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
   };
 
   void onSearch(List<Map<String, dynamic>> params) {
-    Map<String, String> newFilters = {};
+    filters = {};
     var newParams = params
         .map((e) => {
               'search_field': e['search_field'],
@@ -46,20 +46,20 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
       var fieldValue = '';
 
       if (element['type'] == 'text') {
-        fieldValue = '%${element['value']}%';
+        fieldValue = '${element['value']}%';
       } else {
         fieldValue = element['value'];
       }
-      newFilters.addEntries(
+      filters.addEntries(
         <String, String>{element['search_field']: fieldValue}.entries,
       );
     }
 
-    newFilters.addEntries(
+    filters.addEntries(
       <String, String>{'order_by': 'name'}.entries,
     );
 
-    viewModel.loadData(newFilters);
+    viewModel.loadData(filters);
   }
 
   onReload() {
@@ -129,7 +129,7 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
                       columnsDef: const [
                         DataColumn(
                           label: Text(
-                            'Id',
+                            'Nome',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -138,16 +138,7 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
                         ),
                         DataColumn(
                           label: Text(
-                            'Name',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Application',
+                            'Aplicação',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -157,7 +148,6 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
                       ],
                       labelInclude: 'name',
                       fieldsData: const [
-                        'id',
                         'name',
                         'application',
                       ],

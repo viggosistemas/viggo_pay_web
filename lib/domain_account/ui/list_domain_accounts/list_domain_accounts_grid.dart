@@ -35,7 +35,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
   };
 
   void onSearch(List<Map<String, dynamic>> params) {
-    Map<String, String> newFilters = {};
+    filters = {};
     var newParams = params
         .map((e) => {
               'search_field': e['search_field'],
@@ -52,16 +52,16 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
       } else {
         fieldValue = element['value'];
       }
-      newFilters.addEntries(
+      filters.addEntries(
         <String, String>{element['search_field']: fieldValue}.entries,
       );
     }
 
-    newFilters.addEntries(
+    filters.addEntries(
       <String, String>{'order_by': 'client_name'}.entries,
     );
 
-    viewModel.loadData(newFilters);
+    viewModel.loadData(filters);
   }
 
   onReload() {
@@ -133,19 +133,25 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                             label: Center(
                                 child: Text(
                           'Id',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ))),
                         DataColumn(
                             label: Center(
                                 child: Text(
                           'Cliente',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ))),
                         DataColumn(
                             label: Center(
                                 child: Text(
                           'Matera',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ))),
                       ],
                       fieldsData: const [

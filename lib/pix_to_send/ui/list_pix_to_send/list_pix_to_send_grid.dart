@@ -33,7 +33,7 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
   };
 
   void onSearch(List<Map<String, dynamic>> params) {
-    Map<String, String> newFilters = {};
+    filters = {};
     var newParams = params
         .map((e) => {
               'search_field': e['search_field'],
@@ -46,20 +46,20 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
       var fieldValue = '';
 
       if (element['type'] == 'text') {
-        fieldValue = '%${element['value']}%';
+        fieldValue = '${element['value']}%';
       } else {
         fieldValue = element['value'];
       }
-      newFilters.addEntries(
+      filters.addEntries(
         <String, String>{element['search_field']: fieldValue}.entries,
       );
     }
 
-    newFilters.addEntries(
+    filters.addEntries(
       <String, String>{'order_by': 'alias'}.entries,
     );
 
-    viewModel.loadData(newFilters);
+    viewModel.loadData(filters);
   }
 
   onReload() {

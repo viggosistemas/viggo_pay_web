@@ -5,6 +5,7 @@ import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dt
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/change_active_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_config_domain_account_by_id_use_case.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_accounts_by_params_use_case.dart';
 import 'package:viggo_pay_core_frontend/domain/ui/list_domain_form_fields.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
@@ -12,6 +13,7 @@ import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
 
 class ListDomainAccountViewModel extends ChangeNotifier {
+  final GetDomainAccountByIdUseCase getDomainAccount;
   final GetDomainAccountsByParamsUseCase getDomainAccounts;
   final GetDomainAccountConfigByIdUseCase getConfigDomainAccount;
   final UpdateSelectedItemUsecase updateSelected;
@@ -24,6 +26,7 @@ class ListDomainAccountViewModel extends ChangeNotifier {
   List<DomainAccountApiDto> selectedItemsList = [];
 
   ListDomainAccountViewModel({
+    required this.getDomainAccount,
     required this.changeActive,
     required this.getDomainAccounts,
     required this.getConfigDomainAccount,
@@ -111,5 +114,16 @@ class ListDomainAccountViewModel extends ChangeNotifier {
   void checkItem(String id) {
     updateSelected.invoke(id);
     _updateDomainsList(_items);
+  }
+
+  Future<DomainAccountApiDto?> catchEntity(String id) async{
+    var result = await getDomainAccount.invoke(id: id);
+
+    if (result.isRight) {
+      return result.right;
+    } else if (result.isLeft && !errorController.isClosed) {
+      errorController.sink.add(result.left.message);
+    }
+    return null;
   }
 }
