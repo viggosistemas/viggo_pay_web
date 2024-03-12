@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:select_form_field/select_form_field.dart';
+import 'package:viggo_pay_admin/pay_facs/data/models/destinatario_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/ui/edit_pix_to_send/edit_pix_to_sends_view_model.dart';
 
 // ignore: must_be_immutable
-class EditPixToSendsForm extends StatelessWidget {
+class EditPixToSendsForm extends StatefulWidget {
   EditPixToSendsForm({
     super.key,
     required this.viewModel,
@@ -19,25 +21,168 @@ class EditPixToSendsForm extends StatelessWidget {
   late PixToSendApiDto? entity = null;
 
   @override
+  State<EditPixToSendsForm> createState() => _EditPixToSendsFormState();
+}
+
+class _EditPixToSendsFormState extends State<EditPixToSendsForm> {
+  final List<Map<String, dynamic>> _items = [
+    {
+      'value': Aliastype.TAX_ID.name,
+      'label': 'CPF/CNPJ',
+    },
+    {
+      'value': Aliastype.EMAIL.name,
+      'label': 'E-Mail',
+    },
+    {
+      'value': Aliastype.PHONE.name,
+      'label': 'Telefone',
+    },
+    {
+      'value': Aliastype.EVP.name,
+      'label': 'Chave aleatória',
+    },
+  ];
+
+  contentDestinatario(DestinatarioApiDto? destinatario) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(
+              'Proprietário',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall!
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              widget.entity != null
+                  ? widget.entity!.holderName
+                  : destinatario!.aliasHolderName,
+              style: Theme.of(context).textTheme.titleSmall!,
+            ),
+          ],
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(
+              'CPF/CNPJ',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall!
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              widget.entity != null
+                  ? widget.entity!.holderTaxIdentifierTaxIdMasked
+                  : destinatario!.aliasHolderTaxIdMasked,
+              style: Theme.of(context).textTheme.titleSmall!,
+            ),
+          ],
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(
+              'Instituição',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall!
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              widget.entity != null
+                  ? widget.entity!.pspName
+                  : destinatario!.pspName,
+              style: Theme.of(context).textTheme.titleSmall!,
+            ),
+          ],
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(
+              'Agência',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall!
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              widget.entity != null
+                  ? widget.entity!.destinationBranch
+                  : destinatario!.accountBranchDestination,
+              style: Theme.of(context).textTheme.titleSmall!,
+            ),
+          ],
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(
+              'Conta',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall!
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              widget.entity != null
+                  ? widget.entity!.destinationAccount
+                  : destinatario!.accountDestination,
+              style: Theme.of(context).textTheme.titleSmall!,
+            ),
+          ],
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(
+              'Tipo da conta',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall!
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              widget.entity != null
+                  ? widget.entity!.destinationAccountType
+                  : destinatario!.accountTypeDestination,
+              style: Theme.of(context).textTheme.titleSmall!,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  @override
   Widget build(context) {
     final aliasFieldControll = TextEditingController();
+    final aliasTypeFieldControll = TextEditingController();
 
-    final pspIdControll = TextEditingController();
-    final taxIdentifierTaxIdControll = TextEditingController();
-    final taxIdentifierCountryControll = TextEditingController();
-    final endToEndIdQueryControll = TextEditingController();
-    final accountDestinationBranchControll = TextEditingController();
-    final accountDestinationAccountControll = TextEditingController();
-    final accountDestinationAccountTypeControll = TextEditingController();
-
-    if (entity != null) viewModel.form.onAliasChange(entity!.alias);
-    if (entity != null) viewModel.form.onPspIdChange(entity!.pspId);
-    if (entity != null) viewModel.form.onTaxIdendifierTaxIdChange(entity!.taxIdentifierTaxId);
-    if (entity != null) viewModel.form.onTaxIdentifierCountryChange(entity!.taxIdentifierCountry);
-    if (entity != null) viewModel.form.onEndToEndIdQueryChange(entity?.endToEndIdQuery ?? '');
-    if (entity != null) viewModel.form.onAccountDestinationBranchChange(entity?.accountDestinationBranch ?? '');
-    if (entity != null) viewModel.form.onAccountDestinationAccountChange(entity!.accountDestinationAccount);
-    if (entity != null) viewModel.form.onAccountDestinationAccountTypeChange(entity!.accountDestinationAccountType);
+    if (widget.entity != null) {
+      widget.viewModel.form.onAliasChange(widget.entity!.alias);
+    }
+    if (widget.entity != null) {
+      widget.viewModel.form.onAliasTypeChange(widget.entity!.aliasType);
+    }
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -45,7 +190,35 @@ class EditPixToSendsForm extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         StreamBuilder<String>(
-          stream: viewModel.form.alias,
+          stream: widget.viewModel.form.aliasType,
+          builder: (context, snapshot) {
+            aliasTypeFieldControll.value =
+                aliasTypeFieldControll.value.copyWith(text: snapshot.data);
+            return SelectFormField(
+              type: SelectFormFieldType.dropdown,
+              controller: aliasTypeFieldControll,
+              items: _items,
+              decoration: InputDecoration(
+                labelText: 'Tipo *',
+                border: const OutlineInputBorder(),
+                errorText: snapshot.error?.toString(),
+              ),
+              onChanged: (val) {
+                widget.viewModel.form.onAliasTypeChange(val);
+                widget.viewModel.onDestinatarioChange(null);
+              },
+              onSaved: (val) {
+                widget.viewModel.form.onAliasTypeChange(val ?? '');
+                widget.viewModel.onDestinatarioChange(null);
+              },
+            );
+          },
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        StreamBuilder<String>(
+          stream: widget.viewModel.form.alias,
           builder: (context, snapshot) {
             aliasFieldControll.value =
                 aliasFieldControll.value.copyWith(text: snapshot.data);
@@ -55,180 +228,34 @@ class EditPixToSendsForm extends StatelessWidget {
                 // },
                 controller: aliasFieldControll,
                 decoration: InputDecoration(
-                  labelText: 'Alias',
+                  labelText: 'Chave *',
                   border: const OutlineInputBorder(),
                   errorText: snapshot.error?.toString(),
                 ),
                 onChanged: (value) {
-                  viewModel.form.onAliasChange(value);
+                  widget.viewModel.form.onAliasChange(value);
+                  widget.viewModel.onDestinatarioChange(null);
                 });
           },
         ),
         const SizedBox(
-          height: 5,
+          height: 10,
         ),
-        StreamBuilder<String>(
-          stream: viewModel.form.pspId,
-          builder: (context, snapshot) {
-            pspIdControll.value =
-                pspIdControll.value.copyWith(text: snapshot.data);
-            return TextFormField(
-                // onChanged: (value) {
-                //   _txtAmountValue = value;
-                // },
-                controller: pspIdControll,
-                decoration: InputDecoration(
-                  labelText: 'Psp Id',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                ),
-                onChanged: (value) {
-                  viewModel.form.onPspIdChange(value);
-                });
-          },
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        StreamBuilder<String>(
-          stream: viewModel.form.taxIdentifierTaxId,
-          builder: (context, snapshot) {
-            taxIdentifierTaxIdControll.value =
-                taxIdentifierTaxIdControll.value.copyWith(text: snapshot.data);
-            return TextFormField(
-                // onChanged: (value) {
-                //   _txtAmountValue = value;
-                // },
-                controller: taxIdentifierTaxIdControll,
-                decoration: InputDecoration(
-                  labelText: 'Tax identifier Tax Id',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                ),
-                onChanged: (value) {
-                  viewModel.form.onTaxIdendifierTaxIdChange(value);
-                });
-          },
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        StreamBuilder<String>(
-          stream: viewModel.form.taxIdentifierCountry,
-          builder: (context, snapshot) {
-            taxIdentifierCountryControll.value = taxIdentifierCountryControll
-                .value
-                .copyWith(text: snapshot.data);
-            return TextFormField(
-                // onChanged: (value) {
-                //   _txtAmountValue = value;
-                // },
-                controller: taxIdentifierCountryControll,
-                decoration: InputDecoration(
-                  labelText: 'Tax identifier Tax Country',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                ),
-                onChanged: (value) {
-                  viewModel.form.onTaxIdentifierCountryChange(value);
-                });
-          },
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        StreamBuilder<String>(
-          stream: viewModel.form.endToEndIdQuery,
-          builder: (context, snapshot) {
-            endToEndIdQueryControll.value =
-                endToEndIdQueryControll.value.copyWith(text: snapshot.data);
-            return TextFormField(
-                // onChanged: (value) {
-                //   _txtAmountValue = value;
-                // },
-                controller: endToEndIdQueryControll,
-                decoration: InputDecoration(
-                  labelText: 'End to end query',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                ),
-                onChanged: (value) {
-                  viewModel.form.onEndToEndIdQueryChange(value);
-                });
-          },
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        StreamBuilder<String>(
-          stream: viewModel.form.accountDestinationBranch,
-          builder: (context, snapshot) {
-            accountDestinationBranchControll.value =
-                accountDestinationBranchControll.value
-                    .copyWith(text: snapshot.data);
-            return TextFormField(
-                // onChanged: (value) {
-                //   _txtAmountValue = value;
-                // },
-                controller: accountDestinationBranchControll,
-                decoration: InputDecoration(
-                  labelText: 'Account destination branch',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                ),
-                onChanged: (value) {
-                  viewModel.form.onAccountDestinationBranchChange(value);
-                });
-          },
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        StreamBuilder<String>(
-          stream: viewModel.form.accountDestinationAccount,
-          builder: (context, snapshot) {
-            accountDestinationAccountControll.value =
-                accountDestinationAccountControll.value
-                    .copyWith(text: snapshot.data);
-            return TextFormField(
-                // onChanged: (value) {
-                //   _txtAmountValue = value;
-                // },
-                controller: accountDestinationAccountControll,
-                decoration: InputDecoration(
-                  labelText: 'Account Destination account',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                ),
-                onChanged: (value) {
-                  viewModel.form.onAccountDestinationAccountChange(value);
-                });
-          },
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        StreamBuilder<String>(
-          stream: viewModel.form.accountDestinationAccountType,
-          builder: (context, snapshot) {
-            accountDestinationAccountTypeControll.value =
-                accountDestinationAccountTypeControll.value
-                    .copyWith(text: snapshot.data);
-            return TextFormField(
-                // onChanged: (value) {
-                //   _txtAmountValue = value;
-                // },
-                controller: accountDestinationAccountTypeControll,
-                decoration: InputDecoration(
-                  labelText: 'Account destination type',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                ),
-                onChanged: (value) {
-                  viewModel.form.onAccountDestinationAccountTypeChange(value);
-                });
-          },
-        ),
+        widget.entity != null
+            ? contentDestinatario(null)
+            : StreamBuilder<DestinatarioApiDto?>(
+                stream: widget.viewModel.destinatarioInfo,
+                builder: (context, destinatarioData) {
+                  if (destinatarioData.data == null) {
+                    return const Visibility(
+                      visible: false,
+                      child: Text(''),
+                    );
+                  } else {
+                    widget.viewModel.preencherEntity(destinatarioData.data!);
+                    return contentDestinatario(destinatarioData.data!);
+                  }
+                }),
       ],
     );
   }

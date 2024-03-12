@@ -1,16 +1,22 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/change_active_pix_to_send_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_id_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_params_use_case.dart';
+import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_core_frontend/domain/ui/list_domain_form_fields.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
+import 'package:viggo_pay_core_frontend/util/constants.dart';
 
 class ListPixToSendViewModel extends ChangeNotifier {
+  final SharedPreferences sharedPrefs;
+
   final GetPixToSendByIdUseCase getPixToSend;
   final GetPixToSendsByParamsUseCase getPixToSends;
   final UpdateSelectedItemUsecase updateSelected;
@@ -22,6 +28,7 @@ class ListPixToSendViewModel extends ChangeNotifier {
   List<PixToSendApiDto> selectedItemsList = [];
 
   ListPixToSendViewModel({
+    required this.sharedPrefs,
     required this.getPixToSend,
     required this.changeActive,
     required this.getPixToSends,
@@ -62,6 +69,13 @@ class ListPixToSendViewModel extends ChangeNotifier {
         value != null ? filters[e] = value : value;
       }
     }
+
+    String? domainJson = sharedPrefs.getString(CoreUserPreferences.DOMAIN);
+    DomainApiDto domain = DomainApiDto.fromJson(jsonDecode(domainJson!));
+
+    filters.addEntries(
+      <String, String>{'domain_account_id': domain.id}.entries,
+    );
 
     var result = await getPixToSends.invoke(filters: filters);
     if (result.isRight) {

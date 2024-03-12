@@ -17,10 +17,22 @@ class ListPixToSendGrid extends StatefulWidget {
 
 class _ListPixToSendGridState extends State<ListPixToSendGrid> {
   late ListPixToSendViewModel viewModel;
+  static const pixToSendsValidActions = [
+    {
+      'backendUrl': '/pix_to_sends/<id>',
+      'method': 'GET',
+    },
+    {
+      'backendUrl': '/pix_to_sends/<id>',
+      'method': 'DELETE',
+    },
+  ];
+
+  static const pixToSendRowsValues = ['alias', 'holder_name', 'psp_name'];
 
   List<Map<String, dynamic>> searchFields = [
     {
-      'label': 'Alias',
+      'label': 'Chave',
       'search_field': 'alias',
       'type': 'text',
       'icon': Icons.key_outlined,
@@ -28,7 +40,7 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
   ];
 
   Map<String, String> filters = {
-    'order_by': 'alias',
+    'order_by': 'holder_name',
     'list_options': ListOptions.ACTIVE_ONLY.name,
   };
 
@@ -46,7 +58,7 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
       var fieldValue = '';
 
       if (element['type'] == 'text') {
-        fieldValue = '${element['value']}%';
+        fieldValue = '%${element['value']}%';
       } else {
         fieldValue = element['value'];
       }
@@ -56,7 +68,7 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
     }
 
     filters.addEntries(
-      <String, String>{'order_by': 'alias'}.entries,
+      <String, String>{'order_by': 'holder_name'}.entries,
     );
 
     viewModel.loadData(filters);
@@ -130,7 +142,7 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
                         DataColumn(
                           label: Center(
                             child: Text(
-                              'Psp ID',
+                              'Chave',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -140,7 +152,17 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
                         DataColumn(
                           label: Center(
                             child: Text(
-                              'Alias',
+                              'Proprietário',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Center(
+                            child: Text(
+                              'Instituição',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -148,7 +170,9 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
                           ),
                         ),
                       ],
-                      fieldsData: const ['psp_id', 'alias'],
+                      addFunction: () => dialogs.addDialog(null),
+                      validActionsList: pixToSendsValidActions,
+                      fieldsData: pixToSendRowsValues,
                       dialogs: dialogs,
                       items: items.map((e) {
                         return e.toJson();

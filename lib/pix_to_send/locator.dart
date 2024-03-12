@@ -1,4 +1,7 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/consultar_alias_destinatario_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/pix_to_send_data_source.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/pix_to_send_repository_impl.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/remote/pix_to_send_api.dart';
@@ -71,6 +74,7 @@ class PixToSendLocator {
     // ViewModels
     locator.registerFactory(
       () => ListPixToSendViewModel(
+        sharedPrefs: locator.get<SharedPreferences>(),
         getPixToSend: locator.get<GetPixToSendByIdUseCase>(),
         changeActive: locator.get<ChangeActivePixToSendUseCase>(),
         getPixToSends: locator.get<GetPixToSendsByParamsUseCase>(),
@@ -85,6 +89,8 @@ class PixToSendLocator {
         getDomainFromSettings: locator.get<GetDomainFromSettingsUseCase>(),
         updatePixToSend: locator.get<UpdatePixToSendUseCase>(),
         createPixToSend: locator.get<CreatePixToSendUseCase>(),
+        getDomainAccount: locator.get<GetDomainAccountByIdUseCase>(),
+        consultarDestinatario: locator.get<ConsultarAliasDestinatarioUseCase>(),
       ),
     );
   }

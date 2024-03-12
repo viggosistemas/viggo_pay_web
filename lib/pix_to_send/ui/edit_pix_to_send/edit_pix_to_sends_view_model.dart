@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/config_domain_accounts/config_domain_accounts_form_fields.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
+import 'package:viggo_pay_admin/pay_facs/data/models/destinatario_api_dto.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/consultar_alias_destinatario_use_case.dart';
+import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/create_pix_to_send_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/update_pix_to_send_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/ui/edit_pix_to_send/edit_pix_to_sends_form/edit_form_fields.dart';
@@ -9,14 +12,17 @@ import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domain_from_s
 
 class EditPixToSendViewModel extends ChangeNotifier {
   bool isLoading = false;
+  String materaId = '';
+  // ignore: avoid_init_to_null
+  late Map<String, dynamic> entity = {};
 
   final UpdatePixToSendUseCase updatePixToSend;
   final CreatePixToSendUseCase createPixToSend;
   final GetDomainFromSettingsUseCase getDomainFromSettings;
+  final ConsultarAliasDestinatarioUseCase consultarDestinatario;
+  final GetDomainAccountByIdUseCase getDomainAccount;
 
   final EditPixToSendFormFields form = EditPixToSendFormFields();
-  final ConfigDomainAccountFormFields formConfig =
-      ConfigDomainAccountFormFields();
 
   final StreamController<String> _streamControllerError =
       StreamController<String>.broadcast();
@@ -26,10 +32,22 @@ class EditPixToSendViewModel extends ChangeNotifier {
       StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
+  final StreamController<PixToSendApiDto> _streamSuccessPixToSend =
+      StreamController<PixToSendApiDto>.broadcast();
+  Stream<PixToSendApiDto> get pixToSendSuccess => _streamSuccessPixToSend.stream;
+
+  Function(DestinatarioApiDto?) get onDestinatarioChange => _streamDestinatarioController.sink.add;
+  final StreamController<DestinatarioApiDto?> _streamDestinatarioController =
+      StreamController<DestinatarioApiDto?>.broadcast();
+  Stream<DestinatarioApiDto?> get destinatarioInfo =>
+      _streamDestinatarioController.stream;
+
   EditPixToSendViewModel({
+    required this.consultarDestinatario,
     required this.updatePixToSend,
     required this.createPixToSend,
     required this.getDomainFromSettings,
+    required this.getDomainAccount,
   });
 
   get domainAccountID {
@@ -38,6 +56,17 @@ class EditPixToSendViewModel extends ChangeNotifier {
     if (domainDto != null) {
       return domainDto.id;
     }
+  }
+
+  void catchDomainAccount() async {
+    var result = await getDomainAccount.invoke(id: domainAccountID);
+
+    if (result.isRight) {
+      if (result.right.materaId != null) materaId = result.right.materaId!;
+    } else if (result.isLeft && !_streamControllerError.isClosed) {
+      _streamControllerError.sink.add(result.left.message);
+    }
+    return null;
   }
 
   void notifyLoading() {
@@ -52,32 +81,19 @@ class EditPixToSendViewModel extends ChangeNotifier {
   ) async {
     notifyLoading();
     dynamic result;
-    var formFields = form.getFields()!;
-
-    Map<String, dynamic> data = {
-      'domain_account_id': domainAccountID,
-      'alias': formFields['alias'],
-      'psp_id': formFields['pspId'],
-      'tax_identifier_tax_id': formFields['taxIdentifierTaxId'],
-      'tax_identifier_country': formFields['taxIdentifierCountry'],
-      'end_to_end_id_query': formFields['endToEndIdQuery'],
-      'account_destination_branch': formFields['accountDestinationBranch'],
-      'account_destination_account': formFields['accountDestinationAccount'],
-      'account_destination_account_type': formFields['accountDestinationAccountType'],
-    };
 
     if (id != null) {
-      data.addEntries(
+      entity.addEntries(
         <String, dynamic>{'id': id}.entries,
       );
     }
     if (id != null) {
       result = await updatePixToSend.invoke(
         id: id,
-        body: data,
+        body: entity,
       );
     } else {
-      result = await createPixToSend.invoke(body: data);
+      result = await createPixToSend.invoke(body: entity);
     }
 
     if (result.isLeft) {
@@ -88,8 +104,49 @@ class EditPixToSendViewModel extends ChangeNotifier {
     } else {
       if (!_streamControllerSuccess.isClosed) {
         _streamControllerSuccess.sink.add(true);
+        _streamSuccessPixToSend.sink.add(result.right);
         notifyLoading();
       }
     }
+  }
+
+  void loadInfoDestinatario(
+    String aliasCountry,
+    String aliasValue,
+  ) async {
+    notifyLoading();
+    Map<String, String> body = {
+      'account_id': materaId,
+      'country': aliasCountry,
+      'alias_destinatario': aliasValue,
+    };
+    var result = await consultarDestinatario.invoke(body: body);
+    if (result.isRight) {
+      _streamDestinatarioController.sink.add(result.right);
+      notifyLoading();
+    } else if (result.isLeft && !_streamControllerError.isClosed) {
+      _streamControllerError.sink.add(result.left.message);
+      notifyLoading();
+    }
+  }
+
+  preencherEntity(DestinatarioApiDto destinatario) {
+    var formFields = form.getFields()!;
+
+    entity['alias'] = formFields['alias'];
+    entity['alias_type'] = formFields['aliasType'];
+
+    entity['domain_account_id'] = domainAccountID;
+    entity['destination_account'] = destinatario.accountDestination;
+    entity['destination_account_type'] = destinatario.accountTypeDestination;
+    entity['destination_branch'] = destinatario.accountBranchDestination;
+    entity['psp_id'] = destinatario.pspId;
+    entity['psp_country'] = destinatario.pspCountry;
+    entity['psp_name'] = destinatario.pspName;
+    entity['holder_name'] = destinatario.aliasHolderName;
+    entity['holder_tax_identifier_country'] = destinatario.aliasHolderCountry;
+    entity['holder_tax_identifier_tax_id'] = destinatario.aliasHolderTaxId;
+    entity['holder_tax_identifier_tax_id_masked'] =
+        destinatario.aliasHolderTaxIdMasked;
   }
 }
