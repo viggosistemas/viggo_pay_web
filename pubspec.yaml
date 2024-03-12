@@ -43,6 +43,7 @@ dependencies:
   fl_chart: ^0.36.1
   ternav_icons: ^1.0.0
   percent_indicator: ^4.2.2
+  file_picker: ^6.1.1
 
   viggo_pay_core_frontend:
     path: ../viggo_pay_core_frontend
@@ -56,6 +57,12 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.1.4
   timeline_tile: ^2.0.0
+  text_area: ^0.0.3
+  pinput: ^4.0.0
+  select_form_field: ^2.2.0
+  brasil_fields: ^1.14.1
+  mask_text_input_formatter: ^2.9.0
+  intl_phone_field: ^3.2.0
 
 dev_dependencies:
   flutter_test:
