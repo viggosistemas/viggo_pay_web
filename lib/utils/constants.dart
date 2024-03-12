@@ -6,10 +6,14 @@ class Routes {
   static const LOGIN_PAGE = '/login';
   static const FORGET_PASSWORD = '/forget_password';
   static const WORKSPACE = '/workspace';
+  //admin
+  static const MATRIZ = '/matriz_perfil';
   static const DOMAIN_ACCOUNTS = '/empresas';
   static const PIX = '/pix';
-  static const HISTORICO = '/historico_transacoes';
-  static const TRANSACAO_CONTA = '/transacoes_entre_contas';
+  static const EXTRATO = '/extrato';
+  static const MATRIZ_TRANSFERENCIA = '/matriz_transferencia';
+  static const FUNCIONARIO = '/funcionarios';
+  //sysadmin
   static const USERS = '/users';
   static const DOMAINS = '/domains';
   static const APPLICATIONS = '/applications';
