@@ -65,7 +65,7 @@ class EditDomains {
               title: Row(
                 children: [
                   Text(
-                    'Adicionando novo domínio',
+                    'Adicionando domínio',
                     style: Theme.of(ctx).textTheme.titleMedium!.copyWith(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -74,7 +74,7 @@ class EditDomains {
                   const SizedBox(
                     width: 4,
                   ),
-                  const Icon(Icons.domain_outlined),
+                  const Icon(Icons.cases_outlined),
                 ],
               ),
               content: SizedBox(
@@ -201,7 +201,7 @@ class EditDomains {
                   const SizedBox(
                     width: 4,
                   ),
-                  const Icon(Icons.domain_outlined),
+                  const Icon(Icons.cases_outlined),
                 ],
               ),
               content: SizedBox(

@@ -26,20 +26,15 @@ class EditUsersForm extends StatefulWidget {
 }
 
 class _EditUsersFormState extends State<EditUsersForm> {
-  getInitialValue() {
-    if (widget.entity != null) {
-      if (widget.entity?.domain != null) {
-        return widget.entity?.domain?.name;
-      } else {
-        return '';
-      }
-    } else {
-      return '';
-    }
-  }
-
   @override
   Widget build(context) {
+    DomainApiDto mockLastOption = DomainApiDto.fromJson({
+      "name": "",
+      "display_name": "t",
+      "application_id": "",
+      "id": "last",
+      "active": true,
+    });
     final nameFieldControll = TextEditingController();
     final emailFieldControll = TextEditingController();
     final domainFieldControll = TextEditingController();
@@ -209,7 +204,8 @@ class _EditUsersFormState extends State<EditUsersForm> {
                             'list_options': ListOptions.ACTIVE_ONLY.name,
                             'order_by': 'name'
                           });
-                          return const Iterable<DomainApiDto>.empty();
+                          snapshotList.data!.add(mockLastOption);
+                          return snapshotList.data!.where((element) => true);
                         } else {
                           widget.viewModel.loadDomains({
                             'list_options': ListOptions.ACTIVE_ONLY.name,
@@ -218,16 +214,18 @@ class _EditUsersFormState extends State<EditUsersForm> {
                           });
                         }
                         if (snapshotList.data != null) {
-                          return snapshotList.data!
-                              .where((DomainApiDto option) {
+                          var options =
+                              snapshotList.data!.where((DomainApiDto option) {
                             return option.name
                                 .contains(textEditingValue.text.toLowerCase());
-                          });
+                          }).toList();
+                          options.add(mockLastOption);
+                          return options.where((element) => true);
                         } else {
                           return {};
                         }
                       },
-                      initialValue: TextEditingValue(text: getInitialValue()),
+                      initialValue: TextEditingValue(text: widget.entity?.domain?.name ?? ''),
                       displayStringForOption: (option) => option.name,
                       optionsViewBuilder: (context, onSelected, options) =>
                           Align(
@@ -247,13 +245,25 @@ class _EditUsersFormState extends State<EditUsersForm> {
                               itemBuilder: (BuildContext context, int index) {
                                 final DomainApiDto option =
                                     options.elementAt(index);
-                                return InkWell(
-                                  onTap: () => onSelected(option),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Text(option.name),
-                                  ),
-                                );
+                                return option.id == 'last'
+                                    ? Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: ElevatedButton.icon(
+                                            onPressed: () {},
+                                            icon: const Icon(
+                                              Icons.add_circle_outline,
+                                              size: 18,
+                                            ),
+                                            label:
+                                                const Text('Adicionar agora')),
+                                      )
+                                    : InkWell(
+                                        onTap: () => onSelected(option),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Text(option.name),
+                                        ),
+                                      );
                               },
                             ),
                           ),

@@ -18,6 +18,25 @@ class ListDomainsGrid extends StatefulWidget {
 class _ListDomainsGridState extends State<ListDomainsGrid> {
   late ListDomainWebViewModel viewModel;
 
+  static const domainsValidActions = [
+    {
+      'backendUrl': '/domains',
+      'method': 'POST',
+    },
+    {
+      'backendUrl': '/domains/<id>',
+      'method': 'PUT',
+    },
+    {
+      'backendUrl': '/domains/<id>',
+      'method': 'DELETE',
+    },
+  ];
+
+  static const domainsRowsValues = ['name', 'application'];
+
+  static const domainsListLabelIncludes = ['name'];
+
   List<Map<String, dynamic>> searchFields = [
     {
       'label': 'Nome',
@@ -46,7 +65,7 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
       var fieldValue = '';
 
       if (element['type'] == 'text') {
-        fieldValue = '${element['value']}%';
+        fieldValue = '%${element['value']}%';
       } else {
         fieldValue = element['value'];
       }
@@ -146,11 +165,9 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
                           ),
                         ),
                       ],
-                      labelInclude: 'name',
-                      fieldsData: const [
-                        'name',
-                        'application',
-                      ],
+                      labelInclude: domainsListLabelIncludes,
+                      fieldsData: domainsRowsValues,
+                      validActionsList: domainsValidActions,
                       items: items.map((e) {
                         return e.toJson();
                       }).toList(),

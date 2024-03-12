@@ -52,7 +52,7 @@ class EditUsers {
               title: Row(
                 children: [
                   Text(
-                    'Adicionando novo usuário',
+                    'Adicionando usuário',
                     style: Theme.of(ctx).textTheme.titleMedium!.copyWith(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,

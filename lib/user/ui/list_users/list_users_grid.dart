@@ -18,6 +18,23 @@ class ListUsersGrid extends StatefulWidget {
 class _ListUsersGridState extends State<ListUsersGrid> {
   late ListUserWebViewModel viewModel;
 
+  static const usersValidActions = [
+    {
+      'backendUrl': '/users',
+      'method': 'POST',
+    },
+    {
+      'backendUrl': '/users/<id>',
+      'method': 'PUT',
+    },
+    {
+      'backendUrl': '/users/<id>',
+      'method': 'DELETE',
+    },
+  ];
+
+  static const usersRowsValues = ['name', 'email', 'domain'];
+
   List<Map<String, dynamic>> searchFields = [
     {
       'label': 'Nome',
@@ -46,7 +63,7 @@ class _ListUsersGridState extends State<ListUsersGrid> {
       var fieldValue = '';
 
       if (element['type'] == 'text') {
-        fieldValue = '${element['value']}%';
+        fieldValue = '%${element['value']}%';
       } else {
         fieldValue = element['value'];
       }
@@ -154,12 +171,9 @@ class _ListUsersGridState extends State<ListUsersGrid> {
                           ),
                         ),
                       ],
-                      labelInclude: 'name',
-                      fieldsData: const [
-                        'name',
-                        'email',
-                        'domain'
-                      ],
+                      labelInclude: const ['name'],
+                      fieldsData: usersRowsValues,
+                      validActionsList: usersValidActions,
                       items: items.map((e) {
                         return e.toJson();
                       }).toList(),
