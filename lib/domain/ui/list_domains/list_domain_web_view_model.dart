@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/domain/domain/usecases/change_active_domain_use_case.dart';
+import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
 import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domain_by_id_use_case.dart';
 import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domains_by_params_use_case.dart';
@@ -11,14 +11,13 @@ import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
 import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
-class ListDomainWebViewModel extends ChangeNotifier {
+class ListDomainWebViewModel extends BaseViewModel {
   final GetDomainByIdUseCase getDomain;
   final GetDomainsByParamsUseCase getDomains;
   final UpdateSelectedItemUsecase updateSelected;
   final GetSelectedItemsUseCase getSelectedItems;
   final ClearSelectedItemsUseCase clearSelectedItems;
   final ChangeActiveDomainUseCase changeActive;
-  bool isLoading = false;
 
   final ListDomainFormFields form = ListDomainFormFields();
 
@@ -37,9 +36,6 @@ class ListDomainWebViewModel extends ChangeNotifier {
       StreamController.broadcast();
   Stream<List<DomainApiDto>> get domains => domainsController.stream;
 
-  final StreamController<String> errorController = StreamController.broadcast();
-  Stream<String> get error => errorController.stream;
-
   List<DomainApiDto> _items = List.empty(growable: true);
 
   List<DomainApiDto> _mapSelected(
@@ -57,6 +53,10 @@ class ListDomainWebViewModel extends ChangeNotifier {
   }
 
   Future<void> loadData(Map<String, String> filters) async {
+    if (isLoading) return;
+
+    setLoading();
+
     Map<String, String>? formFields = form.getFields();
 
     if (formFields != null) {
@@ -75,10 +75,13 @@ class ListDomainWebViewModel extends ChangeNotifier {
       listOptions: listOptions,
       include: 'application',
     );
+
+    setLoading();
+    
     if (result.isRight) {
       _updateDomainsList(result.right.domains);
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -88,12 +91,17 @@ class ListDomainWebViewModel extends ChangeNotifier {
   }
 
   Future<DomainApiDto?> catchEntity(String id) async{
+    if (isLoading) return null;
+
+    setLoading();
+    
     var result = await getDomain.invoke(id: id, include: 'application');
 
+    setLoading();
     if (result.isRight) {
       return result.right;
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
     return null;
   }

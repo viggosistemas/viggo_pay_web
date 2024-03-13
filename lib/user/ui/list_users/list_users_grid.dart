@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users.dart';
 import 'package:viggo_pay_admin/user/ui/list_users/list_users_web_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
@@ -16,7 +16,7 @@ class ListUsersGrid extends StatefulWidget {
 }
 
 class _ListUsersGridState extends State<ListUsersGrid> {
-  late ListUserWebViewModel viewModel;
+  ListUserWebViewModel viewModel = locator.get<ListUserWebViewModel>();
 
   static const usersValidActions = [
     {
@@ -84,21 +84,23 @@ class _ListUsersGridState extends State<ListUsersGrid> {
 
   @override
   Widget build(BuildContext context) {
-    viewModel = Provider.of<ListUserWebViewModel>(context);
     final dialogs = EditUsers(context: context);
     onReload();
 
-    viewModel.error.listen(
+    viewModel.errorMessage.listen(
       (value) {
-        showInfoMessage(
-          context,
-          2,
-          Colors.red,
-          value,
-          'X',
-          () {},
-          Colors.white,
-        );
+        if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
+          showInfoMessage(
+            context,
+            2,
+            Colors.red,
+            value,
+            'X',
+            () {},
+            Colors.white,
+          );
+        }
       },
     );
     return StreamBuilder<Object>(

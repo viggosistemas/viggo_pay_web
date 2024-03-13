@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users_form/edit_form_fields.dart';
 import 'package:viggo_pay_core_frontend/application/domain/usecases/get_roles_from_application_by_id_use_case.dart';
+import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
 import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domains_by_params_use_case.dart';
 import 'package:viggo_pay_core_frontend/grant/data/models/grant_api_dto.dart';
@@ -17,8 +18,7 @@ import 'package:viggo_pay_core_frontend/user/domain/usecases/update_user_use_cas
 import 'package:viggo_pay_core_frontend/util/constants.dart';
 import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
-class EditUsersViewModel extends ChangeNotifier {
-  bool isLoading = false;
+class EditUsersViewModel extends BaseViewModel {
   List<GrantApiDto> grants = [];
   List<RoleApiDto> roles = [];
 
@@ -32,10 +32,6 @@ class EditUsersViewModel extends ChangeNotifier {
   final AddGrantUseCase addGrantUser;
 
   final EditUsersFormField form = EditUsersFormField();
-
-  final StreamController<String> _streamControllerError =
-      StreamController<String>.broadcast();
-  Stream<String> get isError => _streamControllerError.stream;
 
   final StreamController<bool> _streamControllerSuccess =
       StreamController<bool>.broadcast();
@@ -61,12 +57,10 @@ class EditUsersViewModel extends ChangeNotifier {
     required this.deleteGranUser,
   });
 
-  void notifyLoading() {
-    isLoading = !isLoading;
-    // notifyListeners();
-  }
-
   Future<void> loadDomains(Map<String, String> filters) async {
+    if (isLoading) return;
+
+    setLoading();
     var listOptions = ListOptions.values
         .where((element) => element.name == filters['list_options'])
         .first;
@@ -75,10 +69,11 @@ class EditUsersViewModel extends ChangeNotifier {
       filters: filters,
       listOptions: listOptions,
     );
+    setLoading();
     if (result.isRight) {
       _streamControllerDomains.sink.add(result.right.domains);
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -97,8 +92,8 @@ class EditUsersViewModel extends ChangeNotifier {
       }
       roles = result.right;
       _streamControllerApplicationRoles.sink.add(result.right);
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -110,8 +105,8 @@ class EditUsersViewModel extends ChangeNotifier {
     if (result.isRight) {
       grants = result.right;
       loadRolesApplication();
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -136,26 +131,26 @@ class EditUsersViewModel extends ChangeNotifier {
             })
         .toList();
 
-    if(addRoles.isNotEmpty){
+    if (addRoles.isNotEmpty) {
       insertRolesToUserGrant(addRoles);
     }
-    if(idsGrantsToRemove.isNotEmpty){
+    if (idsGrantsToRemove.isNotEmpty) {
       removeRolesFromUserGrant(idsGrantsToRemove);
     }
   }
 
-  Future<void> insertRolesToUserGrant(List<Map<String, dynamic>> grants)async{
+  Future<void> insertRolesToUserGrant(List<Map<String, dynamic>> grants) async {
     var count = 0;
-    for(var grant in grants){
+    for (var grant in grants) {
       await addGrantUser.invoke(body: grant);
       count++;
     }
     _streamControllerSuccess.sink.add(count == grants.length);
   }
 
-  Future<void> removeRolesFromUserGrant(List<String> grants) async{
+  Future<void> removeRolesFromUserGrant(List<String> grants) async {
     var count = 0;
-    for(var id in grants){
+    for (var id in grants) {
       await deleteGranUser.invoke(id: id);
       count++;
     }
@@ -167,7 +162,9 @@ class EditUsersViewModel extends ChangeNotifier {
     Function showMsg,
     BuildContext context,
   ) async {
-    notifyLoading();
+    if (isLoading) return;
+
+    setLoading();
     var formFields = form.getFields();
     dynamic result;
 
@@ -193,15 +190,12 @@ class EditUsersViewModel extends ChangeNotifier {
     } else {
       result = await createUser.invoke(body: data);
     }
+    setLoading();
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
+      postError(result.left.message);
     } else {
       if (!_streamControllerSuccess.isClosed) {
         getGrantsRoles(result.value.id);
-        notifyLoading();
       }
     }
   }

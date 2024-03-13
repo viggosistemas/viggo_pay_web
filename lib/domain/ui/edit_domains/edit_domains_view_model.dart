@@ -5,14 +5,14 @@ import 'package:viggo_pay_admin/domain/ui/edit_domains/edit_domains_form/edit_fo
 import 'package:viggo_pay_admin/domain/ui/edit_domains/edit_domains_form/register_form_fields.dart';
 import 'package:viggo_pay_core_frontend/application/data/models/application_api_dto.dart';
 import 'package:viggo_pay_core_frontend/application/domain/usecases/get_applications_by_params_use_case.dart';
+import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
 import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domains_by_params_use_case.dart';
 import 'package:viggo_pay_core_frontend/domain/domain/usecases/register_use_case.dart';
 import 'package:viggo_pay_core_frontend/domain/domain/usecases/update_domain_use_case.dart';
 import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
-class EditDomainsViewModel extends ChangeNotifier {
-  bool isLoading = false;
+class EditDomainsViewModel extends BaseViewModel {
   late DomainApiDto matriz;
 
   final GetDomainsByParamsUseCase getDomains;
@@ -22,10 +22,6 @@ class EditDomainsViewModel extends ChangeNotifier {
 
   final EditDomainFormFields form = EditDomainFormFields();
   final RegisterFormFields formRegister = RegisterFormFields();
-
-  final StreamController<String> _streamControllerError =
-      StreamController<String>.broadcast();
-  Stream<String> get isError => _streamControllerError.stream;
 
   final StreamController<bool> _streamControllerSuccess =
       StreamController<bool>.broadcast();
@@ -42,17 +38,10 @@ class EditDomainsViewModel extends ChangeNotifier {
     required this.updateDomain,
     required this.registerDomain,
     required this.getApplications,
-  }){
-    getMatriz().then(
-      (value) {
-        matriz = value!;
-      }
-    );
-  }
-
-  void notifyLoading() {
-    isLoading = !isLoading;
-    // notifyListeners();
+  }) {
+    getMatriz().then((value) {
+      matriz = value!;
+    });
   }
 
   Future<void> loadApplications(Map<String, String> filters) async {
@@ -65,6 +54,10 @@ class EditDomainsViewModel extends ChangeNotifier {
     //   }
     // }
 
+    if (isLoading) return;
+
+    setLoading();
+
     var listOptions = ListOptions.values
         .where((element) => element.name == filters['list_options'])
         .first;
@@ -73,14 +66,21 @@ class EditDomainsViewModel extends ChangeNotifier {
       filters: filters,
       listOptions: listOptions,
     );
+
+    setLoading();
+
     if (result.isRight) {
       _streamControllerApplications.sink.add(result.right.applications);
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
   Future<DomainApiDto?> getMatriz() async {
+    if (isLoading) return null;
+
+    setLoading();
+
     var result = await getDomains.invoke(
       filters: {
         'tag': '%MATRIZ%',
@@ -91,6 +91,9 @@ class EditDomainsViewModel extends ChangeNotifier {
       listOptions: ListOptions.ACTIVE_ONLY,
       include: 'application',
     );
+
+    setLoading();
+
     if (result.isRight) {
       return result.right.domains[0];
     }
@@ -102,7 +105,9 @@ class EditDomainsViewModel extends ChangeNotifier {
     Function showMsg,
     BuildContext context,
   ) async {
-    notifyLoading();
+    if (isLoading) return;
+
+    setLoading();
     dynamic result;
     var formFields = form.getFields();
     var formRegisterFields = formRegister.getFields();
@@ -122,21 +127,20 @@ class EditDomainsViewModel extends ChangeNotifier {
       'password': formRegisterFields['password'].toString(),
       'parent_id': matriz.id,
     };
-    
+
     if (id != null) {
       result = await updateDomain.invoke(id: id, body: data);
     } else {
       result = await registerDomain.invoke(dataRegister);
     }
+
+    setLoading();
+
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
+      postError(result.left.message);
     } else {
       if (!_streamControllerSuccess.isClosed) {
         _streamControllerSuccess.sink.add(true);
-        notifyLoading();
       }
     }
   }

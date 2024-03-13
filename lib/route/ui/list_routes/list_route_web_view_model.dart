@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/route/domain/usecases/change_active_route_use_case.dart';
+import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
 import 'package:viggo_pay_core_frontend/domain/ui/list_domain_form_fields.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
@@ -11,14 +11,13 @@ import 'package:viggo_pay_core_frontend/route/domain/usecases/get_route_by_id_us
 import 'package:viggo_pay_core_frontend/route/domain/usecases/get_routes_by_params_use_case.dart';
 import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
-class ListRouteWebViewModel extends ChangeNotifier {
+class ListRouteWebViewModel extends BaseViewModel {
   final GetRouteByIdUseCase getRoute;
   final GetRoutesByParamsUseCase getRoutes;
   final UpdateSelectedItemUsecase updateSelected;
   final GetSelectedItemsUseCase getSelectedItems;
   final ClearSelectedItemsUseCase clearSelectedItems;
   final ChangeActiveRouteUseCase changeActive;
-  bool isLoading = false;
 
   final ListDomainFormFields form = ListDomainFormFields();
 
@@ -37,10 +36,7 @@ class ListRouteWebViewModel extends ChangeNotifier {
       StreamController.broadcast();
   Stream<List<RouteApiDto>> get routes => routesController.stream;
 
-  final StreamController<String> errorController = StreamController.broadcast();
-  Stream<String> get error => errorController.stream;
-
-  List<RouteApiDto> _items = List.empty(growable: true); 
+  List<RouteApiDto> _items = List.empty(growable: true);
 
   List<RouteApiDto> _mapSelected(
     List<RouteApiDto> routes,
@@ -57,6 +53,9 @@ class ListRouteWebViewModel extends ChangeNotifier {
   }
 
   Future<void> loadData(Map<String, String> filters) async {
+    if (isLoading) return;
+    setLoading();
+
     Map<String, String>? formFields = form.getFields();
 
     if (formFields != null) {
@@ -74,10 +73,11 @@ class ListRouteWebViewModel extends ChangeNotifier {
       filters: filters,
       listOptions: listOptions,
     );
+    setLoading();
     if (result.isRight) {
       _updateRoutesList(result.right.routes);
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -86,13 +86,15 @@ class ListRouteWebViewModel extends ChangeNotifier {
     _updateRoutesList(_items);
   }
 
-  Future<RouteApiDto?> catchEntity(String id) async{
+  Future<RouteApiDto?> catchEntity(String id) async {
+    if (isLoading) return null;
+    setLoading();
     var result = await getRoute.invoke(id: id);
-
+    setLoading();
     if (result.isRight) {
       return result.right;
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
     return null;
   }

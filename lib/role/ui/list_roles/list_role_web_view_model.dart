@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/role/domain/usecases/change_active_role_use_case.dart';
+import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
 import 'package:viggo_pay_core_frontend/domain/ui/list_domain_form_fields.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
@@ -11,14 +11,13 @@ import 'package:viggo_pay_core_frontend/role/domain/usecases/get_role_by_id_use_
 import 'package:viggo_pay_core_frontend/role/domain/usecases/get_roles_by_params_use_case.dart';
 import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
-class ListRoleWebViewModel extends ChangeNotifier {
+class ListRoleWebViewModel extends BaseViewModel {
   final GetRoleByIdUseCase getRole;
   final GetRolesByParamsUseCase getRoles;
   final UpdateSelectedItemUsecase updateSelected;
   final GetSelectedItemsUseCase getSelectedItems;
   final ClearSelectedItemsUseCase clearSelectedItems;
   final ChangeActiveRoleUseCase changeActive;
-  bool isLoading = false;
 
   final ListDomainFormFields form = ListDomainFormFields();
 
@@ -37,9 +36,6 @@ class ListRoleWebViewModel extends ChangeNotifier {
       StreamController.broadcast();
   Stream<List<RoleApiDto>> get roles => rolesController.stream;
 
-  final StreamController<String> errorController = StreamController.broadcast();
-  Stream<String> get error => errorController.stream;
-
   List<RoleApiDto> _items = List.empty(growable: true);
 
   List<RoleApiDto> _mapSelected(
@@ -57,6 +53,9 @@ class ListRoleWebViewModel extends ChangeNotifier {
   }
 
   Future<void> loadData(Map<String, String> filters) async {
+    if (isLoading) return;
+
+    setLoading();
     Map<String, String>? formFields = form.getFields();
 
     if (formFields != null) {
@@ -74,10 +73,12 @@ class ListRoleWebViewModel extends ChangeNotifier {
       filters: filters,
       listOptions: listOptions,
     );
+
+    setLoading();
     if (result.isRight) {
       _updateRolesList(result.right.roles);
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -86,13 +87,16 @@ class ListRoleWebViewModel extends ChangeNotifier {
     _updateRolesList(_items);
   }
 
-  Future<RoleApiDto?> catchEntity(String id) async{
-    var result = await getRole.invoke(id: id);
+  Future<RoleApiDto?> catchEntity(String id) async {
+    if (isLoading) return null;
 
+    setLoading();
+    var result = await getRole.invoke(id: id);
+    setLoading();
     if (result.isRight) {
       return result.right;
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
     return null;
   }

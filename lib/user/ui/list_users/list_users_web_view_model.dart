@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_pay_admin/user/domain/usecases/change_active_user_use_case.dart';
 import 'package:viggo_pay_admin/user/ui/list_users/list_users_form_field.dart';
+import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
 import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
@@ -15,7 +15,7 @@ import 'package:viggo_pay_core_frontend/user/domain/usecases/get_users_by_params
 import 'package:viggo_pay_core_frontend/util/constants.dart';
 import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
-class ListUserWebViewModel extends ChangeNotifier {
+class ListUserWebViewModel extends BaseViewModel {
   final SharedPreferences sharedPrefs;
   
   final GetUserByIdUseCase getUser;
@@ -24,7 +24,6 @@ class ListUserWebViewModel extends ChangeNotifier {
   final GetSelectedItemsUseCase getSelectedItems;
   final ClearSelectedItemsUseCase clearSelectedItems;
   final ChangeActiveUserUseCase changeActive;
-  bool isLoading = false;
 
   final ListUsersFormField form = ListUsersFormField();
 
@@ -43,9 +42,6 @@ class ListUserWebViewModel extends ChangeNotifier {
   final StreamController<List<UserApiDto>> usersController =
       StreamController.broadcast();
   Stream<List<UserApiDto>> get users => usersController.stream;
-
-  final StreamController<String> errorController = StreamController.broadcast();
-  Stream<String> get error => errorController.stream;
 
   List<UserApiDto> _items = List.empty(growable: true);
 
@@ -69,6 +65,10 @@ class ListUserWebViewModel extends ChangeNotifier {
   }
 
   Future<void> loadData(Map<String, String> filters) async {
+    if (isLoading) return;
+
+    setLoading();
+
     Map<String, String>? formFields = form.getFields();
 
     if (formFields != null) {
@@ -94,10 +94,12 @@ class ListUserWebViewModel extends ChangeNotifier {
       listOptions: listOptions,
       include: 'domain'
     );
+    setLoading();
+    
     if (result.isRight) {
       _updateUsersList(result.right.users);
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -107,12 +109,17 @@ class ListUserWebViewModel extends ChangeNotifier {
   }
 
   Future<UserApiDto?> catchEntity(String id) async{
+    if (isLoading) return null;
+
+    setLoading();
+
     var result = await getUser.invoke(id: id, include: 'domain');
 
+    setLoading();
     if (result.isRight) {
       return result.right;
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
     return null;
   }
