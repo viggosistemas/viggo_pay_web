@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_bottom_action.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_items/alterar_senha/alterar_senha.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_items/info_user/info_user.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
 
 enum SampleItem { itemOne, itemTwo, itemThree }
 
@@ -11,9 +11,11 @@ class PopUpMenuUser extends StatefulWidget {
   const PopUpMenuUser({
     super.key,
     required this.onSelectScreen,
+    required this.updateUser,
   });
 
   final void Function(String identifier) onSelectScreen;
+  final Function updateUser;
 
   @override
   State<PopUpMenuUser> createState() {
@@ -23,10 +25,10 @@ class PopUpMenuUser extends StatefulWidget {
 
 class _PopMenuActionUser extends State<PopUpMenuUser> {
   SampleItem? selectedMenu;
+  final viewModel = locator.get<AppBuilderViewModel>();
 
   @override
   Widget build(context) {
-    final viewModel = Provider.of<AppBuilderViewModel>(context);
 
     return PopupMenuButton<SampleItem>(
       onSelected: (value) {
@@ -40,10 +42,13 @@ class _PopMenuActionUser extends State<PopUpMenuUser> {
       itemBuilder: (context) => <PopupMenuEntry<SampleItem>>[
         PopupMenuItem<SampleItem>(
           value: SampleItem.itemOne,
-          onTap: () {
-            InfoUserDialog(
+          onTap: () async{
+            var result = await InfoUserDialog(
               context: context,
             ).showFormDialog();
+            if(result != null && result == true){
+              widget.updateUser();
+            }
           },
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

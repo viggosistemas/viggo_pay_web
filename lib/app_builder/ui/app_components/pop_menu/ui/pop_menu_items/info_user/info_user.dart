@@ -1,9 +1,9 @@
-import 'package:file_picker/_internal/file_picker_web.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_view_model.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
+import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
 
 class InfoUserDialog {
   InfoUserDialog({required this.context});
@@ -11,8 +11,15 @@ class InfoUserDialog {
   final BuildContext context;
   final viewModel = locator.get<PopMenuViewModel>();
 
-  Widget? getImagem() {
-    if (viewModel.user!.photoId != null &&
+  Widget? getImagem(String? photoId) {
+    if (photoId != null && photoId.isNotEmpty) {
+      return CircleAvatar(
+        backgroundImage: NetworkImage(
+          viewModel.parseImage.invoke(photoId),
+        ),
+      );
+    }
+    else if (viewModel.user!.photoId != null &&
         viewModel.user!.photoId!.isNotEmpty) {
       return CircleAvatar(
         backgroundImage: NetworkImage(
@@ -28,20 +35,37 @@ class InfoUserDialog {
     }
   }
 
-  Future<void> showFormDialog() {
+  Future showFormDialog() {
     final formKey = GlobalKey<FormState>();
     final nickNameController = TextEditingController();
-    viewModel.form.onNickNameChange(viewModel.user!.nickname!);
+    viewModel.form.onNickNameChange(viewModel.user!.nickname ?? '');
 
-    actionUpload(PlatformFile file) {
-      viewModel.uploadPhoto(file, showInfoMessage, context);
+    showMsgError(String value) {
+      showInfoMessage(
+        context,
+        2,
+        Colors.red,
+        value,
+        'X',
+        () {},
+        Colors.white,
+      );
     }
 
     onUploadPhoto() async {
-      var picked = await FilePickerWeb.platform.pickFiles(type: FileType.image);
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        allowedExtensions: ['png', 'jpg', 'wbp', 'jpeg'],
+        type: FileType.custom,
+      );
 
-      if (picked != null) {
-        actionUpload(picked.files.first);
+      if (result != null) {
+        for (var element in result.files) {
+          viewModel.uploadPhoto(
+            element,
+            showMsgError,
+          );
+        }
       }
     }
 
@@ -63,17 +87,19 @@ class InfoUserDialog {
       Navigator.pop(context, true);
     });
 
-    viewModel.isError.listen(
+    viewModel.errorMessage.listen(
       (value) {
-        showInfoMessage(
-          context,
-          2,
-          Colors.red,
-          value,
-          'X',
-          () {},
-          Colors.white,
-        );
+        if (value.isNotEmpty && context.mounted) {
+          showInfoMessage(
+            context,
+            2,
+            Colors.red,
+            value,
+            'X',
+            () {},
+            Colors.white,
+          );
+        }
       },
     );
 
@@ -115,12 +141,17 @@ class InfoUserDialog {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Center(
-                          child: SizedBox(
-                            height: 100,
-                            width: 100,
-                            child: getImagem(),
-                          ),
+                        StreamBuilder<UserApiDto>(
+                          stream: viewModel.userController,
+                          builder: (context, snapshot) {
+                            return Center(
+                              child: SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: getImagem(snapshot.data?.photoId),
+                              ),
+                            );
+                          }
                         ),
                         const SizedBox(
                           height: 10,
@@ -131,8 +162,9 @@ class InfoUserDialog {
                           children: [
                             IconButton(
                               onPressed: () {
-                                if (viewModel.user!.photoId != null)
-                                  return null;
+                                if (viewModel.user!.photoId != null) {
+                                  return viewModel.removePhoto();
+                                }
                               },
                               icon: const Icon(Icons.delete_outline),
                               style: IconButton.styleFrom(
