@@ -10,14 +10,18 @@ import 'package:viggo_pay_admin/domain_account/data/remote/domain_account_remote
 import 'package:viggo_pay_admin/domain_account/domain/domain_account_config_repository.dart';
 import 'package:viggo_pay_admin/domain_account/domain/domain_account_repository.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/add_config_domain_account_use_case.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/add_domain_account_documents_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/change_active_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_config_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_accounts_by_params_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/update_config_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/update_domain_account_use_case.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/update_password_pix_matera_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_view_model.dart';
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_view_model.dart';
+import 'package:viggo_pay_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
+import 'package:viggo_pay_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/preferences_settings.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
@@ -84,6 +88,17 @@ class DomainAccountLocator {
         repository: locator.get<DomainAccountRepository>(),
       ),
     );
+    locator.registerFactory(
+      () => UpdatePasswordPixUseCase(
+        repository: locator.get<DomainAccountRepository>(),
+      ),
+    );
+    locator.registerFactory(
+      () => AddDomainAccountDocumentsUseCase(
+        repository: locator.get(),
+      ),
+    );
+
     //domain_account_taxa
 
     locator.registerFactory(
@@ -117,6 +132,9 @@ class DomainAccountLocator {
     );
     locator.registerFactory(
       () => EditDomainAccountViewModel(
+        getMunicipio: locator.get<GetMunicipioByParamsUseCase>(),
+        searchCep: locator.get<SearchCepUseCase>(),
+        addDomainAccountDocuments: locator.get<AddDomainAccountDocumentsUseCase>(),
         updateDomainAccount: locator.get<UpdateDomainAccountUseCase>(),
         updateConfigAccount: locator.get<UpdateConfigDomainAccountUseCase>(),
         createConfigAccount: locator.get<AddConfigDomainAccountUseCase>(),

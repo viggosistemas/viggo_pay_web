@@ -195,6 +195,7 @@ class _EditPixToSendsFormState extends State<EditPixToSendsForm> {
             aliasTypeFieldControll.value =
                 aliasTypeFieldControll.value.copyWith(text: snapshot.data);
             return SelectFormField(
+              readOnly: widget.entity != null,
               type: SelectFormFieldType.dropdown,
               controller: aliasTypeFieldControll,
               items: _items,
@@ -226,6 +227,7 @@ class _EditPixToSendsFormState extends State<EditPixToSendsForm> {
                 // onChanged: (value) {
                 //   _txtAmountValue = value;
                 // },
+                readOnly: widget.entity != null,
                 controller: aliasFieldControll,
                 decoration: InputDecoration(
                   labelText: 'Chave *',

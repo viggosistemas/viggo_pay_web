@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
-import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_form/edit_domain_accounts_form.dart';
+import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/domain_accounts_stepper/domain_accounts_stepper.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
@@ -12,6 +12,40 @@ class EditDomainAccounts {
   final viewModel = locator.get<EditDomainAccountViewModel>();
 
   Future<void> addDialog() {
+    onSubmit() {
+      viewModel.submit(null, showInfoMessage, context);
+      // Navigator.of(context).pop();
+    }
+
+    viewModel.isSuccess.listen((value) {
+      showInfoMessage(
+        context,
+        2,
+        Colors.green,
+        'Conta editada com sucesso!',
+        'X',
+        () {},
+        Colors.white,
+      );
+      Navigator.pop(context, true);
+    });
+
+    viewModel.errorMessage.listen(
+      (value) {
+        if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
+          showInfoMessage(
+            context,
+            2,
+            Colors.red,
+            value,
+            'X',
+            () {},
+            Colors.white,
+          );
+        }
+      },
+    );
     return showDialog(
         context: context,
         builder: (BuildContext ctx) {
@@ -21,7 +55,7 @@ class EditDomainAccounts {
               title: Row(
                 children: [
                   Text(
-                    'Adicionando nova conta',
+                    'Adicionando conta',
                     style: Theme.of(ctx).textTheme.titleMedium!.copyWith(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -30,7 +64,7 @@ class EditDomainAccounts {
                   const SizedBox(
                     width: 4,
                   ),
-                  const Icon(Icons.settings),
+                  const Icon(Icons.domain_outlined),
                 ],
               ),
               content: SizedBox(
@@ -41,8 +75,10 @@ class EditDomainAccounts {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      EditDomainAccountsForm(
+                      DomainAccountStepper(
+                        readOnly: false,
                         viewModel: viewModel,
+                        onSubmit: onSubmit,
                       )
                     ],
                   ),
@@ -98,28 +134,31 @@ class EditDomainAccounts {
 
     viewModel.isSuccess.listen((value) {
       showInfoMessage(
-          context,
-          2,
-          Colors.green,
-          'Conta editada com sucesso!',
-          'X',
-          () {},
-          Colors.white,
-        );
+        context,
+        2,
+        Colors.green,
+        'Conta editada com sucesso!',
+        'X',
+        () {},
+        Colors.white,
+      );
       Navigator.pop(context, true);
     });
 
-    viewModel.isError.listen(
+    viewModel.errorMessage.listen(
       (value) {
-        showInfoMessage(
-          context,
-          2,
-          Colors.red,
-          value,
-          'X',
-          () {},
-          Colors.white,
-        );
+        if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
+          showInfoMessage(
+            context,
+            2,
+            Colors.red,
+            value,
+            'X',
+            () {},
+            Colors.white,
+          );
+        }
       },
     );
 
@@ -146,7 +185,7 @@ class EditDomainAccounts {
                   const SizedBox(
                     width: 4,
                   ),
-                  const Icon(Icons.settings),
+                  const Icon(Icons.domain_outlined),
                 ],
               ),
               content: SizedBox(
@@ -157,9 +196,11 @@ class EditDomainAccounts {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      EditDomainAccountsForm(
+                      DomainAccountStepper(
+                        readOnly: false,
                         entity: entity,
                         viewModel: viewModel,
+                        onSubmit: onSubmit,
                       )
                     ],
                   ),
@@ -198,6 +239,74 @@ class EditDomainAccounts {
                       ),
                     ),
                   ],
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  Future<void> infoDataDialog(DomainAccountApiDto entity) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return PopScope(
+            canPop: false,
+            onPopInvoked: (bool didPop) {
+              if (didPop) return;
+              Navigator.pop(context, true);
+            },
+            child: SimpleDialog(
+              insetPadding: const EdgeInsets.all(10),
+              title: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Detalhes da conta',
+                        style: Theme.of(ctx).textTheme.titleMedium!.copyWith(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      const Icon(Icons.domain_outlined),
+                    ],
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(
+                      Icons.close_outlined,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: SizedBox(
+                    width: 500,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          DomainAccountStepper(
+                              readOnly: true,
+                              entity: entity,
+                              viewModel: viewModel,
+                              onSubmit: () {})
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

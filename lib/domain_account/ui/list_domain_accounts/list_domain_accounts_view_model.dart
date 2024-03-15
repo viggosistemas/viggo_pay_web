@@ -1,18 +1,18 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/change_active_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_config_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_accounts_by_params_use_case.dart';
+import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
 import 'package:viggo_pay_core_frontend/domain/ui/list_domain_form_fields.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
 
-class ListDomainAccountViewModel extends ChangeNotifier {
+class ListDomainAccountViewModel extends BaseViewModel {
   final GetDomainAccountByIdUseCase getDomainAccount;
   final GetDomainAccountsByParamsUseCase getDomainAccounts;
   final GetDomainAccountConfigByIdUseCase getConfigDomainAccount;
@@ -45,9 +45,6 @@ class ListDomainAccountViewModel extends ChangeNotifier {
   Stream<DomainAccountConfigApiDto?> get configDomainAccount =>
       configDomainController.stream;
 
-  final StreamController<String> errorController = StreamController.broadcast();
-  Stream<String> get error => errorController.stream;
-
   List<DomainAccountApiDto> _items = List.empty(growable: true);
 
   List<DomainAccountApiDto> _mapSelected(
@@ -69,6 +66,9 @@ class ListDomainAccountViewModel extends ChangeNotifier {
   }
 
   Future<void> loadData(Map<String, String> filters) async {
+    if (isLoading) return;
+
+    setLoading();
     Map<String, String>? formFields = form.getFields();
 
     if (formFields != null) {
@@ -79,20 +79,26 @@ class ListDomainAccountViewModel extends ChangeNotifier {
     }
 
     var result = await getDomainAccounts.invoke(filters: filters);
+    setLoading();
     if (result.isRight) {
       _updateDomainsList(result.right.domainAccounts);
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
   Future<void> getConfigInfo(String id) async {
+    if (isLoading) return;
+
+    setLoading();
     Map<String, String> filters = {'domain_account_id': id};
     var result = await getConfigDomainAccount.invoke(filters: filters);
+
+    setLoading();
     if (result.isRight && result.right.domainAccountTaxas.isNotEmpty) {
       configDomainController.sink.add(result.right.domainAccountTaxas[0]);
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -116,13 +122,17 @@ class ListDomainAccountViewModel extends ChangeNotifier {
     _updateDomainsList(_items);
   }
 
-  Future<DomainAccountApiDto?> catchEntity(String id) async{
+  Future<DomainAccountApiDto?> catchEntity(String id) async {
+    if (isLoading) return null;
+
+    setLoading();
     var result = await getDomainAccount.invoke(id: id);
 
+    setLoading();
     if (result.isRight) {
       return result.right;
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
     return null;
   }

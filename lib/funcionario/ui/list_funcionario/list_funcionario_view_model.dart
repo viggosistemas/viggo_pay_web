@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_pay_admin/funcionario/data/models/funcionario_api_dto.dart';
 import 'package:viggo_pay_admin/funcionario/domain/usecases/change_active_funcionario_use_case.dart';
 import 'package:viggo_pay_admin/funcionario/domain/usecases/get_funcionario_by_id_use_case.dart';
 import 'package:viggo_pay_admin/funcionario/domain/usecases/get_funcionario_by_params_use_case.dart';
+import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
 import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_core_frontend/domain/ui/list_domain_form_fields.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
@@ -15,7 +15,7 @@ import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selec
 import 'package:viggo_pay_core_frontend/util/constants.dart';
 import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
-class ListFuncionarioViewModel extends ChangeNotifier {
+class ListFuncionarioViewModel extends BaseViewModel {
   final SharedPreferences sharedPrefs;
 
   final GetFuncionarioByIdUseCase getFuncionario;
@@ -43,9 +43,6 @@ class ListFuncionarioViewModel extends ChangeNotifier {
   Stream<List<FuncionarioApiDto>> get funcionarios =>
       funcionarioController.stream;
 
-  final StreamController<String> errorController = StreamController.broadcast();
-  Stream<String> get error => errorController.stream;
-
   List<FuncionarioApiDto> _items = List.empty(growable: true);
 
   List<FuncionarioApiDto> _mapSelected(
@@ -63,6 +60,9 @@ class ListFuncionarioViewModel extends ChangeNotifier {
   }
 
   Future<void> loadData(Map<String, String> filters) async {
+    if (isLoading) return;
+    setLoading();
+
     String? domainJson = sharedPrefs.getString(CoreUserPreferences.DOMAIN);
     DomainApiDto domain = DomainApiDto.fromJson(jsonDecode(domainJson!));
     Map<String, String>? formFields = form.getFields();
@@ -83,13 +83,15 @@ class ListFuncionarioViewModel extends ChangeNotifier {
     );
 
     var result = await getFuncionarios.invoke(
-        filters: filters,
-        listOptions: listOptions,
-        include: 'parceiro,user');
+      filters: filters,
+      listOptions: listOptions,
+      include: 'parceiro,user',
+    );
+    setLoading();
     if (result.isRight) {
       _updateFuncionarioList(result.right.funcionarios);
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -106,8 +108,8 @@ class ListFuncionarioViewModel extends ChangeNotifier {
 
     if (result.isRight) {
       return result.right;
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
     return null;
   }

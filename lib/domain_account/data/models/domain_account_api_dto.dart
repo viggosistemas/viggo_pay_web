@@ -1,3 +1,6 @@
+// ignore_for_file: constant_identifier_names
+
+import 'package:viggo_pay_admin/domain_account/data/models/domain_account_document_api_dto.dart';
 import 'package:viggo_pay_core_frontend/base/entity_api_dto.dart';
 import 'package:viggo_pay_core_frontend/util/date_converter.dart';
 
@@ -19,10 +22,14 @@ class DomainAccountApiDto extends EntityDto {
   late String billingAddressEstado;
   late String billingAddressCep;
   late String billingAddressPais;
+  late List<DomainAccountDocumentApiDto> documents;
   late String? macMaquina;
   late DateTime? aceitacaoTermoDh;
   late double? lat;
   late double? lon;
+  late String? password;
+  late bool? temChavePix;
+  late bool? usoLiberado;
   bool selected = false;
 
   DomainAccountApiDto.fromJson(Map<String, dynamic> json) {
@@ -47,12 +54,19 @@ class DomainAccountApiDto extends EntityDto {
     billingAddressCep = json['billing_address_cep'];
     billingAddressPais = json['billing_address_pais'];
 
+    documents = List<DomainAccountDocumentApiDto>.from(
+      json['documents'].map((val) => DomainAccountDocumentApiDto.fromJson(val)),
+    ).toList();
+
     macMaquina = json['mac_maquina'];
     aceitacaoTermoDh = json['aceitacao_termo_dh'] != null
         ? DateConverter().deserializeDateTime(json['aceitacao_termo_dh'])
         : null;
     lat = json['lat'];
     lon = json['lon'];
+    password = json['password'];
+    temChavePix = json['tem_chave_pix'];
+    usoLiberado = json['uso_liberado'];
   }
 
   @override
@@ -93,7 +107,28 @@ class DomainAccountApiDto extends EntityDto {
     }
     if (lat != null) result['lat'] = lat;
     if (lon != null) result['lon'] = lon;
+    if (password != null) result['password'] = password;
+    result['tem_chave_pix'] = temChavePix;
+    result['uso_liberado'] = usoLiberado;
 
     return result;
   }
+}
+
+enum DomainAccountStatus {
+  UNKNOWN,
+  CRIADA,
+  REGULAR,
+  ERRO,
+  REJEITADA,
+  CRIANDO,
+  LIBERADA,
+}
+
+extension DomainAccountStatusMapper on String {
+  DomainAccountStatus toDomainAccountStatus() =>
+      DomainAccountStatus.values.firstWhere(
+        (element) => element.name == this,
+        orElse: () => DomainAccountStatus.UNKNOWN,
+      );
 }

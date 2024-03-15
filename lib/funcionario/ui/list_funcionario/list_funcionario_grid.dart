@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/funcionario/data/models/funcionario_api_dto.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario.dart';
 import 'package:viggo_pay_admin/funcionario/ui/list_funcionario/list_funcionario_view_model.dart';
@@ -16,7 +16,7 @@ class ListFuncionarioGrid extends StatefulWidget {
 }
 
 class _ListFuncionarioGridState extends State<ListFuncionarioGrid> {
-  late ListFuncionarioViewModel viewModel;
+  ListFuncionarioViewModel viewModel = locator.get<ListFuncionarioViewModel>();
 
   static const funcionariosValidActions = [
     {
@@ -91,21 +91,22 @@ class _ListFuncionarioGridState extends State<ListFuncionarioGrid> {
 
   @override
   Widget build(BuildContext context) {
-    viewModel = Provider.of<ListFuncionarioViewModel>(context);
     final dialogs = EditFuncionario(context: context);
     onReload();
 
-    viewModel.error.listen(
+    viewModel.errorMessage.listen(
       (value) {
-        showInfoMessage(
-          context,
-          2,
-          Colors.red,
-          value,
-          'X',
-          () {},
-          Colors.white,
-        );
+        if (value.isNotEmpty && context.mounted) {
+          showInfoMessage(
+            context,
+            2,
+            Colors.red,
+            value,
+            'X',
+            () {},
+            Colors.white,
+          );
+        }
       },
     );
     return StreamBuilder<Object>(

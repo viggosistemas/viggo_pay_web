@@ -4,6 +4,7 @@ import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dt
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_dto_pagination.dart';
 import 'package:viggo_pay_admin/domain_account/domain/domain_account_repository.dart';
 import 'package:viggo_pay_core_frontend/network/network_exceptions.dart';
+import 'package:viggo_pay_core_frontend/network/no_content_response.dart';
 import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
 class DomainAccountRepositoryImpl implements DomainAccountRepository {
@@ -37,4 +38,18 @@ class DomainAccountRepositoryImpl implements DomainAccountRepository {
     required Map<String, dynamic> body,
   }) =>
       remoteDataSource.updateEntity(id: id, body: body);
+
+  @override
+  Future<Either<NetworkException, NoContentApiDto>> updatePasswordPix({
+    required String id,
+    required Map<String, dynamic> body,
+  }) =>
+      remoteDataSource.updatePasswordPix(id: id, body: body);
+
+  @override
+  Future<Either<NetworkException, DomainAccountApiDto>> addDocuments(
+    String id,
+    Map<String, dynamic> body,
+  ) =>
+      remoteDataSource.addDocuments(id: id, body: body);
 }

@@ -8,10 +8,10 @@ import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/create_pix_to_send_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/update_pix_to_send_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/ui/edit_pix_to_send/edit_pix_to_sends_form/edit_form_fields.dart';
+import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
 import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
 
-class EditPixToSendViewModel extends ChangeNotifier {
-  bool isLoading = false;
+class EditPixToSendViewModel extends BaseViewModel {
   String materaId = '';
   // ignore: avoid_init_to_null
   late Map<String, dynamic> entity = {};
@@ -24,19 +24,17 @@ class EditPixToSendViewModel extends ChangeNotifier {
 
   final EditPixToSendFormFields form = EditPixToSendFormFields();
 
-  final StreamController<String> _streamControllerError =
-      StreamController<String>.broadcast();
-  Stream<String> get isError => _streamControllerError.stream;
-
   final StreamController<bool> _streamControllerSuccess =
       StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
   final StreamController<PixToSendApiDto> _streamSuccessPixToSend =
       StreamController<PixToSendApiDto>.broadcast();
-  Stream<PixToSendApiDto> get pixToSendSuccess => _streamSuccessPixToSend.stream;
+  Stream<PixToSendApiDto> get pixToSendSuccess =>
+      _streamSuccessPixToSend.stream;
 
-  Function(DestinatarioApiDto?) get onDestinatarioChange => _streamDestinatarioController.sink.add;
+  Function(DestinatarioApiDto?) get onDestinatarioChange =>
+      _streamDestinatarioController.sink.add;
   final StreamController<DestinatarioApiDto?> _streamDestinatarioController =
       StreamController<DestinatarioApiDto?>.broadcast();
   Stream<DestinatarioApiDto?> get destinatarioInfo =>
@@ -63,15 +61,10 @@ class EditPixToSendViewModel extends ChangeNotifier {
 
     if (result.isRight) {
       if (result.right.materaId != null) materaId = result.right.materaId!;
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
     return null;
-  }
-
-  void notifyLoading() {
-    isLoading = !isLoading;
-    // notifyListeners();
   }
 
   void submit(
@@ -79,7 +72,9 @@ class EditPixToSendViewModel extends ChangeNotifier {
     Function showMsg,
     BuildContext context,
   ) async {
-    notifyLoading();
+    if (isLoading) return;
+    setLoading();
+
     dynamic result;
 
     if (id != null) {
@@ -96,16 +91,13 @@ class EditPixToSendViewModel extends ChangeNotifier {
       result = await createPixToSend.invoke(body: entity);
     }
 
+    setLoading();
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
+      postError(result.left.message);
     } else {
       if (!_streamControllerSuccess.isClosed) {
         _streamControllerSuccess.sink.add(true);
         _streamSuccessPixToSend.sink.add(result.right);
-        notifyLoading();
       }
     }
   }
@@ -114,19 +106,22 @@ class EditPixToSendViewModel extends ChangeNotifier {
     String aliasCountry,
     String aliasValue,
   ) async {
-    notifyLoading();
+    
+    if(isLoading) return;
+    setLoading();
+
     Map<String, String> body = {
       'account_id': materaId,
       'country': aliasCountry,
       'alias_destinatario': aliasValue,
     };
     var result = await consultarDestinatario.invoke(body: body);
+
+    setLoading();
     if (result.isRight) {
       _streamDestinatarioController.sink.add(result.right);
-      notifyLoading();
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
-      notifyLoading();
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 

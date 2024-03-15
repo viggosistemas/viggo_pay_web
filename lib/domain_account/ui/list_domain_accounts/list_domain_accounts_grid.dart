@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/config_domain_accounts/config_domain_accounts.dart';
@@ -18,7 +18,27 @@ class ListDomainAccountsGrid extends StatefulWidget {
 }
 
 class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
-  late ListDomainAccountViewModel viewModel;
+  ListDomainAccountViewModel viewModel =
+      locator.get<ListDomainAccountViewModel>();
+
+  static const domainAccountsValidActions = [
+    {
+      'backendUrl': '/domain_accounts/<id>',
+      'method': 'GET',
+    },
+    {
+      'backendUrl': '/domain_accounts/<id>',
+      'method': 'DELETE',
+    },
+  ];
+
+  static const domainAccountRowsValues = [
+    'matera_id',
+    'client_name',
+    'client_tax_identifier_tax_id',
+    'tem_chave_pix',
+    'uso_liberado'
+  ];
 
   List<Map<String, dynamic>> searchFields = [
     {
@@ -70,21 +90,23 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
 
   @override
   Widget build(BuildContext context) {
-    viewModel = Provider.of<ListDomainAccountViewModel>(context);
     final dialogs = EditDomainAccounts(context: context);
     onReload();
 
-    viewModel.error.listen(
+    viewModel.errorMessage.listen(
       (value) {
-        showInfoMessage(
-          context,
-          2,
-          Colors.red,
-          value,
-          'X',
-          () {},
-          Colors.white,
-        );
+        if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
+          showInfoMessage(
+            context,
+            2,
+            Colors.red,
+            value,
+            'X',
+            () {},
+            Colors.white,
+          );
+        }
       },
     );
     return StreamBuilder<Object>(
@@ -132,7 +154,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                         DataColumn(
                             label: Center(
                                 child: Text(
-                          'Id',
+                          'Matera',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -148,25 +170,35 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                         DataColumn(
                             label: Center(
                                 child: Text(
-                          'Matera',
+                          'CNPJ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ))),
+                        DataColumn(
+                            label: Center(
+                                child: Text(
+                          'Possui chave PIX',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ))),
+                        DataColumn(
+                            label: Center(
+                                child: Text(
+                          'Uso liberado',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ))),
                       ],
-                      fieldsData: const [
-                        'id',
-                        'client_name',
-                        'matera_id',
-                      ],
+                      fieldsData: domainAccountRowsValues,
+                      validActionsList: domainAccountsValidActions,
                       dialogs: dialogs,
                       items: items.map((e) {
                         return e.toJson();
                       }).toList(),
                       actions: [
-                        const SizedBox(
-                          width: 10,
-                        ),
                         StreamBuilder<DomainAccountConfigApiDto?>(
                             stream: viewModel.configDomainAccount,
                             builder: (context, snapshot) {
@@ -184,16 +216,26 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                               }
 
                               return IconButton.outlined(
-                                onPressed: () {
+                                onPressed: () async {
                                   if (selecteds.length == 1) {
                                     if (snapshot.data == null) {
-                                      ConfigDomainAccounts(context: context)
+                                      var result = await ConfigDomainAccounts(
+                                              context: context)
                                           .configDialog(
                                               viewModel.getEmptyConfigInfo(
                                                   selecteds[0].id));
+                                      if (result != null && result == true) {
+                                        viewModel.clearSelectionConfig();
+                                        viewModel.clearSelectedItems.invoke();
+                                      }
                                     } else {
-                                      ConfigDomainAccounts(context: context)
+                                      var result = await ConfigDomainAccounts(
+                                              context: context)
                                           .configDialog(snapshot.data!);
+                                      if (result != null && result == true) {
+                                        viewModel.clearSelectionConfig();
+                                        viewModel.clearSelectedItems.invoke();
+                                      }
                                     }
                                   }
                                 },
@@ -202,7 +244,10 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                                   Icons.settings,
                                 ),
                               );
-                            })
+                            }),
+                        const SizedBox(
+                          width: 10,
+                        ),
                       ],
                     ),
                   ),

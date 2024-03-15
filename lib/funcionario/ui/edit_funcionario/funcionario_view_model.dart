@@ -10,6 +10,7 @@ import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario_stepper/edit_funcionario_form/edit_funcionario_form_fields.dart';
 import 'package:viggo_pay_admin/parceiro/domain/usecases/create_parceiro_use_case.dart';
 import 'package:viggo_pay_admin/parceiro/domain/usecases/update_parceiro_use_case.dart';
+import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
 import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_core_frontend/localidades/data/models/address_via_cep_dto.dart';
 import 'package:viggo_pay_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
@@ -18,9 +19,7 @@ import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_pay_core_frontend/user/domain/usecases/get_users_disponiveis_use_case.dart';
 import 'package:viggo_pay_core_frontend/util/constants.dart';
 
-class EditFuncionarioViewModel extends ChangeNotifier {
-  bool isLoading = false;
-
+class EditFuncionarioViewModel extends BaseViewModel {
   final SharedPreferences sharedPrefs;
   final UpdateFuncionarioUseCase updateFuncionario;
   final CreateFuncionarioUseCase createFuncionario;
@@ -33,10 +32,6 @@ class EditFuncionarioViewModel extends ChangeNotifier {
   final EditFuncionarioFormFields formDados = EditFuncionarioFormFields();
   final EditEnderecoFormFields formEndereco = EditEnderecoFormFields();
   final EditContatoFormFields formContato = EditContatoFormFields();
-
-  final StreamController<String> _streamControllerError =
-      StreamController<String>.broadcast();
-  Stream<String> get isError => _streamControllerError.stream;
 
   final StreamController<bool> _streamControllerSuccess =
       StreamController<bool>.broadcast();
@@ -57,12 +52,10 @@ class EditFuncionarioViewModel extends ChangeNotifier {
     required this.getMunicipio,
   });
 
-  void notifyLoading() {
-    isLoading = !isLoading;
-    // notifyListeners();
-  }
-
   Future<void> loadUsers(Map<String, String> filters) async {
+    if (isLoading) return;
+    setLoading();
+
     String? domainJson = sharedPrefs.getString(CoreUserPreferences.DOMAIN);
     DomainApiDto domain = DomainApiDto.fromJson(jsonDecode(domainJson!));
 
@@ -71,10 +64,12 @@ class EditFuncionarioViewModel extends ChangeNotifier {
     );
 
     var result = await getUsers.invoke(filters: filters);
+    setLoading();
+
     if (result.isRight) {
       _streamControllerUsers.sink.add(result.right);
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -83,7 +78,9 @@ class EditFuncionarioViewModel extends ChangeNotifier {
     Function showMsg,
     BuildContext context,
   ) async {
-    notifyLoading();
+    if (isLoading) return;
+    setLoading();
+
     dynamic result;
     var dadosFormFields = formDados.getFields()!;
     var enderecosFormFields = formEndereco.getFields()!;
@@ -125,14 +122,11 @@ class EditFuncionarioViewModel extends ChangeNotifier {
       result = await createParceiro.invoke(body: data);
     }
 
+    setLoading();
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
+      postError(result.left.message);
     } else {
       submitFuncionario(id, result.right.id, showMsg);
-      notifyLoading();
     }
   }
 
@@ -141,7 +135,9 @@ class EditFuncionarioViewModel extends ChangeNotifier {
     String parceiroId,
     Function showMsg,
   ) async {
-    notifyLoading();
+    if (isLoading) return;
+    setLoading();
+
     var dadosFormFields = formDados.getFields()!;
     dynamic result;
     String? domainJson = sharedPrefs.getString(CoreUserPreferences.DOMAIN);
@@ -167,15 +163,12 @@ class EditFuncionarioViewModel extends ChangeNotifier {
       result = await createFuncionario.invoke(body: data);
     }
 
+    setLoading();
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
+      postError(result.left.message);
     } else {
       if (!_streamControllerSuccess.isClosed) {
         _streamControllerSuccess.sink.add(true);
-        notifyLoading();
       }
     }
   }
@@ -185,8 +178,8 @@ class EditFuncionarioViewModel extends ChangeNotifier {
 
     if (result.isRight) {
       getMunicipioViaCep(result.right);
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -201,8 +194,8 @@ class EditFuncionarioViewModel extends ChangeNotifier {
       formEndereco.onMunicipioChange(result.right.municipios[0].id);
       formEndereco.onMunicipioNameChange(
           '${result.right.municipios[0].nome}/${result.right.municipios[0].siglaUf}');
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 }

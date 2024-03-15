@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/change_active_pix_to_send_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_id_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_params_use_case.dart';
+import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
 import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_core_frontend/domain/ui/list_domain_form_fields.dart';
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
@@ -14,7 +14,7 @@ import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected
 import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
 import 'package:viggo_pay_core_frontend/util/constants.dart';
 
-class ListPixToSendViewModel extends ChangeNotifier {
+class ListPixToSendViewModel extends BaseViewModel {
   final SharedPreferences sharedPrefs;
 
   final GetPixToSendByIdUseCase getPixToSend;
@@ -41,9 +41,6 @@ class ListPixToSendViewModel extends ChangeNotifier {
       StreamController.broadcast();
   Stream<List<PixToSendApiDto>> get pixToSends => pixController.stream;
 
-  final StreamController<String> errorController = StreamController.broadcast();
-  Stream<String> get error => errorController.stream;
-
   List<PixToSendApiDto> _items = List.empty(growable: true);
 
   List<PixToSendApiDto> _mapSelected(
@@ -61,6 +58,8 @@ class ListPixToSendViewModel extends ChangeNotifier {
   }
 
   Future<void> loadData(Map<String, String> filters) async {
+    if (isLoading) return;
+    setLoading();
     Map<String, String>? formFields = form.getFields();
 
     if (formFields != null) {
@@ -78,10 +77,12 @@ class ListPixToSendViewModel extends ChangeNotifier {
     );
 
     var result = await getPixToSends.invoke(filters: filters);
+
+    setLoading();
     if (result.isRight) {
       _updatePixList(result.right.pixToSends);
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -90,13 +91,16 @@ class ListPixToSendViewModel extends ChangeNotifier {
     _updatePixList(_items);
   }
 
-  Future<PixToSendApiDto?> catchEntity(String id) async{
+  Future<PixToSendApiDto?> catchEntity(String id) async {
+    if (isLoading) return null;
+    setLoading();
     var result = await getPixToSend.invoke(id: id);
 
+    setLoading();
     if (result.isRight) {
       return result.right;
-    } else if (result.isLeft && !errorController.isClosed) {
-      errorController.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
     return null;
   }
