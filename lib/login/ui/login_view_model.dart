@@ -4,28 +4,28 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
+import 'package:viggo_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
+import 'package:viggo_core_frontend/domain/domain/usecases/search_domain_by_name_use_case.dart';
+import 'package:viggo_core_frontend/domain/domain/usecases/set_domain_use_case.dart';
+import 'package:viggo_core_frontend/image/domain/usecases/parse_image_url_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/clear_remember_credential_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/get_remember_credential_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/set_remember_credential_use_case.dart';
+import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
+import 'package:viggo_core_frontend/route/domain/usecases/get_routes_use_case.dart';
+import 'package:viggo_core_frontend/route/domain/usecases/set_routes_use_case.dart';
+import 'package:viggo_core_frontend/token/data/models/login_command.dart';
+import 'package:viggo_core_frontend/token/domain/usecases/login_use_case.dart';
+import 'package:viggo_core_frontend/token/domain/usecases/set_token_use_case.dart';
+import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/get_routes_from_user_use_case.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/get_user_by_id_use_case.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/get_user_use_case.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/set_user_use_case.dart';
 import 'package:viggo_pay_admin/login/ui/login_form_fields.dart';
 import 'package:viggo_pay_admin/sync/domain/usecases/get_app_state_use_case.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
-import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
-import 'package:viggo_pay_core_frontend/domain/domain/usecases/search_domain_by_name_use_case.dart';
-import 'package:viggo_pay_core_frontend/domain/domain/usecases/set_domain_use_case.dart';
-import 'package:viggo_pay_core_frontend/image/domain/usecases/parse_image_url_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_remember_credential_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_remember_credential_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/set_remember_credential_use_case.dart';
-import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
-import 'package:viggo_pay_core_frontend/route/domain/usecases/get_routes_use_case.dart';
-import 'package:viggo_pay_core_frontend/route/domain/usecases/set_routes_use_case.dart';
-import 'package:viggo_pay_core_frontend/token/data/models/login_command.dart';
-import 'package:viggo_pay_core_frontend/token/domain/usecases/login_use_case.dart';
-import 'package:viggo_pay_core_frontend/token/domain/usecases/set_token_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/get_routes_from_user_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/get_user_by_id_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/get_user_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/set_user_use_case.dart';
 
 class LoginViewModel extends ChangeNotifier {
   SharedPreferences sharedPrefs;
@@ -106,9 +106,9 @@ class LoginViewModel extends ChangeNotifier {
   void getCredentials() {
     var credentials = getRememberCredential.invoke();
     if (credentials?['rememberCredentials'] == true) {
-      form.onDomainChange(credentials?['domain_name']);
-      form.onEmailChange(credentials?['usernameOrEmail']);
-      form.onRememberChange(credentials?['rememberCredentials']);
+      form.domain.onValueChange(credentials?['domain_name']);
+      form.username.onValueChange(credentials?['usernameOrEmail']);
+      form.remember.onValueChange(credentials!['rememberCredentials'].toString());
     }
   }
 
@@ -117,7 +117,7 @@ class LoginViewModel extends ChangeNotifier {
 
     if (domainDto != null) {
       _streamControllerDomain.sink.add(domainDto);
-      form.onDomainChange(domainDto.name);
+      form.domain.onValueChange(domainDto.name);
     }
   }
 
@@ -140,10 +140,10 @@ class LoginViewModel extends ChangeNotifier {
   void onClearRememberCredential() {
     clearRememberCredential.invoke();
     _streamControllerDomain.sink.add(null);
-    form.onDomainChange('');
-    form.onEmailChange('');
-    form.onPasswordChange('');
-    form.onRememberChange(false);
+    form.domain.onValueChange('');
+    form.username.onValueChange('');
+    form.password.onValueChange('');
+    form.remember.onValueChange('');
   }
 
   Future<void> funGetDomainByName(String domainName) async {
@@ -190,7 +190,7 @@ class LoginViewModel extends ChangeNotifier {
     BuildContext context,
   ) async {
     notifyLoading();
-    var formFields = form.getFields();
+    var formFields = form.getValues();
 
     LoginCommand loginCommand = LoginCommand();
     loginCommand.domainName = formFields?['domain'] ?? '';
@@ -213,8 +213,13 @@ class LoginViewModel extends ChangeNotifier {
       await funGetUserById(result.right.userId);
       await funGetRoutesFromUser();
       await funGetDomainByName(loginCommand.domainName);
-      sharedPrefs.setString('SHOW_MSG_LOGGED', 'true');
       notifyLoading();
     }
+  }
+}
+
+extension BoolParsing on String {
+  bool parseBool() {
+    return toLowerCase() == 'true';
   }
 }

@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:viggo_pay_admin/application/ui/edit_capability/edit_capability_page.dart';
+import 'package:viggo_pay_admin/application/ui/edit_policy/edit_policy_page.dart';
+import 'package:viggo_pay_admin/application/ui/list_applications/list_applications_page.dart';
 import 'package:viggo_pay_admin/dashboard/ui/dashboard_page.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain/ui/list_domains/list_domains_page.dart';
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_page.dart';
+import 'package:viggo_pay_admin/extrato/ui/timeline_extrato_page.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_page.dart';
-import 'package:viggo_pay_admin/historico/ui/timeline_historico_transacao.dart';
+import 'package:viggo_pay_admin/funcionario/ui/list_funcionario/list_funcionario_page.dart';
 import 'package:viggo_pay_admin/login/ui/login_page.dart';
+import 'package:viggo_pay_admin/matriz/ui/matriz_info/matriz_info.dart';
+import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia.dart';
 import 'package:viggo_pay_admin/pix_to_send/ui/list_pix_to_send/list_pix_to_send_page.dart';
+import 'package:viggo_pay_admin/role/ui/list_roles/list_roles_page.dart';
+import 'package:viggo_pay_admin/route/ui/list_routes/list_routes_page.dart';
+import 'package:viggo_pay_admin/user/ui/list_users/list_users_page.dart';
+import 'package:viggo_pay_admin/usuarios_por_dominio/ui/list_users_domain_page.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 
 //CONFIGURACAO DOS CARDS DO DASHBOARD
@@ -84,7 +96,33 @@ class _ViggoPayWebState extends State<ViggoPayWeb> {
           ),
         ),
         iconTheme: const IconThemeData().copyWith(
-          color: kColorScheme.primary,
+          color: kColorScheme.primary
+        ),
+        textTheme: TextTheme(
+          titleLarge: GoogleFonts.lato(),
+          titleMedium: GoogleFonts.lato(),
+          titleSmall: GoogleFonts.lato(),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: kColorScheme.primary,
+            foregroundColor: kColorScheme.onPrimary,
+            padding: const EdgeInsets.all(16),
+            textStyle: GoogleFonts.lato(
+              color: kColorScheme.onPrimary,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            surfaceTintColor: kColorScheme.onPrimary,
+            foregroundColor: kColorScheme.primary,
+            textStyle: GoogleFonts.roboto(
+              color: kColorScheme.onPrimary,
+              fontSize: 18,
+            ),
+          ),
         ),
       ),
       darkTheme: ThemeData.dark().copyWith(
@@ -124,11 +162,22 @@ class _ViggoPayWebState extends State<ViggoPayWeb> {
         Routes.WORKSPACE: (ctx) => DashboardPage(changeTheme: changeTheme),
         //sysadmin
         Routes.DOMAINS: (ctx) => ListDomainsPage(changeTheme: changeTheme),
+        Routes.USERS: (ctx) => ListUsersPage(changeTheme: changeTheme),
+        Routes.USERS_FOR_DOMAIN: (ctx) => ListUsersDomainPage(changeTheme: changeTheme),
+        Routes.ROLES: (ctx) => ListRolesPage(changeTheme: changeTheme),
+        Routes.ROUTES: (ctx) => ListRoutesPage(changeTheme: changeTheme),
+        Routes.APPLICATIONS: (ctx) => ListApplicationsPage(changeTheme: changeTheme),
+        Routes.EDIT_CAPABILITY: (ctx) => EditCapabilityPage(changeTheme: changeTheme),
+        Routes.EDIT_POLICY: (ctx) => EditPolicyPage(changeTheme: changeTheme),
         //admin
         Routes.DOMAIN_ACCOUNTS: (ctx) =>
             ListDomainAccountPage(changeTheme: changeTheme),
         Routes.PIX: (ctx) => ListPixToSendPage(changeTheme: changeTheme),
-        Routes.HISTORICO: (ctx) => TimelineTransacaoPage(changeTheme: changeTheme),
+        Routes.EXTRATO: (ctx) =>
+            TimelineExtratoPage(changeTheme: changeTheme),
+        Routes.MATRIZ: (ctx) => MatrizInfoPage(changeTheme: changeTheme),
+        Routes.MATRIZ_TRANSFERENCIA: (ctx) => MatrizTransferenciaPage(changeTheme: changeTheme),
+        Routes.FUNCIONARIO: (ctx) => ListFuncionarioPage(changeTheme: changeTheme),
       },
       themeMode: _themeMode,
       debugShowCheckedModeBanner: false,

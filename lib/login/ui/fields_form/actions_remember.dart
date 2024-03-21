@@ -21,13 +21,13 @@ class ActionsRememberForget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            StreamBuilder<bool>(
-              stream: viewModel.form.remember,
+            StreamBuilder<String>(
+              stream: viewModel.form.remember.field,
               builder: (context, snapshot) {
                 return Checkbox(
-                  value: snapshot.data ?? false,
+                  value: snapshot.data?.parseBool() ?? false,
                   onChanged: (value) {
-                    viewModel.form.onRememberChange(value!);
+                    viewModel.form.remember.onValueChange(value!.toString());
                   },
                 );
               }

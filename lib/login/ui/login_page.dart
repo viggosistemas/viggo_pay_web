@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/app_bar.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/login/ui/login_form.dart';
 import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
-import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.changeTheme});
@@ -37,18 +35,6 @@ class _LoginPageState extends State<LoginPage> {
 
     navigateWorkspace() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (sharedPrefs.getString('SHOW_MSG_LOGGED') == 'true') {
-          sharedPrefs.setString('SHOW_MSG_LOGGED', 'false');
-          showInfoMessage(
-            context,
-            2,
-            Colors.green,
-            'Seja Bem-vindo!',
-            'X',
-            () {},
-            Colors.white,
-          );
-        }
         Navigator.of(context).pushReplacementNamed(Routes.WORKSPACE);
       });
     }
@@ -56,33 +42,22 @@ class _LoginPageState extends State<LoginPage> {
     return ChangeNotifierProvider(
       create: (_) => locator.get<LoginViewModel>(),
       child: Scaffold(
-        appBar: AppBarPrivate(
-          toolbarHeight: 60,
-          // actions: [
-          //   IconButton(
-          //     style: IconButton.styleFrom(
-          //       foregroundColor: Colors.white,
-          //     ),
-          //     onPressed: () {
-          //       setState(() {
-          //         isActioned = true;
-          //         if (isDarkMode) {
-          //           iconMode = Icons.dark_mode_outlined;
-          //           colorIconMode = Colors.white;
-          //           widget.changeTheme(ThemeMode.light);
-          //         } else {
-          //           iconMode = Icons.light_mode_outlined;
-          //           colorIconMode = Colors.yellow;
-          //           widget.changeTheme(ThemeMode.dark);
-          //         }
-          //       });
-          //     },
-          //     icon: Icon(
-          //       iconMode,
-          //       color: colorIconMode,
-          //     ),
-          //   ),
-          // ],
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: 70,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/logo.png',
+                width: 80,
+                height: 80,
+              ),
+            ],
+          ),
+          shadowColor: Colors.black,
+          elevation: 8,
         ),
         body: Stack(
           children: [
@@ -102,6 +77,12 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   LoginForm(onSucess: navigateWorkspace),
+                  const SizedBox(height: 10),
+                  Image.asset(
+                    'assets/images/logo-viggo.png',
+                    width: 80,
+                    height: 80,
+                  ),
                 ],
               ),
             ),

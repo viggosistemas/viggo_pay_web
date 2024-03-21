@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/restore_password_use_case.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_form_fields.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/restore_password_use_case.dart';
 
 class ForgetPasswordViewModel extends ChangeNotifier {
   final RestorePasswordUseCase restorePassword;
@@ -37,7 +37,7 @@ class ForgetPasswordViewModel extends ChangeNotifier {
       'domain_name': '',
       'email': '',
     };
-    var formFields = form.getFields();
+    var formFields = form.getValues();
     params['domain_name'] = formFields?['domain'] ?? '';
     params['email'] = formFields?['email'] ?? '';
 

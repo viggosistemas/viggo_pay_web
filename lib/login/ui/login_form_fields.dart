@@ -1,90 +1,59 @@
-import 'dart:async';
+import 'package:viggo_core_frontend/form/base_form.dart';
+import 'package:viggo_core_frontend/form/field/field.dart';
+import 'package:viggo_core_frontend/form/field/stringfield.dart';
+import 'package:viggo_core_frontend/form/validator.dart';
 
-import 'package:rxdart/rxdart.dart';
-import 'package:viggo_pay_core_frontend/form/base_form.dart';
-import 'package:viggo_pay_core_frontend/form/validator.dart';
+class LoginFormFields extends BaseForm {
+  final domain = StringField(
+    isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+    ],
+  );
 
-class LoginFormFields extends BaseForm with LoginFormFieldsValidation {
-  final _domainController = BehaviorSubject<String>();
-  Stream<String> get domain =>
-      _domainController.stream.transform(domainValidation);
-  Function(String) get onDomainChange => _domainController.sink.add;
+  final username = StringField(
+    isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+    ],
+  );
 
-  final _usernameController = BehaviorSubject<String>();
-  Stream<String> get username =>
-      _usernameController.stream.transform(usernameValidation);
-  Function(String) get onEmailChange => _usernameController.sink.add;
+  final password = StringField(
+    isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+    ],
+  );
 
-  final _passwordController = BehaviorSubject<String>();
-  Stream<String> get password =>
-      _passwordController.stream.transform(passwordValidation);
-  Function(String) get onPasswordChange => _passwordController.sink.add;
-
-  final _rememberController = BehaviorSubject<bool>();
-  Stream<bool> get remember => _rememberController.stream;
-  Function(bool) get onRememberChange => _rememberController.sink.add;
+  final remember = StringField();
 
   @override
-  List<Stream<String>> getStreams() => [domain, username, password];
+  List<Field> getFields() => [domain, username, password];
 
   @override
-  Map<String, String>? getFields() {
-    var domain = _domainController.valueOrNull;
-    var username = _usernameController.valueOrNull;
-    var password = _passwordController.valueOrNull;
-
-    if (domain == null || username == null || password == null) return null;
+  Map<String, String>? getValues() {
+    if (!domain.isValid || !username.isValid || !password.isValid) return null;
 
     return {
-      'domain': domain,
-      'username': username,
-      'password': password,
+      'domain': domain.value!,
+      'username': username.value!,
+      'password': password.value!,
     };
   }
 
   Map<String, dynamic>? getRememberFields() {
-    var domain = _domainController.valueOrNull;
-    var username = _usernameController.valueOrNull;
-    var remember = _rememberController.valueOrNull;
-
-    if (domain == null || username == null || remember == null) return null;
+    if (!domain.isValid || !username.isValid || !remember.isValid) return null;
 
     return {
-      "domain_name": domain,
-      "usernameOrEmail": username,
-      "rememberCredentials": remember,
+      "domain_name": domain.value!,
+      "usernameOrEmail": username.value!,
+      "rememberCredentials": remember.value?.parseBool() ?? false,
     };
   }
 }
 
-mixin LoginFormFieldsValidation {
-  final domainValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-        Validator().isEmptyValue,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
-
-  final usernameValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-        Validator().isEmptyValue,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
-
-  final passwordValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-        Validator().isEmptyValue,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
+extension BoolParsing on String {
+  bool parseBool() {
+    return toLowerCase() == 'true';
+  }
 }

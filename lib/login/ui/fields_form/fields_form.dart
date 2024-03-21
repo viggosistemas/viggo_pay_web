@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 
 // ignore: must_be_immutable
 class FieldsForm extends StatefulWidget {
@@ -48,7 +48,7 @@ class _FieldsFormState extends State<FieldsForm> {
                 ),
               ),
               StreamBuilder<String>(
-                stream: widget.viewModel.form.domain,
+                stream: widget.viewModel.form.domain.field,
                 builder: (context, snapshot) {
                   _domainController.value =
                       _domainController.value.copyWith(text: snapshot.data);
@@ -60,7 +60,7 @@ class _FieldsFormState extends State<FieldsForm> {
                     ),
                     controller: _domainController,
                     onChanged: (value) {
-                      widget.viewModel.form.onDomainChange(value);
+                      widget.viewModel.form.domain.onValueChange(value);
                     },
                     // onFieldSubmitted: (value) {
                     //   if (_validateForm()) {
@@ -108,7 +108,7 @@ class _FieldsFormState extends State<FieldsForm> {
         domainContent,
         const SizedBox(height: 10),
         StreamBuilder<String>(
-            stream: widget.viewModel.form.username,
+            stream: widget.viewModel.form.username.field,
             builder: (context, snapshot) {
               _userController.value =
                   _userController.value.copyWith(text: snapshot.data ?? '');
@@ -120,7 +120,7 @@ class _FieldsFormState extends State<FieldsForm> {
                 ),
                 controller: _userController,
                 onChanged: (value) {
-                  widget.viewModel.form.onEmailChange(value);
+                  widget.viewModel.form.username.onValueChange(value);
                 },
                 // onFieldSubmitted: (value) {
                 //   if (_validateForm()) {
@@ -136,7 +136,7 @@ class _FieldsFormState extends State<FieldsForm> {
             }),
         const SizedBox(height: 10),
         StreamBuilder<String>(
-            stream: widget.viewModel.form.password,
+            stream: widget.viewModel.form.password.field,
             builder: (context, snapshot) {
               _passwordController.value =
                   _passwordController.value.copyWith(text: snapshot.data);
@@ -161,7 +161,7 @@ class _FieldsFormState extends State<FieldsForm> {
                 ),
                 controller: _passwordController,
                 onChanged: (value) {
-                  widget.viewModel.form.onPasswordChange(value);
+                  widget.viewModel.form.password.onValueChange(value);
                 },
                 // onFieldSubmitted: (value) {
                 //   if (_validateForm()) {

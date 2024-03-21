@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/app_bar.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_form.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_view_model.dart';
@@ -41,33 +40,22 @@ class _ForgetPassPageState extends State<ForgetPassPage> {
     return ChangeNotifierProvider(
       create: (_) => locator.get<ForgetPasswordViewModel>(),
       child: Scaffold(
-        appBar: AppBarPrivate(
-          toolbarHeight: 60,
-          // actions: [
-          //   IconButton(
-          //     style: IconButton.styleFrom(
-          //       foregroundColor: Colors.white,
-          //     ),
-          //     onPressed: () {
-          //       setState(() {
-          //         isActioned = true;
-          //         if (isDarkMode) {
-          //           iconMode = Icons.dark_mode_outlined;
-          //           colorIconMode = Colors.white;
-          //           widget.changeTheme(ThemeMode.light);
-          //         } else {
-          //           iconMode = Icons.light_mode_outlined;
-          //           colorIconMode = Colors.yellow;
-          //           widget.changeTheme(ThemeMode.dark);
-          //         }
-          //       });
-          //     },
-          //     icon: Icon(
-          //       iconMode,
-          //       color: colorIconMode,
-          //     ),
-          //   ),
-          // ],
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: 70,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/logo.png',
+                width: 80,
+                height: 80,
+              ),
+            ],
+          ),
+          shadowColor: Colors.black,
+          elevation: 8,
         ),
         body: Stack(
           children: [

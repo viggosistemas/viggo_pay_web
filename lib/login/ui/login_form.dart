@@ -58,14 +58,18 @@ class _LoginFormState extends State<LoginForm> {
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: FadeInImage(
-                  image: NetworkImage(url),
-                  placeholder: AssetImage(placeholder),
-                  imageErrorBuilder: (context, error, stackTrace) {
-                    return Image.asset(placeholder, fit: BoxFit.fitWidth);
-                  },
-                  fit: BoxFit.fitWidth,
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
+                  width: 150,
+                  height: 100,
+                  child: FadeInImage(
+                    image: NetworkImage(url),
+                    placeholder: AssetImage(placeholder),
+                    imageErrorBuilder: (context, error, stackTrace) {
+                      return Image.asset(placeholder, fit: BoxFit.contain);
+                    },
+                    fit: BoxFit.fitWidth,
+                  ),
                 ),
               ),
             ),
@@ -185,7 +189,7 @@ class _LoginFormState extends State<LoginForm> {
         return Column(
           children: [
             SizedBox(
-              width: 400,
+              width: 200,
               child: Image.asset('assets/images/logo.png'),
             ),
             const SizedBox(

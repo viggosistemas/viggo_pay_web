@@ -3,21 +3,32 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:viggo_pay_admin/sync/domain/usecases/get_app_state_use_case.dart';
-import 'package:viggo_pay_admin/utils/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:viggo_core_frontend/token/domain/usecases/get_token_use_case.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
 
 class LazyLoadingViewModel extends ChangeNotifier {
-  final GetAppStateUseCase getAppState;
+  final GetTokenUseCase getToken;
+  late SharedPreferences sharedPrefs = locator.get<SharedPreferences>();
 
-  Stream<bool> get isLogged => getAppState.invoke().transform(
-        StreamTransformer<String, bool>.fromHandlers(
-          handleData: (value, sink) {
-            sink.add(value == AppStateConst.LOGGED);
-          },
-        ),
-      );
+  final StreamController<bool> _streamController =
+      StreamController<bool>.broadcast();
+
+  Stream<bool> get isLogged => _streamController.stream;
 
   LazyLoadingViewModel({
-    required this.getAppState,
-  });
+    required this.getToken,
+  }) {
+    checkAppState();
+  }
+
+  void checkAppState() {
+    var tokenDto = getToken.invoke();
+
+    if (tokenDto != null) {
+      _streamController.sink.add(true);
+    } else {
+      _streamController.sink.add(false);
+    }
+  }
 }

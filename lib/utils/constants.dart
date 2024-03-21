@@ -19,6 +19,9 @@ class Routes {
   static const APPLICATIONS = '/applications';
   static const ROUTES = '/routes';
   static const ROLES = '/roles';
+  static const USERS_FOR_DOMAIN = '/usuarios_por_dominio';
+  static const EDIT_CAPABILITY = '/editar_capacidades';
+  static const EDIT_POLICY = '/editar_politica';
 }
 
 // CLASSE DE CONTANTS QUE DECLARAM TODAS AS VARIAVEIS COMUMENTE USADAS NO PROJETO

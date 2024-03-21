@@ -47,7 +47,7 @@ class _FieldsFormState extends State<FieldsForm> {
         ),
         const SizedBox(height: 10),
         StreamBuilder<String>(
-            stream: widget.viewModel.form.domain,
+            stream: widget.viewModel.form.domain.field,
             builder: (context, snapshot) {
               _domainController.value =
                   _domainController.value.copyWith(text: snapshot.data ?? '');
@@ -59,7 +59,7 @@ class _FieldsFormState extends State<FieldsForm> {
                 ),
                 controller: _domainController,
                 onChanged: (value) {
-                  widget.viewModel.form.onDomainChange(value);
+                  widget.viewModel.form.domain.onValueChange(value);
                 },
                 // onFieldSubmitted: (value) {
                 //   if (_validateForm()) {
@@ -75,7 +75,7 @@ class _FieldsFormState extends State<FieldsForm> {
             }),
         const SizedBox(height: 10),
         StreamBuilder<String>(
-            stream: widget.viewModel.form.email,
+            stream: widget.viewModel.form.email.field,
             builder: (context, snapshot) {
               _emailController.value =
                   _emailController.value.copyWith(text: snapshot.data);
@@ -87,7 +87,7 @@ class _FieldsFormState extends State<FieldsForm> {
                 ),
                 controller: _emailController,
                 onChanged: (value) {
-                  widget.viewModel.form.onEmailChange(value);
+                  widget.viewModel.form.email.onValueChange(value);
                 },
                 // onFieldSubmitted: (value) {
                 //   if (_validateForm()) {
