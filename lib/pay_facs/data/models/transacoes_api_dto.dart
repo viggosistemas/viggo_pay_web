@@ -125,7 +125,7 @@ class InstantPaymentSenderApiDto {
 
 class InstantePaymentRecipientApiDto {
   late String alias;
-  late String name;
+  late String? name;
   late String taxIdentifierTaxId;
   late String taxIdentifierCountry;
   late String taxIdentifierTaxIdMasked;

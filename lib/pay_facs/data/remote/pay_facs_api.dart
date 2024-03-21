@@ -3,20 +3,22 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:viggo_core_frontend/base/base_api.dart';
+import 'package:viggo_core_frontend/network/bytes_response.dart';
+import 'package:viggo_core_frontend/network/network_exceptions.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/response_chave_pix.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/response_destinatario.dart';
+import 'package:viggo_pay_admin/pay_facs/data/models/response_extrato.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/response_saldo.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/response_transacoes.dart';
-import 'package:viggo_pay_core_frontend/base/base_api.dart';
-import 'package:viggo_pay_core_frontend/network/network_exceptions.dart';
 
-// FIXME: CRIAR API_DTO E RESPONSE DE CADA RESPOSTA
 class PayFacsApi extends BaseApi {
   PayFacsApi({required super.settings});
 
   static const ENDPOINT = '/pay_facs';
   static const SALDO_ENDPOINT = '/get_saldo';
   static const EXTRATO_ENDPOINT = '/get_extrato';
+  static const EXTRATO_SALDO_ENDPOINT = '/get_extrato_com_saldo';
   static const TRANSACOES_ENDPOINT = '/get_transacoes';
   static const ULTIMA_TRANSACAO_ENDPOINT = '/get_ultima_transacao';
   static const CASHOUT_ENDPOINT = '/cashout_via_pix';
@@ -48,7 +50,7 @@ class PayFacsApi extends BaseApi {
     }
   }
 
-  Future<dynamic> getExtrato(Map<String, dynamic> params) async {
+  Future<ExtratosResponse> getExtrato(Map<String, dynamic> params) async {
     Map<String, dynamic> body = params['body'];
     Map<String, String> headers = getHeaders();
 
@@ -63,7 +65,33 @@ class PayFacsApi extends BaseApi {
     switch (response.statusCode) {
       case 200:
         Map<String, dynamic> json = jsonDecode(response.body);
-        return json;
+        return ExtratosResponse.fromJson(json);
+      default:
+        throw NetworkException(
+          message: response.body,
+          isRetryAble: false,
+          code: response.statusCode,
+        );
+    }
+  }
+
+
+  Future<ExtratosSaldoResponse> getExtratoSaldo(Map<String, dynamic> params) async {
+    Map<String, dynamic> body = params['body'];
+    Map<String, String> headers = getHeaders();
+
+    body = cleanEntity(body);
+    String url = '$baseUrl$ENDPOINT$EXTRATO_SALDO_ENDPOINT';
+
+    var response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+    switch (response.statusCode) {
+      case 200:
+        Map<String, dynamic> json = jsonDecode(response.body);
+        return ExtratosSaldoResponse.fromJson(json);
       default:
         throw NetworkException(
           message: response.body,
@@ -123,7 +151,7 @@ class PayFacsApi extends BaseApi {
     }
   }
 
-  Future<dynamic> cashoutViaPix(Map<String, dynamic> params) async {
+  Future<BytesResponse> cashoutViaPix(Map<String, dynamic> params) async {
     Map<String, dynamic> body = params['body'];
     Map<String, String> headers = getHeaders();
 
@@ -137,8 +165,7 @@ class PayFacsApi extends BaseApi {
     );
     switch (response.statusCode) {
       case 200:
-        Map<String, dynamic> json = jsonDecode(response.body);
-        return json;
+        return BytesResponse(bytes: response.bodyBytes);
       default:
         throw NetworkException(
           message: response.body,

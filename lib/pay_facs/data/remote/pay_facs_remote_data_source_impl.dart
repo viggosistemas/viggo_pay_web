@@ -1,16 +1,21 @@
+import 'dart:typed_data';
+
 import 'package:either_dart/either.dart';
+import 'package:viggo_core_frontend/network/bytes_response.dart';
+import 'package:viggo_core_frontend/network/network_exceptions.dart';
+import 'package:viggo_core_frontend/network/safe_api_call.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/chave_pix_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/destinatario_api_dto.dart';
+import 'package:viggo_pay_admin/pay_facs/data/models/extrato_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/response_chave_pix.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/response_destinatario.dart';
+import 'package:viggo_pay_admin/pay_facs/data/models/response_extrato.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/response_saldo.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/response_transacoes.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/saldo_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/transacoes_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/pay_facs_data_source.dart';
 import 'package:viggo_pay_admin/pay_facs/data/remote/pay_facs_api.dart';
-import 'package:viggo_pay_core_frontend/network/network_exceptions.dart';
-import 'package:viggo_pay_core_frontend/network/safe_api_call.dart';
 
 class PayFacsRemoteDataSourceImpl implements PayFacsRemoteDataSource {
   final PayFacsApi api;
@@ -18,21 +23,35 @@ class PayFacsRemoteDataSourceImpl implements PayFacsRemoteDataSource {
   PayFacsRemoteDataSourceImpl({required this.api});
 
   @override
-  Future<Either<NetworkException, dynamic>> cashoutViaPix({
+  Future<Either<NetworkException, Uint8List>> cashoutViaPix({
     required Map<String, dynamic> body,
   }) {
     Map<String, dynamic> params = {'body': body};
     return safeApiCall(api.cashoutViaPix, params: params)
-        .mapRight((right) => (right as dynamic));
+        .mapRight((right) => (right as BytesResponse).bytes);
   }
 
   @override
-  Future<Either<NetworkException, dynamic>> getExtrato({
+  Future<Either<NetworkException, List<ExtratoApiDto>>> getExtrato({
     required Map<String, dynamic> body,
   }) {
     Map<String, dynamic> params = {'body': body};
     return safeApiCall(api.getExtrato, params: params)
-        .mapRight((right) => (right as dynamic));
+        .mapRight((right) => (right as ExtratosResponse).extratos);
+  }
+
+  @override
+  Future<Either<NetworkException, ExtratoSaldoApiDto>> getExtratoSaldo({
+    required Map<String, dynamic> body,
+  }) {
+    Map<String, dynamic> params = {'body': body};
+    return safeApiCall(api.getExtratoSaldo, params: params).mapRight(
+      (right) => ExtratoSaldoApiDto(
+        extrato: (right as ExtratosSaldoResponse).extrato,
+        saldoFinal: (right).saldoFinal,
+        saldoInicial: (right).saldoInicial,
+      ),
+    );
   }
 
   @override
@@ -72,7 +91,8 @@ class PayFacsRemoteDataSourceImpl implements PayFacsRemoteDataSource {
   }
 
   @override
-  Future<Either<NetworkException, DestinatarioApiDto>> consultarAliasDestinatario({
+  Future<Either<NetworkException, DestinatarioApiDto>>
+      consultarAliasDestinatario({
     required Map<String, dynamic> body,
   }) {
     Map<String, dynamic> params = {'body': body};
