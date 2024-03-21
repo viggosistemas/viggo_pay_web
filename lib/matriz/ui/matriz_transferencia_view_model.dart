@@ -1,8 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_config_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
@@ -23,11 +30,8 @@ import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_ultima_transacao_do
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/list_chave_pix_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
-class MatrizTransferenciaViewModel extends ChangeNotifier {
-  bool isLoading = false;
+class MatrizTransferenciaViewModel extends BaseViewModel {
   String materaId = '';
   String domainAccountId = '';
   String endToEndId = '';
@@ -59,21 +63,19 @@ class MatrizTransferenciaViewModel extends ChangeNotifier {
       StreamController<DomainAccountApiDto?>.broadcast();
   Stream<DomainAccountApiDto?> get matriz => _streamMatrizController.stream;
 
-  final StreamController<String> _streamControllerError =
-      StreamController<String>.broadcast();
-  Stream<String> get isError => _streamControllerError.stream;
-
   final StreamController<bool> _streamControllerSuccess =
       StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
   final StreamController<List<TransacaoApiDto>> _streamTransacoesController =
       StreamController<List<TransacaoApiDto>>.broadcast();
-  Stream<List<TransacaoApiDto>> get transacoes => _streamTransacoesController.stream;
+  Stream<List<TransacaoApiDto>> get transacoes =>
+      _streamTransacoesController.stream;
 
   final StreamController<TransacaoApiDto> _streamUltimaTransacaoController =
       StreamController<TransacaoApiDto>.broadcast();
-  Stream<TransacaoApiDto> get ultimaTransacao => _streamUltimaTransacaoController.stream;
+  Stream<TransacaoApiDto> get ultimaTransacao =>
+      _streamUltimaTransacaoController.stream;
 
   final StreamController<SaldoApiDto> _streamSaldoController =
       StreamController<SaldoApiDto>.broadcast();
@@ -98,6 +100,9 @@ class MatrizTransferenciaViewModel extends ChangeNotifier {
   Stream<List<PixToSendApiDto>> get chavePixToSends =>
       _streamChavePixToSendsController.stream;
 
+  final _streamComprovanteController = BehaviorSubject<Either<bool, Uint8List>?>();
+  Stream<Either<bool, Uint8List>?> get extratoPdf => _streamComprovanteController.stream;
+
   MatrizTransferenciaViewModel({
     required this.getConfigDomainAccount,
     required this.cashout,
@@ -112,29 +117,33 @@ class MatrizTransferenciaViewModel extends ChangeNotifier {
     required this.getUltimaTransacao,
   });
 
-  void notifyLoading() {
-    isLoading = !isLoading;
-    // notifyListeners();
-  }
-
   void catchEntity() async {
+    if (isLoading) return;
+    setLoading();
+
     var result =
         await getDomainAccount.invoke(id: getDomainFromSettings.invoke()!.id);
 
+    setLoading();
     if (result.isRight) {
       _streamMatrizController.sink.add(result.right);
       domainAccountId = result.right.id;
       if (result.right.materaId != null) materaId = result.right.materaId!;
       getConfigInfo(result.right.id);
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
     return null;
   }
 
   void getConfigInfo(String id) async {
+    if (isLoading) return;
+    setLoading();
+
     Map<String, String> filters = {'domain_account_id': id};
     var result = await getConfigDomainAccount.invoke(filters: filters);
+    setLoading();
+
     if (result.isRight && result.right.domainAccountTaxas.isNotEmpty) {
       var taxa = result.right.domainAccountTaxas[0].taxa;
       var isPorcentagem = result.right.domainAccountTaxas[0].porcentagem;
@@ -142,16 +151,15 @@ class MatrizTransferenciaViewModel extends ChangeNotifier {
         'taxa': taxa ?? 0.0,
         'porcentagem': isPorcentagem ?? false,
       };
-      if(taxaMediatorFee['porcentagem']){
-        taxaMediatorFee['taxa'] = taxaMediatorFee['taxa']/100;
+      if (taxaMediatorFee['porcentagem']) {
+        taxaMediatorFee['taxa'] = taxaMediatorFee['taxa'] / 100;
       }
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
   void loadSaldo(String materaId) async {
-    notifyLoading();
     Map<String, dynamic> data = {
       'id': materaId,
       'account_id': materaId,
@@ -159,34 +167,25 @@ class MatrizTransferenciaViewModel extends ChangeNotifier {
 
     var result = await getSaldo.invoke(body: data);
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
+      postError(result.left.message);
     } else {
       if (!_streamSaldoController.isClosed) {
         _streamSaldoController.sink.add(result.right);
-        notifyLoading();
       }
     }
   }
 
   void loadChavePix(String materaId) async {
-    notifyLoading();
     Map<String, dynamic> data = {
       'account_id': materaId,
     };
 
     var result = await listChavePix.invoke(body: data);
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
+      postError(result.left.message);
     } else {
       if (!_streamChavePixController.isClosed) {
         _streamChavePixController.sink.add(result.right[0]);
-        notifyLoading();
       }
     }
   }
@@ -200,43 +199,51 @@ class MatrizTransferenciaViewModel extends ChangeNotifier {
     var result = await listChavePixToSends.invoke(filters: filters);
     if (result.isRight) {
       _streamChavePixToSendsController.sink.add(result.right.pixToSends);
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
   void loadTransacoes(String materaId) async {
-    notifyLoading();
-    Map<String, dynamic> data = {'id': materaId, 'account_id': materaId};
+    Map<String, dynamic> data = {
+      'id': materaId,
+      'account_id': materaId,
+      'parametros': {
+        'begin': DateFormat('yyyy-MM-dd')
+            .format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
+        'end': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+        'status': 'APPROVED',
+        'paymentTypes': 'WithdrawInstantPayment',
+        'pageLimit': 5
+      }
+    };
 
     var result = await getTransacoes.invoke(body: data);
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
+      postError(result.left.message);
     } else {
       if (!_streamTransacoesController.isClosed) {
         _streamTransacoesController.sink.add(result.right);
-        notifyLoading();
       }
     }
   }
 
   void loadUltimatransacao(String materaId) async {
-    notifyLoading();
-    Map<String, dynamic> data = {'id': materaId, 'account_id': materaId};
+    Map<String, dynamic> data = {
+      'id': materaId,
+      'account_id': materaId,
+      'parametros': {
+        'status': 'APPROVED',
+        'paymentTypes': 'WithdrawInstantPayment',
+      }
+    };
 
     var result = await getUltimaTransacao.invoke(body: data);
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
+      postError(result.left.message);
     } else {
       if (!_streamUltimaTransacaoController.isClosed) {
         _streamUltimaTransacaoController.sink.add(result.right);
-        notifyLoading();
       }
     }
   }
@@ -251,28 +258,31 @@ class MatrizTransferenciaViewModel extends ChangeNotifier {
       'alias_destinatario': aliasValue,
     };
     var result = await consultarDestinatario.invoke(body: body);
+
     if (result.isRight) {
       endToEndId = result.right.endToEndId;
       _streamDestinatarioController.sink.add(result.right);
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
   initValues() {
-    formStepValor.onValorChange('0');
-    formStepSelectPix.onContatoChange('');
-    formStepSelectPix.onPixSelectChange('');
-    formStepSenha.onSenhaChange('');
+    formStepValor.valor.onValueChange('0');
+    formStepSelectPix.contato.onValueChange('');
+    formStepSelectPix.pixSelect.onValueChange('');
+    formStepSenha.senha.onValueChange('');
   }
 
-  void onCashoutSubmit(
+  Future<Uint8List?> onCashoutSubmit(
     BuildContext context,
   ) async {
-    notifyLoading();
-    var formFieldsSenha = formStepSenha.getFields()!;
-    var formFieldsValor = formStepValor.getFields()!;
-    var formFieldsPix = formStepSelectPix.getFields()!;
+    if (isLoading) return null;
+    setLoading(value: true);
+
+    var formFieldsSenha = formStepSenha.getValues()!;
+    var formFieldsValor = formStepValor.getValues()!;
+    var formFieldsPix = formStepSelectPix.getValues()!;
     final pixSelected = PixToSendApiDto.fromJson(
         jsonDecode(formFieldsPix['pixSelect'].toString()));
 
@@ -306,19 +316,16 @@ class MatrizTransferenciaViewModel extends ChangeNotifier {
     };
 
     var result = await cashout.invoke(body: params);
+    setLoading();
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
-    } else {
-      if (!_streamControllerSuccess.isClosed) {
-        _streamMatrizController.sink.add(null);
-        _streamControllerSuccess.sink.add(true);
-        catchEntity();
-        notifyLoading();
-      }
-    }
+      postError(result.left.message);
+      _streamComprovanteController.sink.add(const Left(true));
+      setLoading(value: false);
+      return null;
+    } 
+    setLoading(value: false);
+    _streamComprovanteController.sink.add(Right(result.right));
+    return result.right;
   }
 
   String encryptPassword(String value) {
@@ -332,30 +339,29 @@ class MatrizTransferenciaViewModel extends ChangeNotifier {
     Function showMsg,
     BuildContext context,
   ) async {
-    notifyLoading();
+    if (isLoading) return;
+    setLoading();
 
     Map<String, dynamic> params = {
       'old_password': '',
       'password': '',
     };
-    var formFields = formSenha.getFields();
+    var formFields = formSenha.getValues();
     params['old_password'] = formFields?['senhaAntiga'] == 'senha1'
         ? null
         : formFields!['senhaAntiga'];
     params['password'] = formFields!['novaSenha'];
 
     var result = await updateSenhaPix.invoke(id: domainAccountId, body: params);
+    setLoading();
+
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
+      postError(result.left.message);
     } else {
       if (!_streamControllerSuccess.isClosed) {
         _streamMatrizController.sink.add(null);
         _streamControllerSuccess.sink.add(true);
         catchEntity();
-        notifyLoading();
       }
     }
   }

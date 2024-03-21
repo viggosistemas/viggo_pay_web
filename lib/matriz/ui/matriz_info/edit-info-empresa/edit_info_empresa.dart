@@ -21,13 +21,14 @@ class EditInfoEmpresa extends StatelessWidget {
     final clientTaxIdFieldController = TextEditingController();
     // final clientTaxCountryFieldController = TextEditingController();
     final clientMobilePhoneFieldControll = TextEditingController();
-    final clientMobilePhoneCountryFieldControll = TextEditingController(text: viewModel.matrizAccount.clientMobilePhoneCountry);
+    final clientMobilePhoneCountryFieldControll = TextEditingController(
+        text: viewModel.matrizAccount.clientMobilePhoneCountry);
     final clientEmailFieldControll = TextEditingController();
 
     return Column(
       children: [
         StreamBuilder<String>(
-          stream: viewModel.form.clientTaxId,
+          stream: viewModel.form.clientTaxId.field,
           builder: (context, snapshot) {
             clientTaxIdFieldController.value =
                 clientTaxIdFieldController.value.copyWith(text: snapshot.data);
@@ -48,7 +49,7 @@ class EditInfoEmpresa extends StatelessWidget {
               ],
               controller: clientTaxIdFieldController,
               onChanged: (value) {
-                viewModel.form.onClientTaxIdChange(value);
+                viewModel.form.clientTaxId.onValueChange(value);
               },
             );
           },
@@ -57,7 +58,7 @@ class EditInfoEmpresa extends StatelessWidget {
           height: 10,
         ),
         StreamBuilder<String>(
-            stream: viewModel.form.clientName,
+            stream: viewModel.form.clientName.field,
             builder: (context, snapshot) {
               clientNameFieldControll.value =
                   clientNameFieldControll.value.copyWith(text: snapshot.data);
@@ -72,14 +73,14 @@ class EditInfoEmpresa extends StatelessWidget {
                     errorText: snapshot.error?.toString(),
                   ),
                   onChanged: (value) {
-                    viewModel.form.onClientNameChange(value);
+                    viewModel.form.clientName.onValueChange(value);
                   });
             }),
         const SizedBox(
           height: 10,
         ),
         StreamBuilder<String>(
-            stream: viewModel.form.clientMobilePhone,
+            stream: viewModel.form.clientMobilePhone.field,
             builder: (context, snapshot) {
               clientMobilePhoneFieldControll.value =
                   clientMobilePhoneFieldControll.value
@@ -107,15 +108,16 @@ class EditInfoEmpresa extends StatelessWidget {
                   ),
                 ),
                 onChanged: (value) {
-                  viewModel.form.onClientMobilePhoneChange(value.number);
-                  viewModel.form
-                      .onClientMobilePhoneCountryChange(value.countryISOCode);
-                  viewModel.form
-                      .onClientTaxCountryChange(value.countryISOCode);
+                  viewModel.form.clientMobilePhone.onValueChange(value.number);
+                  viewModel.form.clientMobilePhoneCountry
+                      .onValueChange(value.countryISOCode);
+                  viewModel.form.clientTaxCountry
+                      .onValueChange(value.countryISOCode);
                 },
                 onCountryChanged: (country) {
-                  viewModel.form.onClientMobilePhoneCountryChange(country.code);
-                  viewModel.form.onClientTaxCountryChange(country.code);
+                  viewModel.form.clientMobilePhoneCountry
+                      .onValueChange(country.code);
+                  viewModel.form.clientTaxCountry.onValueChange(country.code);
                 },
               );
             }),
@@ -143,7 +145,7 @@ class EditInfoEmpresa extends StatelessWidget {
           height: 10,
         ),
         StreamBuilder<String>(
-            stream: viewModel.form.clientEmail,
+            stream: viewModel.form.clientEmail.field,
             builder: (context, snapshot) {
               clientEmailFieldControll.value =
                   clientEmailFieldControll.value.copyWith(text: snapshot.data);
@@ -158,7 +160,7 @@ class EditInfoEmpresa extends StatelessWidget {
                     errorText: snapshot.error?.toString(),
                   ),
                   onChanged: (value) {
-                    viewModel.form.onClientEmailChange(value);
+                    viewModel.form.clientEmail.onValueChange(value);
                   });
             }),
       ],

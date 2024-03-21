@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
-import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-documentos/edit-info-documentos.dart';
+import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-documentos/edit_info_documentos.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-empresa/edit_info_empresa.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-endereco/edit_info_endereco.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-taxa-empresa/edit_taxa_empresa.dart';
@@ -31,17 +31,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
       });
     }
 
-    onSubmitTaxa() {
-      viewModel.submitConfig(showInfoMessage, context);
-    }
-
-    onSubmitDocuments() {
-      viewModel.onSendFiles(showInfoMessage, context);
-    }
-
     onSubmit() {
-      onSubmitTaxa();
-      onSubmitDocuments();
       viewModel.submit(showInfoMessage, context);
     }
 
@@ -58,54 +48,57 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
       navigateToWorkspace();
     });
 
-    viewModel.isError.listen(
+    viewModel.errorMessage.listen(
       (value) {
-        showInfoMessage(
-          context,
-          2,
-          Colors.red,
-          value,
-          'X',
-          () {},
-          Colors.white,
-        );
+        if (value.isNotEmpty && context.mounted) {
+          showInfoMessage(
+            context,
+            2,
+            Colors.red,
+            value,
+            'X',
+            () {},
+            Colors.white,
+          );
+        }
       },
     );
 
     updateFormValeus() {
-      var formFields = viewModel.form.getFields();
-      var formAddressFields = viewModel.formAddress.getFields();
-      var formTaxa = viewModel.formConfig.getFields();
+      var formFields = viewModel.form.getValues();
+      var formAddressFields = viewModel.formAddress.getValues();
+      var formTaxa = viewModel.formConfig.getValues();
 
-      viewModel.form.onClientTaxIdChange(
-          formFields!['client_tax_identifier_tax_id'] ?? '');
-      viewModel.form.onClientNameChange(formFields['client_name'] ?? '');
-      viewModel.form
-          .onClientMobilePhoneChange(formFields['client_mobile_phone'] ?? '');
-      viewModel.form.onClientMobilePhoneCountryChange(
-          formFields['client_mobile_phone_country'] ?? '');
-      viewModel.form.onClientEmailChange(formFields['client_email'] ?? '');
+      viewModel.form.clientTaxId
+          .onValueChange(formFields!['client_tax_identifier_tax_id'] ?? '');
+      viewModel.form.clientName.onValueChange(formFields['client_name'] ?? '');
+      viewModel.form.clientMobilePhone
+          .onValueChange(formFields['client_mobile_phone'] ?? '');
+      viewModel.form.clientMobilePhoneCountry
+          .onValueChange(formFields['client_mobile_phone_country'] ?? '');
+      viewModel.form.clientEmail
+          .onValueChange(formFields['client_email'] ?? '');
 
-      viewModel.formAddress.onLogradouroChange(
+      viewModel.formAddress.logradouro.onValueChange(
           formAddressFields!['billing_address_logradouro'] ?? '');
-      viewModel.formAddress
-          .onNumeroChange(formAddressFields['billing_address_numero'] ?? '');
-      viewModel.formAddress.onComplementoChange(
+      viewModel.formAddress.numero
+          .onValueChange(formAddressFields['billing_address_numero'] ?? '');
+      viewModel.formAddress.complemento.onValueChange(
           formAddressFields['billing_address_complemento'] ?? '');
-      viewModel.formAddress
-          .onBairroChange(formAddressFields['billing_address_bairro'] ?? '');
-      viewModel.formAddress
-          .onCidadeChange(formAddressFields['billing_address_cidade'] ?? '');
-      viewModel.formAddress
-          .onEstadoChange(formAddressFields['billing_address_estado'] ?? '');
-      viewModel.formAddress
-          .onCepChange(formAddressFields['billing_address_cep'] ?? '');
-      viewModel.formAddress
-          .onPaisChange(formAddressFields['billing_address_pais'] ?? '');
+      viewModel.formAddress.bairro
+          .onValueChange(formAddressFields['billing_address_bairro'] ?? '');
+      viewModel.formAddress.cidade
+          .onValueChange(formAddressFields['billing_address_cidade'] ?? '');
+      viewModel.formAddress.estado
+          .onValueChange(formAddressFields['billing_address_estado'] ?? '');
+      viewModel.formAddress.cep
+          .onValueChange(formAddressFields['billing_address_cep'] ?? '');
+      viewModel.formAddress.pais
+          .onValueChange(formAddressFields['billing_address_pais'] ?? '');
 
-      viewModel.formConfig.onTaxaChange(formTaxa!['taxa']!.toString());
-      viewModel.formConfig
-          .onPorcentagemChange(formTaxa['porcentagem'].toString() == 'true');
+      viewModel.formConfig.taxa.onValueChange(formTaxa!['taxa']!.toString());
+      viewModel.formConfig.porcentagem.onValueChange(
+          formTaxa['porcentagem'].toString().parseBool().toString());
     }
 
     return Container(

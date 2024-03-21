@@ -37,9 +37,9 @@ class StepTransferenciaDetalhe extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var valorTransferido =
-        viewModel.formStepValor.getFields()!['valor'].toString();
+        viewModel.formStepValor.getValues()!['valor'].toString();
     final pixSelected = PixToSendApiDto.fromJson(jsonDecode(
-        viewModel.formStepSelectPix.getFields()!['pixSelect'].toString()));
+        viewModel.formStepSelectPix.getValues()!['pixSelect'].toString()));
 
     return StreamBuilder<DestinatarioApiDto>(
         stream: viewModel.destinatarioInfo,
@@ -84,7 +84,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                           width: 10,
                         ),
                         StreamBuilder<String>(
-                            stream: viewModel.formStepValor.valor,
+                            stream: viewModel.formStepValor.valor.field,
                             builder: (context, snapshot) {
                               return Text(
                                 'R\$ ${snapshot.data ?? valorTransferido}',
@@ -105,16 +105,9 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                               context: context,
                               saldo: saldo,
                             ).openDialog();
-
-                            if (result != null) {
-                              if (result == true) {
-                                valorTransferido = viewModel.formStepValor
-                                    .getFields()!['valor']
-                                    .toString();
-                              } else {
-                                viewModel.formStepValor
-                                    .onValorChange(valorTransferido);
-                              }
+                            if (result != true) {
+                              viewModel.formStepValor.valor
+                                  .onValueChange(valorTransferido);
                             }
                           },
                           icon: const Icon(
@@ -125,7 +118,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                       ],
                     ),
                     StreamBuilder<String>(
-                        stream: viewModel.formStepValor.valor,
+                        stream: viewModel.formStepValor.valor.field,
                         builder: (context, snapshot) {
                           return Text(
                             'Valor a ser debitado pelos encargos será R\$ ${getValorTaxa(snapshot.data ?? valorTransferido)}',
@@ -271,7 +264,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                       ],
                     ),
                     StreamBuilder<String>(
-                        stream: viewModel.formStepValor.valor,
+                        stream: viewModel.formStepValor.valor.field,
                         builder: (context, snapshot) {
                           return Row(
                             crossAxisAlignment: CrossAxisAlignment.center,

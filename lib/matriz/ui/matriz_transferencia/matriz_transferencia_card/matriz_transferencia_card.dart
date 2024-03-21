@@ -11,7 +11,7 @@ import 'package:viggo_pay_admin/pay_facs/data/models/transacoes_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
-class TransferenciaCard extends StatelessWidget {
+class TransferenciaCard extends StatefulWidget {
   const TransferenciaCard({
     super.key,
     required this.matrizAccount,
@@ -20,22 +20,32 @@ class TransferenciaCard extends StatelessWidget {
   final DomainAccountApiDto matrizAccount;
 
   @override
+  State<TransferenciaCard> createState() => _TransferenciaCardState();
+}
+
+class _TransferenciaCardState extends State<TransferenciaCard> {
+  bool isObscureSaldo = true;
+
+  @override
   Widget build(BuildContext context) {
     MatrizTransferenciaViewModel viewModel =
         locator.get<MatrizTransferenciaViewModel>();
     final dialogs = MatrizTransferenciaDialog(context: context);
 
-    viewModel.isError.listen(
+    viewModel.errorMessage.listen(
       (value) {
-        showInfoMessage(
-          context,
-          2,
-          Colors.red,
-          value,
-          'X',
-          () {},
-          Colors.white,
-        );
+        if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
+          showInfoMessage(
+            context,
+            2,
+            Colors.red,
+            value,
+            'X',
+            () {},
+            Colors.white,
+          );
+        }
       },
     );
 
@@ -62,7 +72,7 @@ class TransferenciaCard extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    'Transferências entre contas',
+                    'Transferência entre contas',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -71,7 +81,7 @@ class TransferenciaCard extends StatelessWidget {
                   SizedBox(
                     width: 10,
                   ),
-                  Icon(Icons.transfer_within_a_station_outlined),
+                  Icon(Icons.move_up_outlined),
                 ],
               ),
               Divider(
@@ -100,7 +110,7 @@ class TransferenciaCard extends StatelessWidget {
                                 width: 5,
                               ),
                               Text(
-                                matrizAccount.clientName,
+                                widget.matrizAccount.clientName,
                                 style: GoogleFonts.lato(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -115,7 +125,7 @@ class TransferenciaCard extends StatelessWidget {
                                 width: 5,
                               ),
                               Text(
-                                'CNPJ: ${matrizAccount.clientTaxIdentifierTaxId}',
+                                'CNPJ: ${widget.matrizAccount.clientTaxIdentifierTaxId}',
                                 style: GoogleFonts.lato(
                                   fontSize: 16,
                                   fontWeight: FontWeight.normal,
@@ -129,7 +139,8 @@ class TransferenciaCard extends StatelessWidget {
                           stream: viewModel.chavePix,
                           builder: (context, chavePixData) {
                             if (chavePixData.data == null) {
-                              viewModel.loadChavePix(matrizAccount.materaId!);
+                              viewModel
+                                  .loadChavePix(widget.matrizAccount.materaId!);
                               return const Text('');
                             } else {
                               return Row(
@@ -150,23 +161,28 @@ class TransferenciaCard extends StatelessWidget {
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      if (matrizAccount.password == null) {
-                                        viewModel.formSenha
-                                            .onSenhaAntigaChange('senha1');
+                                      if (widget.matrizAccount.password ==
+                                          null) {
+                                        viewModel.formSenha.senhaAntiga
+                                            .onValueChange('senha1');
                                       } else {
-                                        viewModel.formSenha
-                                            .onSenhaAntigaChange('');
+                                        viewModel.formSenha.senhaAntiga
+                                            .onValueChange('');
                                       }
-                                      viewModel.formSenha.onNovaSenhaChange('');
-                                      viewModel.formSenha.onConfirmarSenha('');
+                                      viewModel.formSenha.novaSenha
+                                          .onValueChange('');
+                                      viewModel.formSenha.confirmarSenha
+                                          .onValueChange('');
                                       DialogAlterarSenha(context: context)
                                           .showFormDialog(
-                                              matrizAccount.password != null);
+                                              widget.matrizAccount.password !=
+                                                  null);
                                     },
                                     icon: const Icon(Icons.lock_outline),
-                                    tooltip: matrizAccount.password != null
-                                        ? 'Alterar senha'
-                                        : 'Criar senha',
+                                    tooltip:
+                                        widget.matrizAccount.password != null
+                                            ? 'Alterar senha'
+                                            : 'Criar senha',
                                   ),
                                 ],
                               );
@@ -176,8 +192,8 @@ class TransferenciaCard extends StatelessWidget {
                           stream: viewModel.ultimaTransacao,
                           builder: (context, ultimaTransacaoData) {
                             if (ultimaTransacaoData.data == null) {
-                              viewModel
-                                  .loadUltimatransacao(matrizAccount.materaId!);
+                              viewModel.loadUltimatransacao(
+                                  widget.matrizAccount.materaId!);
                               return const Text('');
                             } else {
                               return Row(
@@ -206,14 +222,14 @@ class TransferenciaCard extends StatelessWidget {
                       stream: viewModel.saldo,
                       builder: (context, saldoData) {
                         if (saldoData.data == null) {
-                          viewModel.loadSaldo(matrizAccount.materaId!);
+                          viewModel.loadSaldo(widget.matrizAccount.materaId!);
                           return const CircularProgressIndicator();
                         } else {
                           return Column(
                             children: [
                               Container(
-                                width: 150.0,
-                                height: 150.0,
+                                width: 180.0,
+                                height: 180.0,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
@@ -227,23 +243,47 @@ class TransferenciaCard extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'R\$ ${saldoData.data!.real.toString()}',
+                                      isObscureSaldo
+                                          ? 'R\$ ${saldoData.data!.real.toString().replaceAll(RegExp(r"."), "*")}'
+                                          : 'R\$ ${saldoData.data!.real.toString()}',
                                       style: GoogleFonts.lato(
-                                        fontSize: 20,
+                                        fontSize: 24,
                                         color: Theme.of(context)
                                             .colorScheme
                                             .primary,
                                       ),
                                     ),
-                                    Text(
-                                      'Saldo disponível',
-                                      style: GoogleFonts.lato(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Text(
+                                          'Saldo disponível',
+                                          style: GoogleFonts.lato(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(
+                                            isObscureSaldo
+                                                ? Icons.visibility
+                                                : Icons.visibility_off,
+                                            size: 18,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              isObscureSaldo = !isObscureSaldo;
+                                            });
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -256,7 +296,8 @@ class TransferenciaCard extends StatelessWidget {
                                   builder: (context, pixToSendData) {
                                     if (pixToSendData.data == null) {
                                       viewModel.loadChavePixToSends(
-                                          matrizAccount.id);
+                                        widget.matrizAccount.id,
+                                      );
                                       return const CircularProgressIndicator();
                                     }
                                     return Tooltip(
@@ -277,13 +318,27 @@ class TransferenciaCard extends StatelessWidget {
                                             Icons.attach_money_outlined,
                                             size: 20,
                                           ),
-                                          onPressed: () {
+                                          onPressed: () async {
                                             if (saldoData.data!.real > 0) {
-                                              dialogs.transferenciaDialog(
+                                              var result = await dialogs
+                                                  .transferenciaDialog(
                                                 saldo: saldoData.data!,
                                                 pixToSendList:
                                                     pixToSendData.data!,
                                               );
+                                              if (result != null &&
+                                                  result == true &&
+                                                  context.mounted) {
+                                                showInfoMessage(
+                                                  context,
+                                                  2,
+                                                  Colors.green,
+                                                  'Transferência realizada com sucesso!',
+                                                  'X',
+                                                  () {},
+                                                  Colors.white,
+                                                );
+                                              }
                                             }
                                           },
                                           label: const Text('Transferir'),

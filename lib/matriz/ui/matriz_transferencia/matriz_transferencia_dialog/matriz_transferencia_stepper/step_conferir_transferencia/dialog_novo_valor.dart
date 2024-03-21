@@ -31,7 +31,7 @@ class DialogNovoValor {
         builder: (BuildContext ctx) {
           final valorTransferenciaControll = TextEditingController();
           valorTransferenciaControll.text =
-              viewModel.formStepValor.getFields()!['valor'].toString();
+              viewModel.formStepValor.getValues()!['valor'].toString();
 
           return PopScope(
             canPop: false,
@@ -59,7 +59,7 @@ class DialogNovoValor {
               content: SizedBox(
                 width: 500,
                 child: StreamBuilder<String>(
-                    stream: viewModel.formStepValor.valor,
+                    stream: viewModel.formStepValor.valor.field,
                     builder: (context, snapshot) {
                       valorTransferenciaControll.value =
                           valorTransferenciaControll.value
@@ -76,7 +76,7 @@ class DialogNovoValor {
                           ),
                         ),
                         onChanged: (value) {
-                          viewModel.formStepValor.onValorChange(value);
+                          viewModel.formStepValor.valor.onValueChange(value);
                         },
                       );
                     }),

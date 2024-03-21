@@ -1,39 +1,25 @@
-import 'dart:async';
+import 'package:viggo_core_frontend/form/base_form.dart';
+import 'package:viggo_core_frontend/form/field/field.dart';
+import 'package:viggo_core_frontend/form/field/stringfield.dart';
+import 'package:viggo_core_frontend/form/validator.dart';
 
-import 'package:rxdart/rxdart.dart';
-import 'package:viggo_pay_core_frontend/form/base_form.dart';
-import 'package:viggo_pay_core_frontend/form/validator.dart';
-
-class EditSenhaStepFormFields extends BaseForm with EditSenhaFormFieldsValidation {
-  final _senhaController = BehaviorSubject<String>();
-  Stream<String> get senha =>
-      _senhaController.stream.transform(senhaValidation);
-  Function(String) get onSenhaChange => _senhaController.sink.add;
-
-  @override
-  List<Stream<String>> getStreams() => [senha];
+class EditSenhaStepFormFields extends BaseForm {
+  final senha = StringField(
+    isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+    ],
+  );
 
   @override
-  Map<String, String>? getFields() {
-    var senha = _senhaController.valueOrNull;
+  List<Field> getFields() => [senha];
 
-    if(senha == null) return null;
+  @override
+  Map<String, String>? getValues() {
+    if (!senha.isValid) return null;
 
     return {
-      'senha': senha,
+      'senha': senha.value!,
     };
   }
-}
-
-mixin EditSenhaFormFieldsValidation {
-  final senhaValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-        Validator().isEmptyValue,
-        // FieldLengthValidator().menorQ6,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
 }

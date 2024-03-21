@@ -22,7 +22,7 @@ class _EditTaxaEmpresaState extends State<EditTaxaEmpresa> {
     return Column(
       children: [
         StreamBuilder<String>(
-          stream: widget.viewModel.formConfig.taxa,
+          stream: widget.viewModel.formConfig.taxa.field,
           builder: (context, snapshot) {
             taxaFieldControll.value =
                 taxaFieldControll.value.copyWith(text: snapshot.data);
@@ -39,7 +39,7 @@ class _EditTaxaEmpresaState extends State<EditTaxaEmpresa> {
                   errorText: snapshot.error?.toString(),
                 ),
                 onChanged: (value) {
-                  widget.viewModel.formConfig.onTaxaChange(value);
+                  widget.viewModel.formConfig.taxa.onValueChange(value);
                 });
           },
         ),

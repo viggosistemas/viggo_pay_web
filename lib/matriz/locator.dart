@@ -1,3 +1,6 @@
+import 'package:viggo_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
+import 'package:viggo_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
+import 'package:viggo_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/add_config_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/add_domain_account_documents_use_case.dart';
@@ -15,9 +18,6 @@ import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_transacoes_domain_a
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_ultima_transacao_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/list_chave_pix_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
-import 'package:viggo_pay_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
 
 class MatrizAccountLocator {
   void setup() {

@@ -4,6 +4,13 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
+import 'package:viggo_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
+import 'package:viggo_core_frontend/localidades/data/models/address_via_cep_dto.dart';
+import 'package:viggo_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
+import 'package:viggo_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
+import 'package:viggo_core_frontend/network/network_exceptions.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/add_config_domain_account_use_case.dart';
@@ -15,17 +22,9 @@ import 'package:viggo_pay_admin/domain_account/domain/usecases/update_domain_acc
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-empresa/edit-info-form/edit_info_form_fields.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-endereco/edit-endereco-form/edit_endereco_form_fields.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-taxa-empresa/edit-taxa-form/edit_taxa_form_fields.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
-import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
-import 'package:viggo_pay_core_frontend/localidades/data/models/address_via_cep_dto.dart';
-import 'package:viggo_pay_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
-import 'package:viggo_pay_core_frontend/network/network_exceptions.dart';
 
-class MatrizViewModel extends ChangeNotifier
+class MatrizViewModel extends BaseViewModel
     with RegisterDomainAccountDocumentsTransformer {
-  bool isLoading = false;
-
   late DomainAccountApiDto matrizAccount;
   late DomainAccountConfigApiDto matrizAccountTaxa;
   late String estadoAddress = '';
@@ -43,10 +42,6 @@ class MatrizViewModel extends ChangeNotifier
   final EditInfoFormFields form = EditInfoFormFields();
   final EditInfoEnderecoFormFields formAddress = EditInfoEnderecoFormFields();
   final ConfigMatrizTaxaFormFields formConfig = ConfigMatrizTaxaFormFields();
-
-  final StreamController<String> _streamControllerError =
-      StreamController<String>.broadcast();
-  Stream<String> get isError => _streamControllerError.stream;
 
   final StreamController<bool> _streamControllerSuccess =
       StreamController<bool>.broadcast();
@@ -87,33 +82,30 @@ class MatrizViewModel extends ChangeNotifier
   }
 
   initialFormValues() {
-    form.onClientTaxIdChange(matrizAccount.clientTaxIdentifierTaxId);
-    form.onClientTaxCountryChange(
-        matrizAccount.clientTaxIdentifierCountry ?? '');
-    form.onClientNameChange(matrizAccount.clientName);
-    form.onClientMobilePhoneChange(matrizAccount.clientMobilePhone);
-    form.onClientMobilePhoneCountryChange(
-        matrizAccount.clientMobilePhoneCountry);
-    form.onClientEmailChange(matrizAccount.clientEmail);
+    form.clientTaxId.onValueChange(matrizAccount.clientTaxIdentifierTaxId);
+    form.clientTaxCountry
+        .onValueChange(matrizAccount.clientTaxIdentifierCountry ?? '');
+    form.clientName.onValueChange(matrizAccount.clientName);
+    form.clientMobilePhone.onValueChange(matrizAccount.clientMobilePhone);
+    form.clientMobilePhoneCountry
+        .onValueChange(matrizAccount.clientMobilePhoneCountry);
+    form.clientEmail.onValueChange(matrizAccount.clientEmail);
 
-    formAddress.onLogradouroChange(matrizAccount.billingAddressLogradouro);
-    formAddress.onNumeroChange(matrizAccount.billingAddressNumero);
-    formAddress.onComplementoChange(matrizAccount.billingAddressComplemento);
-    formAddress.onBairroChange(matrizAccount.billingAddressBairro);
-    formAddress.onCidadeChange(matrizAccount.billingAddressCidade);
-    formAddress.onEstadoChange(matrizAccount.billingAddressEstado);
-    formAddress.onCepChange(matrizAccount.billingAddressCep);
-    formAddress.onPaisChange(matrizAccount.billingAddressPais);
+    formAddress.logradouro
+        .onValueChange(matrizAccount.billingAddressLogradouro);
+    formAddress.numero.onValueChange(matrizAccount.billingAddressNumero);
+    formAddress.complemento
+        .onValueChange(matrizAccount.billingAddressComplemento);
+    formAddress.bairro.onValueChange(matrizAccount.billingAddressBairro);
+    formAddress.cidade.onValueChange(matrizAccount.billingAddressCidade);
+    formAddress.estado.onValueChange(matrizAccount.billingAddressEstado);
+    formAddress.cep.onValueChange(matrizAccount.billingAddressCep);
+    formAddress.pais.onValueChange(matrizAccount.billingAddressPais);
 
-    formConfig.onTaxaChange(matrizAccountTaxa.taxa.toString());
-    formConfig.onPorcentagemChange(
-      matrizAccountTaxa.porcentagem.toString().parseBool(),
+    formConfig.taxa.onValueChange(matrizAccountTaxa.taxa.toString());
+    formConfig.porcentagem.onValueChange(
+      matrizAccountTaxa.porcentagem.toString().parseBool().toString(),
     );
-  }
-
-  void notifyLoading() {
-    isLoading = !isLoading;
-    // notifyListeners();
   }
 
   Future<DomainAccountApiDto?> catchEntity() async {
@@ -124,8 +116,8 @@ class MatrizViewModel extends ChangeNotifier
       _streamMatrizController.sink.add(result.right);
       estadoAddress = result.right.billingAddressEstado;
       return result.right;
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
     return null;
   }
@@ -136,8 +128,8 @@ class MatrizViewModel extends ChangeNotifier
     if (result.isRight && result.right.domainAccountTaxas.isNotEmpty) {
       _streamMatrizTaxaController.sink.add(result.right.domainAccountTaxas[0]);
       return result.right.domainAccountTaxas[0];
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
     return null;
   }
@@ -146,9 +138,11 @@ class MatrizViewModel extends ChangeNotifier
     Function showMsg,
     BuildContext context,
   ) async {
-    notifyLoading();
-    var formFields = form.getFields();
-    var formAddressFields = formAddress.getFields();
+    if (isLoading) return;
+    setLoading();
+
+    var formFields = form.getValues();
+    var formAddressFields = formAddress.getValues();
 
     Map<String, dynamic> data = {
       'id': matrizAccount.id,
@@ -171,15 +165,12 @@ class MatrizViewModel extends ChangeNotifier
 
     var result =
         await updateDomainAccount.invoke(id: matrizAccount.id, body: data);
+    setLoading();
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
+      postError(result.left.message);
     } else {
-      if (!_streamControllerSuccess.isClosed) {
-        _streamControllerSuccess.sink.add(true);
-        notifyLoading();
+      if (!_streamControllerSuccess.isClosed && context.mounted) {
+        submitConfig(showMsg, context);
       }
     }
   }
@@ -188,9 +179,11 @@ class MatrizViewModel extends ChangeNotifier
     Function showMsg,
     BuildContext context,
   ) async {
-    notifyLoading();
+    if (isLoading) return;
+    setLoading();
+
     dynamic result;
-    var form = formConfig.getFields();
+    var form = formConfig.getValues();
     var taxa = form!['taxa'] ?? matrizAccountTaxa.taxa;
 
     Map<String, dynamic> data = matrizAccountTaxa.id.isNotEmpty
@@ -215,15 +208,12 @@ class MatrizViewModel extends ChangeNotifier
       result = await createConfigAccount.invoke(body: data);
     }
 
+    setLoading();
     if (result.isLeft) {
-      if (!_streamControllerError.isClosed) {
-        _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
-      }
+      postError(result.left.message);
     } else {
-      if (!_streamControllerSuccess.isClosed) {
-        // _streamControllerSuccess.sink.add(true);
-        notifyLoading();
+      if (!_streamControllerSuccess.isClosed && context.mounted) {
+        onSendFiles(showMsg, context);
       }
     }
   }
@@ -233,8 +223,8 @@ class MatrizViewModel extends ChangeNotifier
 
     if (result.isRight) {
       getMunicipioViaCep(result.right);
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -246,11 +236,11 @@ class MatrizViewModel extends ChangeNotifier
     );
 
     if (result.isRight) {
-      formAddress.onEstadoChange(result.right.municipios[0].siglaUf);
+      formAddress.estado.onValueChange(result.right.municipios[0].siglaUf);
       estadoAddress = result.right.municipios[0].siglaUf;
-      formAddress.onCidadeChange(result.right.municipios[0].nome);
-    } else if (result.isLeft && !_streamControllerError.isClosed) {
-      _streamControllerError.sink.add(result.left.message);
+      formAddress.cidade.onValueChange(result.right.municipios[0].nome);
+    } else if (result.isLeft) {
+      postError(result.left.message);
     }
   }
 
@@ -278,7 +268,8 @@ class MatrizViewModel extends ChangeNotifier
   }
 
   Future<void> onSelectedFile(PlatformFile file, Function onError) async {
-    var kb = (file.bytes!.lengthInBytes * 0.001 * 100).round() / 100; // TAMANHO EM KBYTES
+    var kb = (file.bytes!.lengthInBytes * 0.001 * 100).round() /
+        100; // TAMANHO EM KBYTES
     var mb = (kb * 0.001 * 100).round() / 100; // TAMANHO EM MEGABYTES
     // var gb = (mb * 0.001 * 100).round() / 100; // TAMANHO EM GYGABYTES
     if (file.extension != 'pdf') {
@@ -322,19 +313,23 @@ class MatrizViewModel extends ChangeNotifier
     List<Map<String, dynamic>> itens = await _getFileList() ?? [];
     DomainApiDto? domain = getDomainFromSettings.invoke();
     if (itens.isEmpty) {
-      _streamControllerError.sink.add('Erro ao enviar documentos');
+      postError('Erro ao enviar documentos');
       return;
     }
     if (domain == null) {
-      _streamControllerError.sink.add('Erro ao enviar documentos');
+      postError('Erro ao enviar documentos');
       return;
     }
 
     var result =
         await addDomainAccountDocuments.invoke(domain.id, {'documents': itens});
     if (result.isLeft) {
-      _streamControllerError.sink.add(result.left.message);
+      postError(result.left.message);
       return;
+    } else {
+      if (!_streamControllerSuccess.isClosed) {
+        _streamControllerSuccess.sink.add(true);
+      }
     }
   }
 }

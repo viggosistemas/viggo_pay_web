@@ -11,71 +11,91 @@ class MatrizTransferenciaDialog {
   final BuildContext context;
   final viewModel = locator.get<MatrizTransferenciaViewModel>();
 
-  Future<void> transferenciaDialog({
+  Future transferenciaDialog({
     required SaldoApiDto saldo,
     required List<PixToSendApiDto> pixToSendList,
   }) {
     return showDialog(
-        context: context,
-        builder: (BuildContext ctx) {
-          return PopScope(
-            canPop: false,
-            onPopInvoked: (bool didPop) {
-              if (didPop) return;
-              Navigator.pop(context, true);
-            },
-            child: Dialog.fullscreen(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Row(
+      context: context,
+      builder: (BuildContext ctx) {
+        return ScaffoldMessenger(
+          child: Builder(
+            builder: (context) {
+              return Scaffold(
+                backgroundColor: Colors.transparent,
+                body: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => Navigator.of(context).pop(),
+                  child: GestureDetector(
+                    onTap: () => {},
+                    child: PopScope(
+                      canPop: false,
+                      onPopInvoked: (bool didPop) {
+                        if (didPop) return;
+                        Navigator.pop(context, true);
+                      },
+                      child: SimpleDialog(
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.max,
                           children: [
-                            Text(
-                              'Transferindo saldo',
-                              style:
-                                  Theme.of(ctx).textTheme.titleLarge!.copyWith(
+                            Row(
+                              children: [
+                                Text(
+                                  'Transferindo saldo',
+                                  style: Theme.of(ctx)
+                                      .textTheme
+                                      .titleLarge!
+                                      .copyWith(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
+                                ),
+                                const SizedBox(
+                                  width: 4,
+                                ),
+                                const Icon(Icons.attach_money_outlined),
+                              ],
                             ),
-                            const SizedBox(
-                              width: 4,
+                            IconButton(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(
+                                Icons.close,
+                                color: Colors.red,
+                              ),
                             ),
-                            const Icon(Icons.attach_money_outlined),
                           ],
                         ),
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(
-                            Icons.close,
-                            color: Colors.red,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.6,
+                                  child: MatrizTransferenciaStepper(
+                                    saldo: saldo,
+                                    pixToSendList: pixToSendList,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.9,
-                      child: MatrizTransferenciaStepper(
-                        saldo: saldo,
-                        pixToSendList: pixToSendList
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          );
-        });
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 }

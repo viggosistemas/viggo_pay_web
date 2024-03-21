@@ -31,7 +31,7 @@ class StepInformarValor extends StatelessWidget {
   Widget build(BuildContext context) {
     final valorTransferenciaControll = TextEditingController();
     valorTransferenciaControll.text =
-        viewModel.formStepValor.getFields()!['valor'].toString();
+        viewModel.formStepValor.getValues()!['valor'].toString();
     
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -55,7 +55,7 @@ class StepInformarValor extends StatelessWidget {
           ],
         ),
         StreamBuilder<String>(
-            stream: viewModel.formStepValor.valor,
+            stream: viewModel.formStepValor.valor.field,
             builder: (context, snapshot) {
               valorTransferenciaControll.value = valorTransferenciaControll
                   .value
@@ -72,7 +72,7 @@ class StepInformarValor extends StatelessWidget {
                   ),
                 ),
                 onChanged: (value) {
-                  viewModel.formStepValor.onValorChange(value);
+                  viewModel.formStepValor.valor.onValueChange(value);
                 },
               );
             }),

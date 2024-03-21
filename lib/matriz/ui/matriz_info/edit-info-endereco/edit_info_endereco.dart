@@ -32,7 +32,7 @@ class EditInfoEndereco extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.1,
                 child: StreamBuilder<String>(
-                    stream: viewModel.formAddress.cep,
+                    stream: viewModel.formAddress.cep.field,
                     builder: (context, snapshot) {
                       cepController.value =
                           cepController.value.copyWith(text: snapshot.data);
@@ -51,10 +51,10 @@ class EditInfoEndereco extends StatelessWidget {
                             CepInputFormatter()
                           ],
                           onChanged: (value) {
-                            viewModel.formAddress.onCepChange(value);
+                            viewModel.formAddress.cep.onValueChange(value);
                             if (value.isEmpty) {
-                              viewModel.formAddress.onCidadeChange('');
-                              viewModel.formAddress.onEstadoChange('');
+                              viewModel.formAddress.cidade.onValueChange('');
+                              viewModel.formAddress.estado.onValueChange('');
                               cidadeController.value =
                                   cidadeController.value.copyWith(text: '');
                             }
@@ -67,7 +67,7 @@ class EditInfoEndereco extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.1,
                 child: StreamBuilder<String>(
-                    stream: viewModel.formAddress.cidade,
+                    stream: viewModel.formAddress.cidade.field,
                     builder: (context, snapshot) {
                       estadoController.text = viewModel.estadoAddress;
                       cidadeController.value = cidadeController.value.copyWith(
@@ -121,7 +121,7 @@ class EditInfoEndereco extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.468,
                 child: StreamBuilder<String>(
-                    stream: viewModel.formAddress.logradouro,
+                    stream: viewModel.formAddress.logradouro.field,
                     builder: (context, snapshot) {
                       logradouroController.value = logradouroController.value
                           .copyWith(text: snapshot.data);
@@ -136,7 +136,8 @@ class EditInfoEndereco extends StatelessWidget {
                             errorText: snapshot.error?.toString(),
                           ),
                           onChanged: (value) {
-                            viewModel.formAddress.onLogradouroChange(value);
+                            viewModel.formAddress.logradouro
+                                .onValueChange(value);
                           });
                     }),
               ),
@@ -153,7 +154,7 @@ class EditInfoEndereco extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.3,
                 child: StreamBuilder<String>(
-                    stream: viewModel.formAddress.bairro,
+                    stream: viewModel.formAddress.bairro.field,
                     builder: (context, snapshot) {
                       bairroController.value =
                           bairroController.value.copyWith(text: snapshot.data);
@@ -168,7 +169,7 @@ class EditInfoEndereco extends StatelessWidget {
                             errorText: snapshot.error?.toString(),
                           ),
                           onChanged: (value) {
-                            viewModel.formAddress.onBairroChange(value);
+                            viewModel.formAddress.bairro.onValueChange(value);
                           });
                     }),
               ),
@@ -178,7 +179,7 @@ class EditInfoEndereco extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.3,
                 child: StreamBuilder<String>(
-                    stream: viewModel.formAddress.complemento,
+                    stream: viewModel.formAddress.complemento.field,
                     builder: (context, snapshot) {
                       complementoController.value = complementoController.value
                           .copyWith(text: snapshot.data);
@@ -193,7 +194,8 @@ class EditInfoEndereco extends StatelessWidget {
                             errorText: snapshot.error?.toString(),
                           ),
                           onChanged: (value) {
-                            viewModel.formAddress.onComplementoChange(value);
+                            viewModel.formAddress.complemento
+                                .onValueChange(value);
                           });
                     }),
               ),
@@ -203,7 +205,7 @@ class EditInfoEndereco extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.068,
                 child: StreamBuilder<String>(
-                    stream: viewModel.formAddress.numero,
+                    stream: viewModel.formAddress.numero.field,
                     builder: (context, snapshot) {
                       numeroController.value =
                           numeroController.value.copyWith(text: snapshot.data);
@@ -218,7 +220,7 @@ class EditInfoEndereco extends StatelessWidget {
                             errorText: snapshot.error?.toString(),
                           ),
                           onChanged: (value) {
-                            viewModel.formAddress.onNumeroChange(value);
+                            viewModel.formAddress.numero.onValueChange(value);
                           });
                     }),
               ),

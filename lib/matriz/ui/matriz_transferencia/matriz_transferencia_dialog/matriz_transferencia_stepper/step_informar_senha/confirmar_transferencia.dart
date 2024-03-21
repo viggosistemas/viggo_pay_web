@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
+import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_dialog/matriz_transferencia_stepper/step_informar_senha/comprovante_pdv_viewer.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_dialog/matriz_transferencia_stepper/step_informar_senha/pin_input_senha.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 
@@ -75,10 +76,20 @@ class StepInformarSenha extends StatelessWidget {
                                 ? Colors.green
                                 : Colors.grey,
                       ),
-                      onPressed: () =>
-                          snapshot.data != null && snapshot.data == true
-                              ? viewModel.onCashoutSubmit(context)
-                              : {},
+                      onPressed: () async {
+                        var result = await showDialog(
+                          context: context,
+                          builder: (BuildContext ctx) => Dialog.fullscreen(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 14),
+                              child: ComprovantePdfViewer(),
+                            ),
+                          ),
+                        );
+                        if(result == true && context.mounted){
+                          Navigator.pop(context, true);
+                        }
+                      },
                       icon: const Icon(
                         Icons.attach_money_outlined,
                         size: 18,

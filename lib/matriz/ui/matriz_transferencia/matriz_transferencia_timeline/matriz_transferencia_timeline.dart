@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:viggo_pay_admin/components/timeline_tile.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/transacoes_api_dto.dart';
 
@@ -26,25 +28,49 @@ class TimelineMatriz extends StatelessWidget {
           isLast: index == listTransferencia.length - 1,
           isPast: index != listTransferencia.length - 1,
           iconInfo: Icons.monetization_on_outlined,
-          eventCard: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
+          eventCard: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Valor total R\$ $index',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.pix_outlined,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    'Transferência de retirada',
+                    style: GoogleFonts.lato(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                'Destinatário...',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                ),
-              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'R\$ ${listTransferencia[index].totalAmount}',
+                    style: GoogleFonts.lato(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    DateFormat('dd/MM/yyyy').format(DateTime.parse(listTransferencia[index].transactionDate)),
+                    style: GoogleFonts.lato(
+                      color: Colors.white.withOpacity(0.7),
+                    ),
+                  ),
+                ],
+              )
             ],
           ),
         ),

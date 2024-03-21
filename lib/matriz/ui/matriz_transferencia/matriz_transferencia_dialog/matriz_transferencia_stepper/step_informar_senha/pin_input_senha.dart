@@ -53,7 +53,7 @@ class _PinInputSenhaState extends State<PinInputSenha> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           StreamBuilder<String>(
-              stream: widget.viewModel.formStepSenha.senha,
+              stream: widget.viewModel.formStepSenha.senha.field,
               builder: (context, snapshot) {
                 pinController.value =
                     pinController.value.copyWith(text: snapshot.data);
@@ -70,7 +70,6 @@ class _PinInputSenhaState extends State<PinInputSenha> {
                     listenForMultipleSmsOnAndroid: true,
                     defaultPinTheme: defaultPinTheme,
                     separatorBuilder: (index) => const SizedBox(width: 8),
-                    errorText: snapshot.error?.toString(),
                     validator: (value) {
                       return snapshot.error?.toString();
                     },
@@ -80,10 +79,10 @@ class _PinInputSenhaState extends State<PinInputSenha> {
                     // },
                     hapticFeedbackType: HapticFeedbackType.lightImpact,
                     onCompleted: (pin) {
-                      widget.viewModel.formStepSenha.onSenhaChange(pin);
+                      widget.viewModel.formStepSenha.senha.onValueChange(pin);
                     },
                     onChanged: (value) {
-                      widget.viewModel.formStepSenha.onSenhaChange(value);
+                      widget.viewModel.formStepSenha.senha.onValueChange(value);
                     },
                     cursor: Column(
                       mainAxisAlignment: MainAxisAlignment.end,

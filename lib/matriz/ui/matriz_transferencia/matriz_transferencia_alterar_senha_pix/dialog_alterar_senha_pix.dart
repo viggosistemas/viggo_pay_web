@@ -17,7 +17,7 @@ class DialogAlterarSenha {
     }
 
     validarForm(bool isValid) {
-      var formFields = viewModel.formSenha.getFields();
+      var formFields = viewModel.formSenha.getValues();
       var novaSenha = formFields?['novaSenha'] ?? '';
       var confirmarSenha = formFields?['confirmarSenha'] ?? '';
       if (novaSenha == confirmarSenha && isValid) {
@@ -48,17 +48,20 @@ class DialogAlterarSenha {
       Navigator.pop(context, true);
     });
 
-    viewModel.isError.listen(
+    viewModel.errorMessage.listen(
       (value) {
-        showInfoMessage(
-          context,
-          2,
-          Colors.red,
-          value,
-          'X',
-          () {},
-          Colors.white,
-        );
+        if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
+          showInfoMessage(
+            context,
+            2,
+            Colors.red,
+            value,
+            'X',
+            () {},
+            Colors.white,
+          );
+        }
       },
     );
 
@@ -92,6 +95,7 @@ class DialogAlterarSenha {
                 ],
               ),
               content: SizedBox(
+                width: 400,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
