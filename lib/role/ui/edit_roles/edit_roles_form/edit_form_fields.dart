@@ -1,47 +1,31 @@
-import 'dart:async';
+import 'package:viggo_core_frontend/form/base_form.dart';
+import 'package:viggo_core_frontend/form/field/field.dart';
+import 'package:viggo_core_frontend/form/field/stringfield.dart';
+import 'package:viggo_core_frontend/form/validator.dart';
+import 'package:viggo_core_frontend/role/data/models/role_api_dto.dart';
+import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_view_model.dart';
 
-import 'package:rxdart/rxdart.dart';
-import 'package:viggo_pay_core_frontend/form/base_form.dart';
-import 'package:viggo_pay_core_frontend/form/validator.dart';
-import 'package:viggo_pay_core_frontend/role/data/models/role_api_dto.dart';
-
-class EditRoleFormFields extends BaseForm with EditRolesFormFieldsValidation {
-  final _nameController = BehaviorSubject<String>();
-  Stream<String> get name => _nameController.stream.transform(nameValidation);
-  Function(String) get onNameChange => _nameController.sink.add;
-
-  final _multiDomainController = BehaviorSubject<bool?>();
-  Stream<bool?> get multiDomain => _multiDomainController.stream;
-  Function(bool?) get onMultiDomainChange => _multiDomainController.sink.add;
-
-  @override
-  List<Stream<String>> getStreams() => [name];
+class EditRoleFormFields extends BaseForm {
+  final name = StringField(
+    isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+    ],
+  );
+  final multiDomain = StringField();
 
   @override
-  Map<String, String>? getFields() {
-    var name = _nameController.valueOrNull;
-    var multiDomain = _multiDomainController.valueOrNull;
+  List<Field> getFields() => [name];
 
-    if (name == null) {
-      return null;
-    }
+  @override
+  Map<String, String>? getValues() {
+    if (!name.isValid) return null;
+
     return {
-      'name': name,
-      'multiDomain': multiDomain == true
+      'name': name.value!,
+      'multiDomain': multiDomain.value?.parseBool() == true
           ? RoleDataView.MULTI_DOMAIN.name
           : RoleDataView.DOMAIN.name
     };
   }
-}
-
-mixin EditRolesFormFieldsValidation {
-  final nameValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-        Validator().isEmptyValue,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
 }

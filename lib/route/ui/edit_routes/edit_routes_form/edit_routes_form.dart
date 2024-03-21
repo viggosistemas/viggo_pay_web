@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:select_form_field/select_form_field.dart';
+import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_pay_admin/route/ui/edit_routes/edit_routes_view_model.dart';
-import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
 
 // ignore: must_be_immutable
 class EditRoutesForm extends StatelessWidget {
@@ -49,15 +49,15 @@ class EditRoutesForm extends StatelessWidget {
     final methodFieldControll = TextEditingController();
 
     if (entity != null) {
-      viewModel.form.onNameChange(entity!.name);
-      viewModel.form.onUrlChange(entity!.url);
-      viewModel.form.onMethodChange(entity!.method.name);
+      viewModel.form.name.onValueChange(entity!.name);
+      viewModel.form.url.onValueChange(entity!.url);
+      viewModel.form.method.onValueChange(entity!.method.name);
     }
 
     return Column(
       children: [
         StreamBuilder<String>(
-            stream: viewModel.form.name,
+            stream: viewModel.form.name.field,
             builder: (context, snapshot) {
               nameFieldControll.value =
                   nameFieldControll.value.copyWith(text: snapshot.data);
@@ -72,14 +72,14 @@ class EditRoutesForm extends StatelessWidget {
                     errorText: snapshot.error?.toString(),
                   ),
                   onChanged: (value) {
-                    viewModel.form.onNameChange(value);
+                    viewModel.form.name.onValueChange(value);
                   });
             }),
         const SizedBox(
           height: 10,
         ),
         StreamBuilder<String>(
-            stream: viewModel.form.url,
+            stream: viewModel.form.url.field,
             builder: (context, snapshot) {
               urlFieldControll.value =
                   urlFieldControll.value.copyWith(text: snapshot.data);
@@ -94,14 +94,14 @@ class EditRoutesForm extends StatelessWidget {
                     errorText: snapshot.error?.toString(),
                   ),
                   onChanged: (value) {
-                    viewModel.form.onUrlChange(value);
+                    viewModel.form.url.onValueChange(value);
                   });
             }),
         const SizedBox(
           height: 10,
         ),
         StreamBuilder<String>(
-          stream: viewModel.form.method,
+          stream: viewModel.form.method.field,
           builder: (context, snapshot) {
             methodFieldControll.value =
                 methodFieldControll.value.copyWith(text: snapshot.data);
@@ -116,10 +116,10 @@ class EditRoutesForm extends StatelessWidget {
                 errorText: snapshot.error?.toString(),
               ),
               onChanged: (val) {
-                viewModel.form.onMethodChange(val);
+                viewModel.form.method.onValueChange(val);
               },
               onSaved: (val) {
-                viewModel.form.onMethodChange(val ?? '');
+                viewModel.form.method.onValueChange(val ?? '');
               },
             );
           },
@@ -131,17 +131,18 @@ class EditRoutesForm extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            StreamBuilder<bool?>(
-              stream: viewModel.form.bypass,
+            StreamBuilder<String?>(
+              stream: viewModel.form.bypass.field,
               builder: (context, snapshot) {
                 return Checkbox(
                   value: snapshot.data != null
-                      ? snapshot.data!
+                      ? snapshot.data!.toString().parseBool()
                       : entity != null
-                          ? entity!.bypass
+                          ? entity!.bypass.toString().parseBool()
                           : false,
                   onChanged: (value) {
-                    viewModel.form.onBypassChange(value!);
+                    viewModel.form.bypass.onValueChange(
+                        value!.toString().parseBool().toString());
                   },
                 );
               },
@@ -157,17 +158,18 @@ class EditRoutesForm extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            StreamBuilder<bool?>(
-              stream: viewModel.form.sysadmin,
+            StreamBuilder<String?>(
+              stream: viewModel.form.sysadmin.field,
               builder: (context, snapshot) {
                 return Checkbox(
                   value: snapshot.data != null
-                      ? snapshot.data!
+                      ? snapshot.data!.toString().parseBool()
                       : entity != null
-                          ? entity!.sysadmin
+                          ? entity!.sysadmin.toString().parseBool()
                           : false,
                   onChanged: (value) {
-                    viewModel.form.onSysadminChange(value!);
+                    viewModel.form.sysadmin.onValueChange(
+                        value!.toString().parseBool().toString());
                   },
                 );
               },

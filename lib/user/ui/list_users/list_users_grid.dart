@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users.dart';
 import 'package:viggo_pay_admin/user/ui/list_users/list_users_web_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
-import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
+// ignore: must_be_immutable
 class ListUsersGrid extends StatefulWidget {
-  const ListUsersGrid({super.key});
+  ListUsersGrid({
+    super.key,
+    domainId,
+  }) {
+    if (domainId != null) {
+      this.domainId = domainId;
+    }
+  }
+
+  // ignore: avoid_init_to_null
+  late String? domainId = null;
 
   @override
   State<ListUsersGrid> createState() => _ListUsersGridState();
@@ -48,7 +59,7 @@ class _ListUsersGridState extends State<ListUsersGrid> {
     'order_by': 'name',
     'list_options': ListOptions.ACTIVE_ONLY.name,
   };
-
+  
   void onSearch(List<Map<String, dynamic>> params) {
     filters = {};
     var newParams = params
@@ -75,10 +86,22 @@ class _ListUsersGridState extends State<ListUsersGrid> {
     filters.addEntries(
       <String, String>{'order_by': 'name'}.entries,
     );
+
+    if (widget.domainId != null) {
+      filters.addEntries(
+        <String, String>{'domain_id': widget.domainId!}.entries,
+      );
+    }
+
     viewModel.loadData(filters);
   }
 
   onReload() {
+    if (widget.domainId != null) {
+      filters.addEntries(
+        <String, String>{'domain_id': widget.domainId!}.entries,
+      );
+    }
     viewModel.loadData(filters);
   }
 

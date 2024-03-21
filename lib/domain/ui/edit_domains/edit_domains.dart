@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain/ui/edit_domains/edit_domains_form/edit_domains_form.dart';
 import 'package:viggo_pay_admin/domain/ui/edit_domains/edit_domains_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
 
 class EditDomains {
   EditDomains({required this.context});
@@ -12,15 +12,15 @@ class EditDomains {
   final viewModel = locator.get<EditDomainsViewModel>();
 
   clearFields() {
-    viewModel.form.onNameChange('');
-    viewModel.form.onDisplayNameChange('');
-    viewModel.form.onDescriptionChange('');
-    viewModel.form.onApplicationIdChange('');
+    viewModel.form.name.onValueChange('');
+    viewModel.form.displayName.onValueChange('');
+    viewModel.form.description.onValueChange('');
+    viewModel.form.applicationId.onValueChange('');
 
-    viewModel.formRegister.onNameChange('');
-    viewModel.formRegister.onDisplayNameChange('');
-    viewModel.formRegister.onEmailChange('');
-    viewModel.formRegister.onPasswordChange('');
+    viewModel.formRegister.name.onValueChange('');
+    viewModel.formRegister.displayName.onValueChange('');
+    viewModel.formRegister.email.onValueChange('');
+    viewModel.formRegister.password.onValueChange('');
   }
 
   Future<void> addDialog() {

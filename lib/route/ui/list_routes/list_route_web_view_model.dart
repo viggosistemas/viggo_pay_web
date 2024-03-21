@@ -1,15 +1,15 @@
 import 'dart:async';
 
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/domain/ui/list_domain_form_fields.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
+import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
+import 'package:viggo_core_frontend/route/domain/usecases/get_route_by_id_use_case.dart';
+import 'package:viggo_core_frontend/route/domain/usecases/get_routes_by_params_use_case.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/route/domain/usecases/change_active_route_use_case.dart';
-import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
-import 'package:viggo_pay_core_frontend/domain/ui/list_domain_form_fields.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
-import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
-import 'package:viggo_pay_core_frontend/route/domain/usecases/get_route_by_id_use_case.dart';
-import 'package:viggo_pay_core_frontend/route/domain/usecases/get_routes_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
 class ListRouteWebViewModel extends BaseViewModel {
   final GetRouteByIdUseCase getRoute;
@@ -56,7 +56,7 @@ class ListRouteWebViewModel extends BaseViewModel {
     if (isLoading) return;
     setLoading();
 
-    Map<String, String>? formFields = form.getFields();
+    Map<String, String>? formFields = form.getValues();
 
     if (formFields != null) {
       for (var e in formFields.keys) {

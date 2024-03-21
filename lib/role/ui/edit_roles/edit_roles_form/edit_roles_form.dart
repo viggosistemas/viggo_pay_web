@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/role/data/models/role_api_dto.dart';
+import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_view_model.dart';
 import 'package:viggo_pay_admin/role/ui/edit_roles/edit_roles_view_model.dart';
-import 'package:viggo_pay_core_frontend/role/data/models/role_api_dto.dart';
 
 // ignore: must_be_immutable
 class EditRolesForm extends StatelessWidget {
@@ -23,13 +24,13 @@ class EditRolesForm extends StatelessWidget {
     final nameFieldControll = TextEditingController();
 
     if (entity != null) {
-      viewModel.form.onNameChange(entity!.name);
+      viewModel.form.name.onValueChange(entity!.name);
     }
 
     return Column(
       children: [
         StreamBuilder<String>(
-            stream: viewModel.form.name,
+            stream: viewModel.form.name.field,
             builder: (context, snapshot) {
               nameFieldControll.value =
                   nameFieldControll.value.copyWith(text: snapshot.data);
@@ -44,24 +45,24 @@ class EditRolesForm extends StatelessWidget {
                     errorText: snapshot.error?.toString(),
                   ),
                   onChanged: (value) {
-                    viewModel.form.onNameChange(value);
+                    viewModel.form.name.onValueChange(value);
                   });
             }),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            StreamBuilder<bool?>(
-              stream: viewModel.form.multiDomain,
+            StreamBuilder<String?>(
+              stream: viewModel.form.multiDomain.field,
               builder: (context, snapshot) {
                 return Checkbox(
-                  value: snapshot.data != null
-                      ? snapshot.data!
+                  value: snapshot.data != null && snapshot.data!.isNotEmpty
+                      ? snapshot.data!.parseBool()
                       : entity != null
                           ? entity!.dataView.name == 'MULTI_DOMAIN'
                           : false,
                   onChanged: (value) {
-                    viewModel.form.onMultiDomainChange(value!);
+                    viewModel.form.multiDomain.onValueChange(value!.toString());
                   },
                 );
               },

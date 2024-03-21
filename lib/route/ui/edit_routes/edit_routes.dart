@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/route/ui/edit_routes/edit_routes_form/edit_routes_form.dart';
 import 'package:viggo_pay_admin/route/ui/edit_routes/edit_routes_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
-import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
 
 class EditRoutes {
   EditRoutes({required this.context});
@@ -12,8 +12,9 @@ class EditRoutes {
   final viewModel = locator.get<EditRoutesViewModel>();
 
   clearFields() {
-    viewModel.form.onNameChange('');
-    // viewModel.form.onMultiDomainChange(null);
+    viewModel.form.name.onValueChange('');
+    viewModel.form.method.onValueChange('');
+    viewModel.form.url.onValueChange('');
   }
 
   Future<void> addDialog() {

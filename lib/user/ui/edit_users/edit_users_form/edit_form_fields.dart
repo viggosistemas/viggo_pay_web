@@ -1,72 +1,37 @@
-import 'dart:async';
+import 'package:viggo_core_frontend/form/base_form.dart';
+import 'package:viggo_core_frontend/form/field/field.dart';
+import 'package:viggo_core_frontend/form/field/stringfield.dart';
+import 'package:viggo_core_frontend/form/validator.dart';
 
-import 'package:rxdart/rxdart.dart';
-import 'package:viggo_pay_core_frontend/form/base_form.dart';
-import 'package:viggo_pay_core_frontend/form/validator.dart';
-
-class EditUsersFormField extends BaseForm with EditUsersFormFieldValidation {
-  final _nameController = BehaviorSubject<String>();
-  Stream<String> get name =>
-      _nameController.stream.transform(nameValidation);
-  Function(String) get onNameChange => _nameController.sink.add;
-
-  final _emailController = BehaviorSubject<String>();
-  Stream<String> get email =>
-      _emailController.stream.transform(emailValidation);
-  Function(String) get onEmailChange => _emailController.sink.add;
-
-  final _domainIdController = BehaviorSubject<String>();
-  Stream<String> get domainId =>
-      _domainIdController.stream.transform(domainValidation);
-  Function(String) get onDomainIdChange =>
-      _domainIdController.sink.add;
-
-
-  @override
-  List<Stream<String>> getStreams() => [name];
+class EditUsersFormField extends BaseForm{
+  final name = StringField(
+    isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+    ],
+  );
+  final email = StringField(
+    isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+      Validator().isEmailValid,
+    ],
+  );
+  final domainId = StringField(
+    isRequired: true,
+  );
 
   @override
-  Map<String, String>? getFields() {
-    var name = _nameController.valueOrNull;
-    var email = _emailController.valueOrNull;
-    var domainId = _domainIdController.valueOrNull;
+  List<Field> getFields() => [name, email, domainId];
 
-    if (name == null || email == null) return null;
+  @override
+  Map<String, String>? getValues() {
+    if (!name.isValid || !email.isValid || !domainId.isValid) return null;
 
     return {
-      'name': name,
-      'email': email,
-      'domain_id': domainId ?? '',
+      'name': name.value!,
+      'email': email.value!,
+      'domain_id': domainId.value!,
     };
   }
-}
-
-mixin EditUsersFormFieldValidation {
-  final nameValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-        Validator().isEmptyValue,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
-  final emailValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-        Validator().isEmptyValue,
-        Validator().isEmailValid
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
-  final domainValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
 }

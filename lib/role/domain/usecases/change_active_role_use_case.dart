@@ -1,4 +1,4 @@
-import 'package:viggo_pay_core_frontend/role/domain/role_repository.dart';
+import 'package:viggo_core_frontend/role/domain/role_repository.dart';
 
 class ChangeActiveRoleUseCase {
   final RoleRepository repository;

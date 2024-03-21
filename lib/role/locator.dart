@@ -1,15 +1,15 @@
+import 'package:viggo_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
+import 'package:viggo_core_frontend/role/domain/role_repository.dart';
+import 'package:viggo_core_frontend/role/domain/usecases/create_role_use_case.dart';
+import 'package:viggo_core_frontend/role/domain/usecases/get_role_by_id_use_case.dart';
+import 'package:viggo_core_frontend/role/domain/usecases/get_roles_by_params_use_case.dart';
+import 'package:viggo_core_frontend/role/domain/usecases/update_role_use_case.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/role/domain/usecases/change_active_role_use_case.dart';
 import 'package:viggo_pay_admin/role/ui/edit_roles/edit_roles_view_model.dart';
 import 'package:viggo_pay_admin/role/ui/list_roles/list_role_web_view_model.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
-import 'package:viggo_pay_core_frontend/role/domain/role_repository.dart';
-import 'package:viggo_pay_core_frontend/role/domain/usecases/create_role_use_case.dart';
-import 'package:viggo_pay_core_frontend/role/domain/usecases/get_role_by_id_use_case.dart';
-import 'package:viggo_pay_core_frontend/role/domain/usecases/get_roles_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/role/domain/usecases/update_role_use_case.dart';
 
 class RoleLocator {
   void setup() {

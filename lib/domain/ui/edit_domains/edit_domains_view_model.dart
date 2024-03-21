@@ -1,16 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/application/domain/usecases/get_applications_by_params_use_case.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
+import 'package:viggo_core_frontend/domain/domain/usecases/get_domains_by_params_use_case.dart';
+import 'package:viggo_core_frontend/domain/domain/usecases/register_use_case.dart';
+import 'package:viggo_core_frontend/domain/domain/usecases/update_domain_use_case.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/domain/ui/edit_domains/edit_domains_form/edit_form_fields.dart';
 import 'package:viggo_pay_admin/domain/ui/edit_domains/edit_domains_form/register_form_fields.dart';
-import 'package:viggo_pay_core_frontend/application/data/models/application_api_dto.dart';
-import 'package:viggo_pay_core_frontend/application/domain/usecases/get_applications_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
-import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domains_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/domain/domain/usecases/register_use_case.dart';
-import 'package:viggo_pay_core_frontend/domain/domain/usecases/update_domain_use_case.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
 class EditDomainsViewModel extends BaseViewModel {
   late DomainApiDto matriz;
@@ -27,12 +26,6 @@ class EditDomainsViewModel extends BaseViewModel {
       StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
-  final StreamController<List<ApplicationApiDto>>
-      _streamControllerApplications =
-      StreamController<List<ApplicationApiDto>>.broadcast();
-  Stream<List<ApplicationApiDto>> get listApplications =>
-      _streamControllerApplications.stream;
-
   EditDomainsViewModel({
     required this.getDomains,
     required this.updateDomain,
@@ -44,16 +37,7 @@ class EditDomainsViewModel extends BaseViewModel {
     });
   }
 
-  Future<void> loadApplications(Map<String, String> filters) async {
-    // Map<String, String>? formFields = form.getFields();
-
-    // if (formFields != null) {
-    //   for (var e in formFields.keys) {
-    //     var value = formFields[e];
-    //     value != null ? filters[e] = value : value;
-    //   }
-    // }
-
+  Future loadApplications(Map<String, String> filters) async {
     if (isLoading) return;
 
     setLoading();
@@ -70,7 +54,7 @@ class EditDomainsViewModel extends BaseViewModel {
     setLoading();
 
     if (result.isRight) {
-      _streamControllerApplications.sink.add(result.right.applications);
+      return result.right.applications;
     } else if (result.isLeft) {
       postError(result.left.message);
     }
@@ -109,8 +93,8 @@ class EditDomainsViewModel extends BaseViewModel {
 
     setLoading();
     dynamic result;
-    var formFields = form.getFields();
-    var formRegisterFields = formRegister.getFields();
+    var formFields = form.getValues();
+    var formRegisterFields = formRegister.getValues();
 
     Map<String, dynamic> data = {
       'id': id,

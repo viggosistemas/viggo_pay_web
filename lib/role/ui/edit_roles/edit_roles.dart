@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/role/data/models/role_api_dto.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/role/ui/edit_roles/edit_roles_form/edit_roles_form.dart';
 import 'package:viggo_pay_admin/role/ui/edit_roles/edit_roles_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
-import 'package:viggo_pay_core_frontend/role/data/models/role_api_dto.dart';
 
 class EditRoles {
   EditRoles({required this.context});
@@ -12,8 +12,8 @@ class EditRoles {
   final viewModel = locator.get<EditRolesViewModel>();
 
   clearFields() {
-    viewModel.form.onNameChange('');
-    viewModel.form.onMultiDomainChange(null);
+    viewModel.form.name.onValueChange('');
+    viewModel.form.multiDomain.onValueChange('');
   }
 
   Future<void> addDialog() {

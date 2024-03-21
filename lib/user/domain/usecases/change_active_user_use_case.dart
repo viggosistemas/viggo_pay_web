@@ -1,4 +1,4 @@
-import 'package:viggo_pay_core_frontend/user/domain/user_repository.dart';
+import 'package:viggo_core_frontend/user/domain/user_repository.dart';
 
 class ChangeActiveUserUseCase {
   final UserRepository repository;

@@ -1,4 +1,4 @@
-import 'package:viggo_pay_core_frontend/route/domain/route_repository.dart';
+import 'package:viggo_core_frontend/route/domain/route_repository.dart';
 
 class ChangeActiveRouteUseCase {
   final RouteRepository repository;

@@ -1,4 +1,4 @@
-import 'package:viggo_pay_core_frontend/domain/domain/domain_repository.dart';
+import 'package:viggo_core_frontend/domain/domain/domain_repository.dart';
 
 class ChangeActiveDomainUseCase {
   final DomainRepository repository;

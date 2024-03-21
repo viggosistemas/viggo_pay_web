@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/role/domain/usecases/create_role_use_case.dart';
+import 'package:viggo_core_frontend/role/domain/usecases/get_roles_by_params_use_case.dart';
+import 'package:viggo_core_frontend/role/domain/usecases/update_role_use_case.dart';
 import 'package:viggo_pay_admin/role/ui/edit_roles/edit_roles_form/edit_form_fields.dart';
-import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
-import 'package:viggo_pay_core_frontend/role/domain/usecases/create_role_use_case.dart';
-import 'package:viggo_pay_core_frontend/role/domain/usecases/get_roles_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/role/domain/usecases/update_role_use_case.dart';
 
 class EditRolesViewModel extends BaseViewModel {
   final GetRolesByParamsUseCase getRoles;
@@ -33,7 +33,7 @@ class EditRolesViewModel extends BaseViewModel {
     setLoading();
 
     dynamic result;
-    var formFields = form.getFields();
+    var formFields = form.getValues();
 
     Map<String, dynamic> data = {
       'name': formFields!['name'],

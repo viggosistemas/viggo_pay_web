@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users_form/edit_users_form.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
-import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
 
 class EditUsers {
   EditUsers({required this.context});

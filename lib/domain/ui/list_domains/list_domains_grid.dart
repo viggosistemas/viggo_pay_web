@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain/ui/edit_domains/edit_domains.dart';
 import 'package:viggo_pay_admin/domain/ui/list_domains/list_domain_web_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
 class ListDomainsGrid extends StatefulWidget {
   const ListDomainsGrid({super.key});

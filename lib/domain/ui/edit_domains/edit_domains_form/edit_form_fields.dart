@@ -1,33 +1,32 @@
-import 'dart:async';
+import 'package:viggo_core_frontend/form/base_form.dart';
+import 'package:viggo_core_frontend/form/field/field.dart';
+import 'package:viggo_core_frontend/form/field/stringfield.dart';
+import 'package:viggo_core_frontend/form/validator.dart';
 
-import 'package:rxdart/rxdart.dart';
-import 'package:viggo_pay_core_frontend/form/base_form.dart';
-import 'package:viggo_pay_core_frontend/form/validator.dart';
-
-class EditDomainFormFields extends BaseForm
-    with EditDomainsFormFieldsValidation {
-  final _nameController = BehaviorSubject<String>();
-  Stream<String> get name => _nameController.stream.transform(nameValidation);
-  Function(String) get onNameChange => _nameController.sink.add;
-
-  final _displayNameController = BehaviorSubject<String>();
-  Stream<String> get displayName =>
-      _displayNameController.stream.transform(displayNameValidation);
-  Function(String) get onDisplayNameChange => _displayNameController.sink.add;
-
-  final _applicationIdController = BehaviorSubject<String>();
-  Stream<String> get applicationId =>
-      _applicationIdController.stream.transform(applicationValidation);
-  Function(String) get onApplicationIdChange =>
-      _applicationIdController.sink.add;
-
-  final _descriptionController = BehaviorSubject<String>();
-  Stream<String> get description =>
-      _descriptionController.stream.transform(descriptionValidation);
-  Function(String) get onDescriptionChange => _descriptionController.sink.add;
+class EditDomainFormFields extends BaseForm {
+  final name = StringField(
+    isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+    ],
+  );
+  final displayName = StringField(
+    isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+    ],
+  );
+  final applicationId = StringField(
+    isRequired: true,
+  );
+  final description = StringField(
+    validators: [
+      Validator().isEmptyValue,
+    ],
+  );
 
   @override
-  List<Stream<String>> getStreams() => [
+  List<Field> getFields() => [
         name,
         displayName,
         description,
@@ -35,57 +34,15 @@ class EditDomainFormFields extends BaseForm
       ];
 
   @override
-  Map<String, String>? getFields() {
-    var name = _nameController.valueOrNull;
-    var displayName = _displayNameController.valueOrNull;
-    var description = _descriptionController.valueOrNull;
-    var applicationId = _applicationIdController.valueOrNull;
-
-    if (name == null || displayName == null || applicationId == null) {
+  Map<String, String>? getValues() {
+    if (!name.isValid || !displayName.isValid || !applicationId.isValid) {
       return null;
     }
     return {
-      'name': name,
-      'display_name': displayName,
-      'description': description ?? '',
-      'application_id': applicationId,
+      'name': name.value!,
+      'display_name': displayName.value!,
+      'description': description.value ?? '',
+      'application_id': applicationId.value!,
     };
   }
-}
-
-mixin EditDomainsFormFieldsValidation {
-  final nameValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-        Validator().isEmptyValue,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
-  final displayNameValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-        Validator().isEmptyValue,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
-  final descriptionValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isEmptyValue,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
-  final applicationValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
 }

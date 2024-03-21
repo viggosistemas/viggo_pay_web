@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/route/domain/usecases/create_route_use_case.dart';
+import 'package:viggo_core_frontend/route/domain/usecases/get_routes_by_params_use_case.dart';
+import 'package:viggo_core_frontend/route/domain/usecases/update_route_use_case.dart';
 import 'package:viggo_pay_admin/route/ui/edit_routes/edit_routes_form/edit_form_fields.dart';
-import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
-import 'package:viggo_pay_core_frontend/route/domain/usecases/create_route_use_case.dart';
-import 'package:viggo_pay_core_frontend/route/domain/usecases/get_routes_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/route/domain/usecases/update_route_use_case.dart';
 
 class EditRoutesViewModel extends BaseViewModel {
   final GetRoutesByParamsUseCase getRoutes;
@@ -33,7 +33,7 @@ class EditRoutesViewModel extends BaseViewModel {
     setLoading();
 
     dynamic result;
-    var formFields = form.getFields();
+    var formFields = form.getValues();
 
     Map<String, dynamic> data = {
       'name': formFields!['name'],

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pinput/pinput.dart';
+import 'package:viggo_core_frontend/application/data/models/application_api_dto.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/domain/ui/edit_domains/edit_domains_view_model.dart';
-import 'package:viggo_pay_core_frontend/application/data/models/application_api_dto.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
 // ignore: must_be_immutable
 class EditDomainsForm extends StatefulWidget {
@@ -37,34 +38,36 @@ class _EditDomainsFormState extends State<EditDomainsForm> {
     }
   }
 
+  final nameFieldControll = TextEditingController();
+  final displayNameFieldControll = TextEditingController();
+  final descriptionFieldControll = TextEditingController();
+  final applicationFieldControll = TextEditingController();
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
   @override
   Widget build(context) {
-    final nameFieldControll = TextEditingController();
-    final displayNameFieldControll = TextEditingController();
-    final descriptionFieldControll = TextEditingController();
-    final applicationFieldControll = TextEditingController();
-
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
     var passwordVisible = false;
 
     if (widget.entity != null) {
-      widget.viewModel.form.onNameChange(widget.entity!.name);
+      widget.viewModel.form.name.onValueChange(widget.entity!.name);
     }
 
     if (widget.entity != null) {
-      widget.viewModel.form.onDisplayNameChange(widget.entity!.displayName);
+      widget.viewModel.form.displayName
+          .onValueChange(widget.entity!.displayName);
     }
 
     if (widget.entity != null) {
-      widget.viewModel.form
-          .onDescriptionChange(widget.entity!.description ?? '');
+      widget.viewModel.form.description
+          .onValueChange(widget.entity!.description ?? '');
     }
 
     if (widget.entity != null) {
       if (widget.entity?.application != null) {
-        widget.viewModel.form
-            .onApplicationIdChange(widget.entity!.applicationId);
+        widget.viewModel.form.applicationId
+            .onValueChange(widget.entity!.applicationId);
       }
     }
 
@@ -73,7 +76,7 @@ class _EditDomainsFormState extends State<EditDomainsForm> {
         return Column(
           children: [
             StreamBuilder<String>(
-                stream: widget.viewModel.formRegister.name,
+                stream: widget.viewModel.formRegister.name.field,
                 builder: (context, snapshot) {
                   nameFieldControll.value =
                       nameFieldControll.value.copyWith(text: snapshot.data);
@@ -88,14 +91,14 @@ class _EditDomainsFormState extends State<EditDomainsForm> {
                         errorText: snapshot.error?.toString(),
                       ),
                       onChanged: (value) {
-                        widget.viewModel.formRegister.onNameChange(value);
+                        widget.viewModel.formRegister.name.onValueChange(value);
                       });
                 }),
             const SizedBox(
               height: 10,
             ),
             StreamBuilder<String>(
-                stream: widget.viewModel.formRegister.displayName,
+                stream: widget.viewModel.formRegister.displayName.field,
                 builder: (context, snapshot) {
                   displayNameFieldControll.value = displayNameFieldControll
                       .value
@@ -111,15 +114,15 @@ class _EditDomainsFormState extends State<EditDomainsForm> {
                         errorText: snapshot.error?.toString(),
                       ),
                       onChanged: (value) {
-                        widget.viewModel.formRegister
-                            .onDisplayNameChange(value);
+                        widget.viewModel.formRegister.displayName
+                            .onValueChange(value);
                       });
                 }),
             const SizedBox(
               height: 10,
             ),
             StreamBuilder<String>(
-                stream: widget.viewModel.formRegister.email,
+                stream: widget.viewModel.formRegister.email.field,
                 builder: (context, snapshot) {
                   emailController.value =
                       emailController.value.copyWith(text: snapshot.data);
@@ -131,7 +134,7 @@ class _EditDomainsFormState extends State<EditDomainsForm> {
                     ),
                     controller: emailController,
                     onChanged: (value) {
-                      widget.viewModel.formRegister.onEmailChange(value);
+                      widget.viewModel.formRegister.email.onValueChange(value);
                     },
                     // onFieldSubmitted: (value) {
                     //   if (_validateForm()) {
@@ -147,7 +150,7 @@ class _EditDomainsFormState extends State<EditDomainsForm> {
                 }),
             const SizedBox(height: 10),
             StreamBuilder<String>(
-                stream: widget.viewModel.formRegister.password,
+                stream: widget.viewModel.formRegister.password.field,
                 builder: (context, snapshot) {
                   passwordController.value =
                       passwordController.value.copyWith(text: snapshot.data);
@@ -172,7 +175,8 @@ class _EditDomainsFormState extends State<EditDomainsForm> {
                     ),
                     controller: passwordController,
                     onChanged: (value) {
-                      widget.viewModel.formRegister.onPasswordChange(value);
+                      widget.viewModel.formRegister.password
+                          .onValueChange(value);
                     },
                     obscureText: !passwordVisible,
                     autocorrect: false,
@@ -185,7 +189,7 @@ class _EditDomainsFormState extends State<EditDomainsForm> {
         return Column(
           children: [
             StreamBuilder<String>(
-                stream: widget.viewModel.form.name,
+                stream: widget.viewModel.form.name.field,
                 builder: (context, snapshot) {
                   nameFieldControll.value =
                       nameFieldControll.value.copyWith(text: snapshot.data);
@@ -200,14 +204,14 @@ class _EditDomainsFormState extends State<EditDomainsForm> {
                         errorText: snapshot.error?.toString(),
                       ),
                       onChanged: (value) {
-                        widget.viewModel.form.onNameChange(value);
+                        widget.viewModel.form.name.onValueChange(value);
                       });
                 }),
             const SizedBox(
               height: 10,
             ),
             StreamBuilder<String>(
-                stream: widget.viewModel.form.displayName,
+                stream: widget.viewModel.form.displayName.field,
                 builder: (context, snapshot) {
                   displayNameFieldControll.value = displayNameFieldControll
                       .value
@@ -223,122 +227,114 @@ class _EditDomainsFormState extends State<EditDomainsForm> {
                         errorText: snapshot.error?.toString(),
                       ),
                       onChanged: (value) {
-                        widget.viewModel.form.onDisplayNameChange(value);
-                      });
-                }),
-            const SizedBox(
-              height: 10,
-            ),
-            StreamBuilder<List<ApplicationApiDto>>(
-                stream: widget.viewModel.listApplications,
-                builder: (context, snapshotList) {
-                  if (snapshotList.data == null) {
-                    widget.viewModel.loadApplications({
-                      'list_options': ListOptions.ACTIVE_ONLY.name,
-                      'order_by': 'name'
-                    });
-                  }
-                  return StreamBuilder<String>(
-                      stream: widget.viewModel.form.applicationId,
-                      builder: (context, snapshot) {
-                        applicationFieldControll.value =
-                            applicationFieldControll.value
-                                .copyWith(text: snapshot.data);
-                        return Autocomplete<ApplicationApiDto>(
-                          optionsBuilder: (TextEditingValue textEditingValue) {
-                            if (textEditingValue.text == '') {
-                              widget.viewModel.loadApplications({
-                                'list_options': ListOptions.ACTIVE_ONLY.name,
-                                'order_by': 'name'
-                              });
-                              return const Iterable<ApplicationApiDto>.empty();
-                            } else {
-                              widget.viewModel.loadApplications({
-                                'list_options': ListOptions.ACTIVE_ONLY.name,
-                                'order_by': 'name',
-                                'name': '%${textEditingValue.text}%'
-                              });
-                            }
-                            if (snapshotList.data != null) {
-                              return snapshotList.data!
-                                  .where((ApplicationApiDto option) {
-                                return option.name.contains(
-                                    textEditingValue.text.toLowerCase());
-                              });
-                            } else {
-                              return {};
-                            }
-                          },
-                          initialValue:
-                              TextEditingValue(text: getInitialValue()),
-                          displayStringForOption: (option) => option.name,
-                          optionsViewBuilder: (context, onSelected, options) =>
-                              Align(
-                            alignment: Alignment.topLeft,
-                            child: Material(
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                    bottom: Radius.circular(4.0)),
-                              ),
-                              child: SizedBox(
-                                height: 52.0 * options.length,
-                                width: 500, //define the same width of dialog
-                                child: ListView.builder(
-                                  padding: EdgeInsets.zero,
-                                  itemCount: options.length,
-                                  shrinkWrap: false,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    final ApplicationApiDto option =
-                                        options.elementAt(index);
-                                    return InkWell(
-                                      onTap: () => onSelected(option),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Text(option.name),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                          fieldViewBuilder: (
-                            BuildContext context,
-                            TextEditingController controller,
-                            FocusNode focusNode,
-                            VoidCallback onFieldSubmitted,
-                          ) {
-                            return TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'Aplicação',
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.always,
-                                floatingLabelAlignment:
-                                    FloatingLabelAlignment.start,
-                                border: const OutlineInputBorder(),
-                                errorText: snapshot.error?.toString(),
-                              ),
-                              controller: controller,
-                              focusNode: focusNode,
-                              onChanged: (value) {
-                                widget.viewModel.form
-                                    .onApplicationIdChange(value);
-                              },
-                            );
-                          },
-                          onSelected: (ApplicationApiDto selection) {
-                            widget.viewModel.form
-                                .onApplicationIdChange(selection.id);
-                          },
-                        );
+                        widget.viewModel.form.displayName.onValueChange(value);
                       });
                 }),
             const SizedBox(
               height: 10,
             ),
             StreamBuilder<String>(
-                stream: widget.viewModel.form.description,
+              stream: widget.viewModel.form.applicationId.field,
+              builder: (context, snapshot) {
+                applicationFieldControll.value = applicationFieldControll.value
+                    .copyWith(text: snapshot.data);
+                return Autocomplete<ApplicationApiDto>(
+                  optionsBuilder: (TextEditingValue textEditingValue) async {
+                    if (textEditingValue.text == '') {
+                      var options = await widget.viewModel.loadApplications({
+                        'list_options': ListOptions.ACTIVE_ONLY.name,
+                        'order_by': 'name'
+                      });
+                      return options!.where((element) => true);
+                    } else {
+                      var options = await widget.viewModel.loadApplications({
+                        'list_options': ListOptions.ACTIVE_ONLY.name,
+                        'order_by': 'name',
+                        'name': '%${textEditingValue.text}%'
+                      });
+                      return options!.where((element) => true);
+                    }
+                  },
+                  initialValue: TextEditingValue(text: getInitialValue()),
+                  displayStringForOption: (option) => option.name,
+                  optionsViewBuilder: (context, onSelected, options) => Align(
+                    alignment: Alignment.topLeft,
+                    child: Material(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(bottom: Radius.circular(4.0)),
+                      ),
+                      child: SizedBox(
+                        height: 52.0 * options.length,
+                        width: 500, //define the same width of dialog
+                        child: ListView.builder(
+                          padding: EdgeInsets.zero,
+                          itemCount: options.length,
+                          shrinkWrap: false,
+                          itemBuilder: (BuildContext context, int index) {
+                            final ApplicationApiDto option =
+                                options.elementAt(index);
+                            return InkWell(
+                              onTap: () => onSelected(option),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Text(option.name),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  fieldViewBuilder: (
+                    BuildContext context,
+                    TextEditingController controller,
+                    FocusNode focusNode,
+                    VoidCallback onFieldSubmitted,
+                  ) {
+                    return TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Aplicação',
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        floatingLabelAlignment: FloatingLabelAlignment.start,
+                        border: const OutlineInputBorder(),
+                        errorText: snapshot.error?.toString(),
+                        suffix:
+                            snapshot.data != null && snapshot.data!.isNotEmpty
+                                ? IconButton(
+                                    onPressed: () {
+                                      widget.viewModel.form.applicationId
+                                          .onValueChange('');
+                                      controller.setText('');
+                                    },
+                                    icon: const Icon(
+                                      Icons.cancel_outlined,
+                                      size: 18,
+                                      color: Colors.red,
+                                    ),
+                                  )
+                                : const Text(''),
+                      ),
+                      controller: controller,
+                      focusNode: focusNode,
+                      onChanged: (value) {
+                        widget.viewModel.form.applicationId
+                            .onValueChange(value);
+                      },
+                    );
+                  },
+                  onSelected: (ApplicationApiDto selection) {
+                    widget.viewModel.form.applicationId
+                        .onValueChange(selection.id);
+                  },
+                );
+              },
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            StreamBuilder<String>(
+                stream: widget.viewModel.form.description.field,
                 builder: (context, snapshot) {
                   descriptionFieldControll.value = descriptionFieldControll
                       .value
@@ -357,7 +353,7 @@ class _EditDomainsFormState extends State<EditDomainsForm> {
                         errorText: snapshot.error?.toString(),
                       ),
                       onChanged: (value) {
-                        widget.viewModel.form.onDescriptionChange(value);
+                        widget.viewModel.form.description.onValueChange(value);
                       });
                 }),
           ],

@@ -3,20 +3,20 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:viggo_core_frontend/application/domain/usecases/get_roles_from_application_by_id_use_case.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
+import 'package:viggo_core_frontend/domain/domain/usecases/get_domains_by_params_use_case.dart';
+import 'package:viggo_core_frontend/grant/data/models/grant_api_dto.dart';
+import 'package:viggo_core_frontend/grant/domain/usecases/add_grant_use_case.dart';
+import 'package:viggo_core_frontend/grant/domain/usecases/delete_grant_use_case.dart';
+import 'package:viggo_core_frontend/grant/domain/usecases/get_grants_from_user_by_id_use_case.dart';
+import 'package:viggo_core_frontend/role/data/models/role_api_dto.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/create_user_use_case.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/update_user_use_case.dart';
+import 'package:viggo_core_frontend/util/constants.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users_form/edit_form_fields.dart';
-import 'package:viggo_pay_core_frontend/application/domain/usecases/get_roles_from_application_by_id_use_case.dart';
-import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
-import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domains_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/grant/data/models/grant_api_dto.dart';
-import 'package:viggo_pay_core_frontend/grant/domain/usecases/add_grant_use_case.dart';
-import 'package:viggo_pay_core_frontend/grant/domain/usecases/delete_grant_use_case.dart';
-import 'package:viggo_pay_core_frontend/grant/domain/usecases/get_grants_from_user_by_id_use_case.dart';
-import 'package:viggo_pay_core_frontend/role/data/models/role_api_dto.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/create_user_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/update_user_use_case.dart';
-import 'package:viggo_pay_core_frontend/util/constants.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
 class EditUsersViewModel extends BaseViewModel {
   List<GrantApiDto> grants = [];
@@ -37,10 +37,6 @@ class EditUsersViewModel extends BaseViewModel {
       StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
-  final StreamController<List<DomainApiDto>> _streamControllerDomains =
-      StreamController<List<DomainApiDto>>.broadcast();
-  Stream<List<DomainApiDto>> get listDomains => _streamControllerDomains.stream;
-
   final StreamController<List<RoleApiDto>> _streamControllerApplicationRoles =
       StreamController<List<RoleApiDto>>.broadcast();
   Stream<List<RoleApiDto>> get listRolesApplication =>
@@ -57,7 +53,7 @@ class EditUsersViewModel extends BaseViewModel {
     required this.deleteGranUser,
   });
 
-  Future<void> loadDomains(Map<String, String> filters) async {
+  Future loadDomains(Map<String, String> filters) async {
     if (isLoading) return;
 
     setLoading();
@@ -71,7 +67,7 @@ class EditUsersViewModel extends BaseViewModel {
     );
     setLoading();
     if (result.isRight) {
-      _streamControllerDomains.sink.add(result.right.domains);
+      return result.right.domains;
     } else if (result.isLeft) {
       postError(result.left.message);
     }
@@ -165,7 +161,7 @@ class EditUsersViewModel extends BaseViewModel {
     if (isLoading) return;
 
     setLoading();
-    var formFields = form.getFields();
+    var formFields = form.getValues();
     dynamic result;
 
     Map<String, dynamic> data = id != null && id.isNotEmpty
@@ -196,6 +192,7 @@ class EditUsersViewModel extends BaseViewModel {
     } else {
       if (!_streamControllerSuccess.isClosed) {
         getGrantsRoles(result.value.id);
+        _streamControllerSuccess.sink.add(true);
       }
     }
   }

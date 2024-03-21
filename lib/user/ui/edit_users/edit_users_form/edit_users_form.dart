@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pinput/pinput.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
+import 'package:viggo_core_frontend/role/data/models/role_api_dto.dart';
+import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users_view_model.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
-import 'package:viggo_pay_core_frontend/role/data/models/role_api_dto.dart';
-import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
 // ignore: must_be_immutable
 class EditUsersForm extends StatefulWidget {
@@ -26,36 +27,35 @@ class EditUsersForm extends StatefulWidget {
 }
 
 class _EditUsersFormState extends State<EditUsersForm> {
+  final nameFieldControll = TextEditingController();
+  final emailFieldControll = TextEditingController();
+  final domainFieldControll = TextEditingController();
+// DomainApiDto mockLastOption = DomainApiDto.fromJson({
+  //   "name": "",
+  //   "display_name": "t",
+  //   "application_id": "",
+  //   "id": "last",
+  //   "active": true,
+  // });
   @override
   Widget build(context) {
-    DomainApiDto mockLastOption = DomainApiDto.fromJson({
-      "name": "",
-      "display_name": "t",
-      "application_id": "",
-      "id": "last",
-      "active": true,
-    });
-    final nameFieldControll = TextEditingController();
-    final emailFieldControll = TextEditingController();
-    final domainFieldControll = TextEditingController();
-
     if (widget.entity != null) {
-      widget.viewModel.form.onNameChange(widget.entity!.name);
+      widget.viewModel.form.name.onValueChange(widget.entity!.name);
     } else {
-      widget.viewModel.form.onNameChange('');
+      widget.viewModel.form.name.onValueChange('');
     }
     if (widget.entity != null) {
-      widget.viewModel.form.onEmailChange(widget.entity!.email);
+      widget.viewModel.form.email.onValueChange(widget.entity!.email);
     } else {
-      widget.viewModel.form.onEmailChange('');
+      widget.viewModel.form.email.onValueChange('');
     }
 
     if (widget.entity != null) {
       if (widget.entity?.domain != null) {
-        widget.viewModel.form.onDomainIdChange(widget.entity!.domainId);
+        widget.viewModel.form.domainId.onValueChange(widget.entity!.domainId);
       }
     } else {
-      widget.viewModel.form.onDomainIdChange('');
+      widget.viewModel.form.domainId.onValueChange('');
     }
 
     contentRolesSelect() {
@@ -140,7 +140,7 @@ class _EditUsersFormState extends State<EditUsersForm> {
     return Column(
       children: [
         StreamBuilder<String>(
-            stream: widget.viewModel.form.name,
+            stream: widget.viewModel.form.name.field,
             builder: (context, snapshot) {
               nameFieldControll.value =
                   nameFieldControll.value.copyWith(text: snapshot.data);
@@ -155,14 +155,14 @@ class _EditUsersFormState extends State<EditUsersForm> {
                     errorText: snapshot.error?.toString(),
                   ),
                   onChanged: (value) {
-                    widget.viewModel.form.onNameChange(value);
+                    widget.viewModel.form.name.onValueChange(value);
                   });
             }),
         const SizedBox(
           height: 10,
         ),
         StreamBuilder<String>(
-            stream: widget.viewModel.form.email,
+            stream: widget.viewModel.form.email.field,
             builder: (context, snapshot) {
               emailFieldControll.value =
                   emailFieldControll.value.copyWith(text: snapshot.data);
@@ -177,126 +177,116 @@ class _EditUsersFormState extends State<EditUsersForm> {
                     errorText: snapshot.error?.toString(),
                   ),
                   onChanged: (value) {
-                    widget.viewModel.form.onEmailChange(value);
+                    widget.viewModel.form.email.onValueChange(value);
                   });
             }),
         const SizedBox(
           height: 10,
         ),
-        StreamBuilder<List<DomainApiDto>>(
-            stream: widget.viewModel.listDomains,
-            builder: (context, snapshotList) {
-              if (snapshotList.data == null) {
-                widget.viewModel.loadDomains({
-                  'list_options': ListOptions.ACTIVE_ONLY.name,
-                  'order_by': 'name'
-                });
-              }
-              return StreamBuilder<String>(
-                  stream: widget.viewModel.form.domainId,
-                  builder: (context, snapshot) {
-                    domainFieldControll.value =
-                        domainFieldControll.value.copyWith(text: snapshot.data);
-                    return Autocomplete<DomainApiDto>(
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        if (textEditingValue.text == '') {
-                          widget.viewModel.loadDomains({
-                            'list_options': ListOptions.ACTIVE_ONLY.name,
-                            'order_by': 'name'
-                          });
-                          snapshotList.data!.add(mockLastOption);
-                          return snapshotList.data!.where((element) => true);
-                        } else {
-                          widget.viewModel.loadDomains({
-                            'list_options': ListOptions.ACTIVE_ONLY.name,
-                            'order_by': 'name',
-                            'name': '%${textEditingValue.text}%'
-                          });
-                        }
-                        if (snapshotList.data != null) {
-                          var options =
-                              snapshotList.data!.where((DomainApiDto option) {
-                            return option.name
-                                .contains(textEditingValue.text.toLowerCase());
-                          }).toList();
-                          options.add(mockLastOption);
-                          return options.where((element) => true);
-                        } else {
-                          return {};
-                        }
-                      },
-                      initialValue: TextEditingValue(text: widget.entity?.domain?.name ?? ''),
-                      displayStringForOption: (option) => option.name,
-                      optionsViewBuilder: (context, onSelected, options) =>
-                          Align(
-                        alignment: Alignment.topLeft,
-                        child: Material(
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                                bottom: Radius.circular(4.0)),
-                          ),
-                          child: SizedBox(
-                            height: 52.0 * options.length,
-                            width: 500, //define the same width of dialog
-                            child: ListView.builder(
-                              padding: EdgeInsets.zero,
-                              itemCount: options.length,
-                              shrinkWrap: false,
-                              itemBuilder: (BuildContext context, int index) {
-                                final DomainApiDto option =
-                                    options.elementAt(index);
-                                return option.id == 'last'
-                                    ? Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: ElevatedButton.icon(
-                                            onPressed: () {},
-                                            icon: const Icon(
-                                              Icons.add_circle_outline,
-                                              size: 18,
-                                            ),
-                                            label:
-                                                const Text('Adicionar agora')),
-                                      )
-                                    : InkWell(
-                                        onTap: () => onSelected(option),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16.0),
-                                          child: Text(option.name),
-                                        ),
-                                      );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                      fieldViewBuilder: (
-                        BuildContext context,
-                        TextEditingController controller,
-                        FocusNode focusNode,
-                        VoidCallback onFieldSubmitted,
-                      ) {
-                        return TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Domínio',
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            floatingLabelAlignment:
-                                FloatingLabelAlignment.start,
-                            border: const OutlineInputBorder(),
-                            errorText: snapshot.error?.toString(),
-                          ),
-                          controller: controller,
-                          focusNode: focusNode,
-                          onChanged: (value) {
-                            widget.viewModel.form.onDomainIdChange(value);
-                          },
-                        );
-                      },
-                      onSelected: (DomainApiDto selection) {
-                        widget.viewModel.form.onDomainIdChange(selection.id);
-                      },
-                    );
+        StreamBuilder<String>(
+          stream: widget.viewModel.form.domainId.field,
+          builder: (context, snapshot) {
+            domainFieldControll.value =
+                domainFieldControll.value.copyWith(text: snapshot.data);
+            return Autocomplete<DomainApiDto>(
+              optionsBuilder: (TextEditingValue textEditingValue) async {
+                if (textEditingValue.text == '') {
+                  var options = await widget.viewModel.loadDomains({
+                    'list_options': ListOptions.ACTIVE_ONLY.name,
+                    'order_by': 'name'
                   });
-            }),
+                  return options!.where((element) => true);
+                } else {
+                  var options = await widget.viewModel.loadDomains({
+                    'list_options': ListOptions.ACTIVE_ONLY.name,
+                    'order_by': 'name',
+                    'name': '%${textEditingValue.text}%'
+                  });
+                  return options!.where((element) => true);
+                }
+              },
+              initialValue:
+                  TextEditingValue(text: widget.entity?.domain?.name ?? ''),
+              displayStringForOption: (option) => option.name,
+              optionsViewBuilder: (context, onSelected, options) => Align(
+                alignment: Alignment.topLeft,
+                child: Material(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.vertical(bottom: Radius.circular(4.0)),
+                  ),
+                  child: SizedBox(
+                    height: 52.0 * options.length,
+                    width: 500, //define the same width of dialog
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: options.length,
+                      shrinkWrap: false,
+                      itemBuilder: (BuildContext context, int index) {
+                        final DomainApiDto option = options.elementAt(index);
+                        return option.id == 'last'
+                            ? Directionality(
+                                textDirection: TextDirection.rtl,
+                                child: ElevatedButton.icon(
+                                    onPressed: () {},
+                                    icon: const Icon(
+                                      Icons.add_circle_outline,
+                                      size: 18,
+                                    ),
+                                    label: const Text('Adicionar agora')),
+                              )
+                            : InkWell(
+                                onTap: () => onSelected(option),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(option.name),
+                                ),
+                              );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              fieldViewBuilder: (
+                BuildContext context,
+                TextEditingController controller,
+                FocusNode focusNode,
+                VoidCallback onFieldSubmitted,
+              ) {
+                return TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Domínio',
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    floatingLabelAlignment: FloatingLabelAlignment.start,
+                    border: const OutlineInputBorder(),
+                    errorText: snapshot.error?.toString(),
+                    suffix: snapshot.data != null && snapshot.data!.isNotEmpty
+                        ? IconButton(
+                            onPressed: () {
+                              widget.viewModel.form.domainId.onValueChange('');
+                              controller.setText('');
+                            },
+                            icon: const Icon(
+                              Icons.cancel_outlined,
+                              size: 18,
+                              color: Colors.red,
+                            ),
+                          )
+                        : const Text(''),
+                  ),
+                  controller: controller,
+                  focusNode: focusNode,
+                  onChanged: (value) {
+                    widget.viewModel.form.domainId.onValueChange(value);
+                  },
+                );
+              },
+              onSelected: (DomainApiDto selection) {
+                widget.viewModel.form.domainId.onValueChange(selection.id);
+              },
+            );
+          },
+        ),
         contentRolesSelect()
       ],
     );

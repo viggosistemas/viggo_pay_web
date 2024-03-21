@@ -1,22 +1,19 @@
-import 'package:rxdart/rxdart.dart';
-import 'package:viggo_pay_core_frontend/form/base_form.dart';
+import 'package:viggo_core_frontend/form/base_form.dart';
+import 'package:viggo_core_frontend/form/field/field.dart';
+import 'package:viggo_core_frontend/form/field/stringfield.dart';
 
 class ListUsersFormField extends BaseForm {
-  final _nameController = BehaviorSubject<String>();
-  Stream<String> get name => _nameController.stream;
-  Function(String) get onNameChange => _nameController.sink.add;
+  final name = StringField();
 
   @override
-  Map<String, String>? getFields() {
-    var name = _nameController.valueOrNull;
-
-    if (name == null) return null;
+  Map<String, String>? getValues() {
+    if (!name.isValid) return null;
 
     return {
-      'name': '%$name%',
+      'name': '%${name.value ?? ''}%',
     };
   }
 
   @override
-  List<Stream<String>> getStreams() => [name];
+  List<Field> getFields() => [name];
 }
