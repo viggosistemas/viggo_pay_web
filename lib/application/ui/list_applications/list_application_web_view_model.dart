@@ -1,15 +1,15 @@
 import 'dart:async';
 
+import 'package:viggo_core_frontend/application/data/models/application_api_dto.dart';
+import 'package:viggo_core_frontend/application/domain/usecases/get_application_by_id_use_case.dart';
+import 'package:viggo_core_frontend/application/domain/usecases/get_applications_by_params_use_case.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/domain/ui/list_domain_form_fields.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/application/domain/usecases/change_active_application_use_case.dart';
-import 'package:viggo_pay_core_frontend/application/data/models/application_api_dto.dart';
-import 'package:viggo_pay_core_frontend/application/domain/usecases/get_application_by_id_use_case.dart';
-import 'package:viggo_pay_core_frontend/application/domain/usecases/get_applications_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
-import 'package:viggo_pay_core_frontend/domain/ui/list_domain_form_fields.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
 class ListApplicationWebViewModel extends BaseViewModel {
   final GetApplicationByIdUseCase getApplication;
@@ -20,7 +20,7 @@ class ListApplicationWebViewModel extends BaseViewModel {
   final ChangeActiveApplicationUseCase changeActive;
 
   List<ApplicationApiDto> selectedItemsList = [];
-  
+
   final ListDomainFormFields form = ListDomainFormFields();
 
   ListApplicationWebViewModel({
@@ -34,7 +34,8 @@ class ListApplicationWebViewModel extends BaseViewModel {
 
   final StreamController<List<ApplicationApiDto>> applicationsController =
       StreamController.broadcast();
-  Stream<List<ApplicationApiDto>> get applications => applicationsController.stream;
+  Stream<List<ApplicationApiDto>> get applications =>
+      applicationsController.stream;
 
   List<ApplicationApiDto> _items = List.empty(growable: true);
 
@@ -56,7 +57,7 @@ class ListApplicationWebViewModel extends BaseViewModel {
     if (isLoading) return;
 
     setLoading();
-    Map<String, String>? formFields = form.getFields();
+    Map<String, String>? formFields = form.getValues();
 
     if (formFields != null) {
       for (var e in formFields.keys) {

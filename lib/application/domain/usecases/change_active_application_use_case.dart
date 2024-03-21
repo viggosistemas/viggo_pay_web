@@ -1,4 +1,4 @@
-import 'package:viggo_pay_core_frontend/application/domain/application_repository.dart';
+import 'package:viggo_core_frontend/application/domain/application_repository.dart';
 
 class ChangeActiveApplicationUseCase {
   final ApplicationRepository repository;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder.dart';
-import 'package:viggo_pay_admin/application/ui/list_applications/list_applications_grid.dart';
+import 'package:viggo_pay_admin/application/ui/edit_capability/edit_capability_grid.dart';
 
-class ListApplicationsPage extends StatelessWidget {
-  const ListApplicationsPage({
+class EditCapabilityPage extends StatelessWidget {
+  const EditCapabilityPage({
     Key? key,
     required this.changeTheme,
   }) : super(key: key);
@@ -14,8 +14,8 @@ class ListApplicationsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppBuilder(
       changeTheme: changeTheme,
-      child: const Expanded(
-        child: ListApplicationsGrid(),
+      child: Expanded(
+        child: EditCapabilityGrid(),
       ),
     );
   }

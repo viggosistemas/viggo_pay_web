@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/application/data/models/application_api_dto.dart';
 import 'package:viggo_pay_admin/application/ui/edit_applications/edit_applications_form/edit_applications_form.dart';
 import 'package:viggo_pay_admin/application/ui/edit_applications/edit_applications_view_model.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
-import 'package:viggo_pay_core_frontend/application/data/models/application_api_dto.dart';
 
 class EditApplications {
   EditApplications({required this.context});
@@ -12,8 +12,8 @@ class EditApplications {
   final viewModel = locator.get<EditApplicationsViewModel>();
 
   clearFields() {
-    viewModel.form.onNameChange('');
-    viewModel.form.onDescriptionChange('');
+    viewModel.form.name.onValueChange('');
+    viewModel.form.description.onValueChange('');
   }
 
   Future<void> addDialog() {

@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/application/domain/usecases/create_application_use_case.dart';
+import 'package:viggo_core_frontend/application/domain/usecases/get_applications_by_params_use_case.dart';
+import 'package:viggo_core_frontend/application/domain/usecases/update_application_use_case.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
 import 'package:viggo_pay_admin/application/ui/edit_applications/edit_applications_form/edit_form_fields.dart';
-import 'package:viggo_pay_core_frontend/application/domain/usecases/create_application_use_case.dart';
-import 'package:viggo_pay_core_frontend/application/domain/usecases/get_applications_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/application/domain/usecases/update_application_use_case.dart';
-import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
 
 class EditApplicationsViewModel extends BaseViewModel {
   final GetApplicationsByParamsUseCase getApplications;
@@ -33,7 +33,7 @@ class EditApplicationsViewModel extends BaseViewModel {
     setLoading();
 
     dynamic result;
-    var formFields = form.getFields();
+    var formFields = form.getValues();
 
     Map<String, dynamic> data = {
       'name': formFields!['name'],

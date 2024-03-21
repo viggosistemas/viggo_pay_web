@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/application/data/models/application_api_dto.dart';
 import 'package:viggo_pay_admin/application/ui/edit_applications/edit_applications_view_model.dart';
-import 'package:viggo_pay_core_frontend/application/data/models/application_api_dto.dart';
 
 // ignore: must_be_immutable
 class EditApplicationsForm extends StatelessWidget {
@@ -24,17 +24,17 @@ class EditApplicationsForm extends StatelessWidget {
     final descriptionFieldControll = TextEditingController();
 
     if (entity != null) {
-      viewModel.form.onNameChange(entity!.name);
+      viewModel.form.name.onValueChange(entity!.name);
     }
 
     if (entity != null) {
-      viewModel.form.onDescriptionChange(entity!.description);
+      viewModel.form.description.onValueChange(entity!.description);
     }
 
     return Column(
       children: [
         StreamBuilder<String>(
-            stream: viewModel.form.name,
+            stream: viewModel.form.name.field,
             builder: (context, snapshot) {
               nameFieldControll.value =
                   nameFieldControll.value.copyWith(text: snapshot.data);
@@ -49,14 +49,14 @@ class EditApplicationsForm extends StatelessWidget {
                     errorText: snapshot.error?.toString(),
                   ),
                   onChanged: (value) {
-                    viewModel.form.onNameChange(value);
+                    viewModel.form.name.onValueChange(value);
                   });
             }),
         const SizedBox(
           height: 10,
         ),
         StreamBuilder<String>(
-            stream: viewModel.form.description,
+            stream: viewModel.form.description.field,
             builder: (context, snapshot) {
               descriptionFieldControll.value =
                   descriptionFieldControll.value.copyWith(text: snapshot.data);
@@ -71,7 +71,7 @@ class EditApplicationsForm extends StatelessWidget {
                     errorText: snapshot.error?.toString(),
                   ),
                   onChanged: (value) {
-                    viewModel.form.onDescriptionChange(value);
+                    viewModel.form.description.onValueChange(value);
                   });
             }),
       ],
