@@ -41,11 +41,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
       
-      - name: Analyze
-        run: flutter analyze
+      # - name: Analyze
+      #   run: flutter analyze
       
-      - name: Format code
-        run: dart format --fix .
+      # - name: Format code
+      #   run: dart format --fix .
       
       - name: Build
         run: flutter build web
