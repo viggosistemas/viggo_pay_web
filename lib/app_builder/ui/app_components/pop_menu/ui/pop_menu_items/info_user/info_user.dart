@@ -1,9 +1,9 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_view_model.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
-import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
 
 class InfoUserDialog {
   InfoUserDialog({required this.context});
@@ -18,8 +18,7 @@ class InfoUserDialog {
           viewModel.parseImage.invoke(photoId),
         ),
       );
-    }
-    else if (viewModel.user!.photoId != null &&
+    } else if (viewModel.user!.photoId != null &&
         viewModel.user!.photoId!.isNotEmpty) {
       return CircleAvatar(
         backgroundImage: NetworkImage(
@@ -28,7 +27,7 @@ class InfoUserDialog {
       );
     } else {
       return const CircleAvatar(
-        backgroundImage: NetworkImage(
+        backgroundImage: AssetImage(
           'assets/images/avatar.png',
         ),
       );
@@ -38,7 +37,7 @@ class InfoUserDialog {
   Future showFormDialog() {
     final formKey = GlobalKey<FormState>();
     final nickNameController = TextEditingController();
-    viewModel.form.onNickNameChange(viewModel.user!.nickname ?? '');
+    viewModel.form.nickname.onValueChange(viewModel.user!.nickname ?? '');
 
     showMsgError(String value) {
       showInfoMessage(
@@ -142,17 +141,16 @@ class InfoUserDialog {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         StreamBuilder<UserApiDto>(
-                          stream: viewModel.userController,
-                          builder: (context, snapshot) {
-                            return Center(
-                              child: SizedBox(
-                                height: 100,
-                                width: 100,
-                                child: getImagem(snapshot.data?.photoId),
-                              ),
-                            );
-                          }
-                        ),
+                            stream: viewModel.userController,
+                            builder: (context, snapshot) {
+                              return Center(
+                                child: SizedBox(
+                                  height: 100,
+                                  width: 100,
+                                  child: getImagem(snapshot.data?.photoId),
+                                ),
+                              );
+                            }),
                         const SizedBox(
                           height: 10,
                         ),
@@ -189,7 +187,7 @@ class InfoUserDialog {
                           height: 20,
                         ),
                         StreamBuilder<String>(
-                          stream: viewModel.form.nickname,
+                          stream: viewModel.form.nickname.field,
                           builder: (context, snapshot) {
                             nickNameController.value = nickNameController.value
                                 .copyWith(text: snapshot.data);
@@ -201,7 +199,7 @@ class InfoUserDialog {
                               ),
                               controller: nickNameController,
                               onChanged: (value) {
-                                viewModel.form.onNickNameChange(value);
+                                viewModel.form.nickname.onValueChange(value);
                               },
                               // onFieldSubmitted: (value) {
                               //   if (_validateForm()) {

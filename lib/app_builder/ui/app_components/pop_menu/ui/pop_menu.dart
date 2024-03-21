@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_bottom_action.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_items/alterar_senha/alterar_senha.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_items/info_user/info_user.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
@@ -29,7 +28,6 @@ class _PopMenuActionUser extends State<PopUpMenuUser> {
 
   @override
   Widget build(context) {
-
     return PopupMenuButton<SampleItem>(
       onSelected: (value) {
         setState(() {
@@ -42,11 +40,11 @@ class _PopMenuActionUser extends State<PopUpMenuUser> {
       itemBuilder: (context) => <PopupMenuEntry<SampleItem>>[
         PopupMenuItem<SampleItem>(
           value: SampleItem.itemOne,
-          onTap: () async{
+          onTap: () async {
             var result = await InfoUserDialog(
               context: context,
             ).showFormDialog();
-            if(result != null && result == true){
+            if (result != null && result == true) {
               widget.updateUser();
             }
           },
@@ -98,8 +96,9 @@ class _PopMenuActionUser extends State<PopUpMenuUser> {
           ),
         ),
       ],
-      child: PopMenuBottomAction(
-        viewModel: viewModel,
+      icon: const Icon(
+        Icons.arrow_drop_down,
+        color: Colors.white,
       ),
     );
   }

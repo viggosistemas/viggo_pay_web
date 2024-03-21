@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/models/destination.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/ui/menu_view_model.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
-import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
 
 class MainDrawer extends StatefulWidget {
   const MainDrawer({
@@ -22,7 +22,7 @@ class MainDrawer extends StatefulWidget {
 class _MainDrawerState extends State<MainDrawer> {
   List<Destination> destinations = <Destination>[];
   List<ListTile> navDestinations = <ListTile>[];
-
+  AppBuilderViewModel appViewModel = locator.get<AppBuilderViewModel>();
   final viewModel = MenuViewModel(menuItems: menuItems);
 
   var screenIndex = 0;
@@ -66,13 +66,11 @@ class _MainDrawerState extends State<MainDrawer> {
 
   @override
   Widget build(context) {
-    final viewModel = Provider.of<AppBuilderViewModel>(context);
-
     return StreamBuilder<List<RouteApiDto>?>(
-        stream: viewModel.routesDto,
+        stream: appViewModel.routesDto,
         builder: (context, snapshot) {
           if (snapshot.data == null) {
-            viewModel.getRoutes();
+            appViewModel.getRoutes();
           } else {
             _buildMenu(snapshot.data!);
           }
@@ -93,18 +91,9 @@ class _MainDrawerState extends State<MainDrawer> {
                   child: Row(
                     children: [
                       Image.asset(
-                        'assets/images/icone.png',
-                        width: 40,
-                        height: 40,
-                      ),
-                      const SizedBox(
-                        width: 18,
-                      ),
-                      Text(
-                        Constants.APP_NAME,
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                              color: Colors.white,
-                            ),
+                        'assets/images/logo.png',
+                        width: 80,
+                        height: 80,
                       ),
                     ],
                   ),
@@ -121,7 +110,7 @@ List<Destination> menuItems = [
   Destination(
     'Empresas',
     null,
-    2,
+    4,
     null,
     Routes.DOMAINS,
     ['/domain_accounts'],
@@ -131,30 +120,50 @@ List<Destination> menuItems = [
   Destination(
     'Chaves pix',
     null,
-    3,
+    6,
     null,
     Routes.PIX,
     ['/pix_to_sends'],
-    ['/GET'],
+    ['/POST'],
     Icons.key_outlined,
   ),
-  // Destination(
-  //   'Transação entre contas',
-  //   null,
-  //   4,
-  //   null,
-  //   Routes.TRANSACAO_CONTA,
-  //   ['/pay_facs/cashout_via_pix'],
-  //   ['/POST'],
-  //   Icons.transfer_within_a_station_outlined,
-  // ),
   Destination(
-    'Histórico de transações',
+    'Informações da matriz',
+    null,
+    2,
+    null,
+    Routes.MATRIZ,
+    ['/pay_facs/cashout_via_pix'],
+    ['/POST'],
+    Icons.domain_add_outlined,
+  ),
+  Destination(
+    'Transações da matriz',
     null,
     5,
     null,
-    Routes.HISTORICO,
-    ['/pay_facs/get_transacoes'],
+    Routes.MATRIZ_TRANSFERENCIA,
+    ['/pay_facs/get_saldo'],
+    ['/POST'],
+    Icons.transfer_within_a_station_outlined,
+  ),
+  Destination(
+    'Funcionário',
+    null,
+    3,
+    null,
+    Routes.FUNCIONARIO,
+    ['/funcionarios'],
+    ['/POST'],
+    Icons.engineering_outlined,
+  ),
+  Destination(
+    'Extrato da conta',
+    null,
+    7,
+    null,
+    Routes.EXTRATO,
+    ['/pay_facs/get_extrato'],
     ['/POST'],
     Icons.history_outlined,
   ),

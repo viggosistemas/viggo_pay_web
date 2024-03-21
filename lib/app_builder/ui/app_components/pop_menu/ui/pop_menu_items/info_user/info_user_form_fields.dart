@@ -1,38 +1,22 @@
-import 'dart:async';
+import 'package:viggo_core_frontend/form/base_form.dart';
+import 'package:viggo_core_frontend/form/field/field.dart';
+import 'package:viggo_core_frontend/form/field/stringfield.dart';
+import 'package:viggo_core_frontend/form/validator.dart';
 
-import 'package:rxdart/rxdart.dart';
-import 'package:viggo_pay_core_frontend/form/base_form.dart';
-import 'package:viggo_pay_core_frontend/form/validator.dart';
-
-class InfoUserFormFields extends BaseForm
-    with InfoUserFormFieldsValidation {
-  final _ninckNameController = BehaviorSubject<String>();
-  Stream<String> get nickname =>
-      _ninckNameController.stream.transform(nickNameValidation);
-  Function(String) get onNickNameChange => _ninckNameController.sink.add;
+class InfoUserFormFields extends BaseForm {
+  final nickname = StringField(validators: [
+    Validator().isEmptyValue,
+  ]);
 
   @override
-  List<Stream<String>> getStreams() => [nickname];
+  List<Field> getFields() => [nickname];
 
   @override
-  Map<String, String>? getFields() {
-    var nickname = _ninckNameController.valueOrNull;
-
-    if (nickname == null) return null;
+  Map<String, String>? getValues() {
+    if (!nickname.isValid) return null;
 
     return {
-      'nickname': nickname,
+      'nickname': nickname.value!,
     };
   }
-}
-
-mixin InfoUserFormFieldsValidation {
-  final nickNameValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isEmptyValue,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
 }

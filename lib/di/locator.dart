@@ -1,7 +1,9 @@
 import 'package:get_it/get_it.dart';
+import 'package:viggo_core_frontend/di/locator.dart';
 import 'package:viggo_pay_admin/app_builder/locator.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/locator.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/locator.dart';
+import 'package:viggo_pay_admin/application/locator.dart';
 import 'package:viggo_pay_admin/dashboard/locator.dart';
 import 'package:viggo_pay_admin/domain/locator.dart';
 import 'package:viggo_pay_admin/domain_account/locator.dart';
@@ -18,7 +20,7 @@ import 'package:viggo_pay_admin/role/locator.dart';
 import 'package:viggo_pay_admin/route/locator.dart';
 import 'package:viggo_pay_admin/sync/locator.dart';
 import 'package:viggo_pay_admin/user/locator.dart';
-import 'package:viggo_pay_core_frontend/di/locator.dart';
+import 'package:viggo_pay_admin/usuarios_por_dominio/locator.dart';
 
 var locator = GetIt.instance;
 
@@ -35,6 +37,8 @@ Future<void> setupLocator() async {
   UsersLocator().setup();
   RoleLocator().setup();
   RouteLocator().setup();
+  ApplicationLocator().setup();
+  UsersDomainLocator().setup();
 
   //admin
   MatrizAccountLocator().setup();

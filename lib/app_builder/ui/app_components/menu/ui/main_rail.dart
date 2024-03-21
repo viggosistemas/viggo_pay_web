@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/models/destination.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/ui/menu_view_model.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
-import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
 
 class MainRail extends StatefulWidget {
   const MainRail({
@@ -22,6 +22,9 @@ class _MainRailState extends State<MainRail> {
   List<Destination> destinations = <Destination>[];
   List<NavigationRailDestination> navDestinations =
       <NavigationRailDestination>[];
+
+  final appViewModel = locator.get<AppBuilderViewModel>();
+
   final viewModel = MenuViewModel(menuItems: menuItems);
 
   var screenIndex = 0;
@@ -49,21 +52,19 @@ class _MainRailState extends State<MainRail> {
 
   @override
   Widget build(context) {
-    final viewModel = Provider.of<AppBuilderViewModel>(context);
-
     return StreamBuilder<List<RouteApiDto>?>(
-      stream: viewModel.routesDto,
+      stream: appViewModel.routesDto,
       builder: (context, snapshot) {
         if (snapshot.data == null) {
-          viewModel.getRoutes();
+          appViewModel.getRoutes();
         } else {
           _buildMenu(snapshot.data!);
         }
         return StreamBuilder<int>(
-          stream: viewModel.indexSelected,
+          stream: appViewModel.indexSelected,
           builder: (context, snapshot) {
             if (snapshot.data == null) {
-              viewModel.getScreenIndex();
+              appViewModel.getScreenIndex();
             }
             return NavigationRail(
               minWidth: 50,
@@ -79,7 +80,7 @@ class _MainRailState extends State<MainRail> {
                 // setState(() {
                 //   screenIndex = index;
                 // });
-                viewModel.setScreenIndex(index);
+                appViewModel.setScreenIndex(index);
                 widget.onSelectScreen(destinations[index].route);
               },
             );
@@ -93,49 +94,77 @@ class _MainRailState extends State<MainRail> {
 List<Destination> menuItems = [
   Destination(
     'Empresas',
-    const Icon(Icons.domain_outlined),
-    2,
-    const Icon(Icons.domain_outlined),
+    const Icon(Icons.domain_add_outlined),
+    4,
+    const Icon(Icons.domain_add_outlined),
     Routes.DOMAIN_ACCOUNTS,
     ['/domain_accounts'],
-    ['/GET'],
+    ['/POST'],
     null,
   ),
   Destination(
     'Chaves pix',
     const Icon(Icons.key_outlined),
-    3,
+    6,
     const Icon(Icons.key_outlined),
     Routes.PIX,
     ['/pix_to_sends'],
-    ['/GET'],
+    ['/POST'],
     null,
   ),
-  // Destination(
-  //   'Transação entre contas',
-  //   Icon(
-  //     Icons.transfer_within_a_station_outlined,
-  //   ),
-  //   4,
-  //   Icon(
-  //     Icons.transfer_within_a_station_outlined,
-  //   ),
-  //   Routes.TRANSACAO_CONTA,
-  //   ['/pay_facs/cashout_via_pix'],
-  //   ['/POST'],
-  //   null,
-  // ),
   Destination(
-    'Histórico de transações',
+    'Extrato da conta',
     const Icon(
       Icons.history_outlined,
+    ),
+    7,
+    const Icon(
+      Icons.history_outlined,
+    ),
+    Routes.EXTRATO,
+    ['/pay_facs/get_extrato'],
+    ['/POST'],
+    null,
+  ),
+  Destination(
+    'Informações da matriz',
+    const Icon(
+      Icons.business_center_outlined,
+    ),
+    2,
+    const Icon(
+      Icons.business_center_outlined,
+    ),
+    Routes.MATRIZ,
+    ['/pay_facs/cashout_via_pix'],
+    ['/POST'],
+    null,
+  ),
+  Destination(
+    'Transferência entre contas',
+    const Icon(
+      Icons.move_up_outlined,
     ),
     5,
     const Icon(
-      Icons.history_outlined,
+      Icons.move_up_outlined,
     ),
-    Routes.HISTORICO,
-    ['/pay_facs/get_transacoes'],
+    Routes.MATRIZ_TRANSFERENCIA,
+    ['/pay_facs/get_saldo'],
+    ['/POST'],
+    null,
+  ),
+  Destination(
+    'Funcionário',
+    const Icon(
+      Icons.engineering_outlined,
+    ),
+    3,
+    const Icon(
+      Icons.engineering_outlined,
+    ),
+    Routes.FUNCIONARIO,
+    ['/funcionarios'],
     ['/POST'],
     null,
   ),

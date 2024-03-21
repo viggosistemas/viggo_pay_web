@@ -1,11 +1,19 @@
+// ignore_for_file: avoid_init_to_null
+
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
+import 'package:viggo_core_frontend/util/constants.dart';
 import 'package:viggo_pay_admin/components/dialogs.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
 
 class DataSource extends DataTableSource {
   late dynamic viewModel;
-  late String labelInclude;
+  late List<String> labelInclude = [];
+  late int counter = 0;
 
   // static const List<int> _displayIndexToRawIndex = <int>[0, 3, 4, 5, 6];
 
@@ -35,12 +43,22 @@ class DataSource extends DataTableSource {
     } else {
       if (data == null) {
         value = '-';
+        counter++;
+        if (labelInclude.length == counter) {
+          counter = 0;
+        }
       } else {
-        if(data is String){
+        if (data is String) {
           value = data.toString();
-        }else{
+        } else if (data is bool) {
+          value = data == true ? 'Sim' : 'Não';
+        } else {
           var dataString = jsonEncode(data);
-          value = jsonDecode(dataString)[labelInclude].toString();
+          value = jsonDecode(dataString)[labelInclude[counter]].toString();
+          counter++;
+          if (labelInclude.length == counter) {
+            counter = 0;
+          }
         }
       }
     }
@@ -53,7 +71,14 @@ class DataSource extends DataTableSource {
     if (index >= sortedData.length) return null;
     final row = sortedData[index];
     return DataRow(
-      cells: <DataCell>[for (var key in fieldsData)cellFor(row[key])],
+      cells: <DataCell>[
+        for (var key in fieldsData)
+          cellFor(
+            key.split('.').length == 1
+                ? row[key]
+                : row[key.split('.')[0]].toJson()[key.split('.')[1]],
+          )
+      ],
       selected: row['selected'],
       color: MaterialStateColor.resolveWith(
         (states) =>
@@ -94,6 +119,10 @@ class DataTablePaginated extends StatefulWidget {
     required this.initialFilters,
     required this.streamList,
     required this.dialogs,
+    addReloadButton,
+    titleTable,
+    validActionsList,
+    addFunction,
     labelInclude,
     List<Widget>? actions,
   }) {
@@ -101,21 +130,38 @@ class DataTablePaginated extends StatefulWidget {
       appendActions = true;
       this.actions.addAll(actions);
     }
-    if(labelInclude != null){
+    if (labelInclude != null) {
       this.labelInclude = labelInclude;
+    }
+    if (addFunction != null) {
+      this.addFunction = addFunction;
+    }
+    if (validActionsList != null) {
+      this.validActionsList = validActionsList;
+    }
+    if (titleTable != null) {
+      this.titleTable = titleTable;
+    }
+    if (addReloadButton != null) {
+      this.addReloadButton = addReloadButton;
     }
   }
 
   late dynamic viewModel;
   late dynamic dialogs;
-  late dynamic labelInclude = '';
-  late Stream<dynamic> streamList;
+  late dynamic labelInclude = [''];
+  late Stream<dynamic>? streamList;
   late Map<String, String> initialFilters;
   late List<dynamic> items;
   late List<DataColumn> columnsDef;
   late List<String> fieldsData;
   late List<Widget> actions = [];
+  late List<dynamic> validActionsList = [];
+  late Function? addFunction = null;
   var appendActions = false;
+  final sharedPrefres = locator.get<SharedPreferences>();
+  late String titleTable = '';
+  late bool addReloadButton = true;
 
   @override
   State<DataTablePaginated> createState() => _DataTablePaginatedState();
@@ -137,49 +183,134 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
   //   });
   // }
 
-  initializeTable() {
-    if (widget.actions.isEmpty || widget.appendActions) {
-      widget.appendActions = false;
-      List<Widget> actionsDefault = [
-        IconButton.outlined(
+  List<Map<String, dynamic>> getGrantURLs(
+    List<RouteApiDto> routes,
+    List<dynamic> urls,
+    bool checkRoutes,
+  ) {
+    List<Map<String, dynamic>> grantURLs = [];
+    if (checkRoutes) {
+      for (var urlCompare in urls) {
+        var index = routes.indexWhere((route) =>
+            urlCompare['url'].contains(route.url) &&
+            urlCompare['method'].contains(route.method.name));
+        if (index >= 0) {
+          grantURLs.add(
+              {'url': routes[index].url, 'method': routes[index].method.name});
+        }
+      }
+    } else {
+      for (var urlCompare in urls) {
+        var index =
+            routes.indexWhere((route) => urlCompare['url'].contains(route.url));
+        if (index >= 0) {
+          grantURLs.add({
+            'url': routes[index].url,
+          });
+        }
+      }
+    }
+    return grantURLs;
+  }
+
+  List<Widget> validAction(
+    List<RouteApiDto> routes,
+    List<dynamic> actions,
+  ) {
+    routes.sort((a, b) => a.url.compareTo(b.url));
+    List<Widget> actionsBtn = [];
+    List<Map<String, dynamic>> grantURLs = getGrantURLs(
+      routes,
+      actions
+          .map(
+            (v) => {
+              'url': v['backendUrl'],
+              'method': v['method'],
+            },
+          )
+          .toList(),
+      true,
+    );
+    for (var rota in grantURLs) {
+      int itemIndex = actions.indexWhere((v) =>
+          v['backendUrl']!.contains(rota['url']) &&
+          v['method']!.contains(rota['method']));
+      if (itemIndex >= 0 && actions[itemIndex]['method'] == 'POST') {
+        actionsBtn.add(IconButton.outlined(
           onPressed: () => onAddEntity(),
           tooltip: 'Adicionar',
           icon: const Icon(
             Icons.add,
           ),
-        ),
-        const SizedBox(
+        ));
+        actionsBtn.add(const SizedBox(
           width: 10,
-        ),
-        IconButton.outlined(
-          onPressed: () => onEditEntity(),
-          tooltip: 'Editar',
-          icon: const Icon(
-            Icons.edit,
+        ));
+      } else if (itemIndex >= 0 && actions[itemIndex]['method'] == 'PUT') {
+        actionsBtn.add(
+          IconButton.outlined(
+            onPressed: () => onEditEntity(),
+            tooltip: 'Editar',
+            icon: const Icon(
+              Icons.edit,
+            ),
           ),
-        ),
-        const SizedBox(
+        );
+        actionsBtn.add(const SizedBox(
           width: 10,
-        ),
-        IconButton.outlined(
+        ));
+      } else if (itemIndex >= 0 && actions[itemIndex]['method'] == 'DELETE') {
+        actionsBtn.add(IconButton.outlined(
           onPressed: () => onChangeActive(),
           tooltip: 'Alterar status',
           icon: const Icon(
             Icons.change_circle,
           ),
-        ),
-        const SizedBox(
+        ));
+        actionsBtn.add(const SizedBox(
           width: 10,
+        ));
+      } else if (itemIndex >= 0 && actions[itemIndex]['method'] == 'GET') {
+        actionsBtn.add(IconButton.outlined(
+          onPressed: () => onSeeInfoData(),
+          tooltip: 'Visualizar informações',
+          icon: const Icon(
+            Icons.remove_red_eye_outlined,
+          ),
+        ));
+        actionsBtn.add(const SizedBox(
+          width: 10,
+        ));
+      }
+    }
+    return actionsBtn;
+  }
+
+  initializeTable() {
+    if (widget.actions.isEmpty || widget.appendActions) {
+      widget.appendActions = false;
+      List<Widget> actionsDefault = [];
+      List<String>? routesJson =
+          widget.sharedPrefres.getStringList(CoreUserPreferences.ROUTES)!;
+      actionsDefault.addAll(
+        validAction(
+          routesJson
+              .map<RouteApiDto>(
+                  (element) => RouteApiDto.fromJson(jsonDecode(element)))
+              .toList(),
+          widget.validActionsList,
         ),
-        IconButton.outlined(
+      );
+      actionsDefault.addAll(widget.actions);
+      if (widget.addReloadButton) {
+        actionsDefault.add(IconButton.outlined(
           onPressed: () => onReloadData(),
           tooltip: 'Recarregar',
           icon: const Icon(
             Icons.replay,
           ),
-        ),
-      ];
-      actionsDefault.addAll(widget.actions);
+        ));
+      }
       widget.actions = actionsDefault;
     }
     dataSource.labelInclude = widget.labelInclude;
@@ -190,13 +321,20 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
   }
 
   void onAddEntity() async {
-    var result = await widget.dialogs.addDialog();
-    if (result != null && result == true) {
-      onReloadData();
+    if (widget.addFunction != null) {
+      var result = await widget.addFunction!();
+      if (result != null && result == true) {
+        onReloadData();
+      }
+    } else {
+      var result = await widget.dialogs.addDialog();
+      if (result != null && result == true) {
+        onReloadData();
+      }
     }
   }
 
-  void onEditEntity(){
+  void onEditEntity() {
     var len =
         dataSource.sortedData.where((element) => element['selected']).length;
     if (len == 1) {
@@ -238,8 +376,13 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
             'Você tem certeza que deseja executar essa ação?\n${entities.length.toString() + ' itens'.toUpperCase()} serão inativados.'
       });
       if (result != null && result == true) {
-        widget.viewModel.changeActive.invoke(entities: entities);
-        onReloadData();
+        var resultChange =
+            await widget.viewModel.changeActive.invoke(entities: entities);
+        Timer(const Duration(milliseconds: 500), () {
+          if (resultChange != null && resultChange == true) {
+            onReloadData();
+          }
+        });
       }
     } else if (isActiveOnly.isEmpty && isInactiveOnly.isNotEmpty) {
       for (var e in isInactiveOnly) {
@@ -258,9 +401,30 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
             'Você tem certeza que deseja executar essa ação?\n${entities.length.toString() + ' itens'.toUpperCase()} serão ativados.'
       });
       if (result != null && result == true) {
-        widget.viewModel.changeActive.invoke(entities: entities);
-        onReloadData();
+        var resultChange =
+            await widget.viewModel.changeActive.invoke(entities: entities);
+        Timer(const Duration(milliseconds: 500), () {
+          if (resultChange != null && resultChange == true) {
+            onReloadData();
+          }
+        });
       }
+    }
+  }
+
+  void onSeeInfoData() {
+    var len =
+        dataSource.sortedData.where((element) => element['selected']).length;
+    if (len == 1) {
+      var entity =
+          dataSource.sortedData.firstWhere((element) => element['selected']);
+      var catchEntity = widget.viewModel.catchEntity(entity['id']) as Future;
+      catchEntity.then((value) async {
+        var result = await widget.dialogs.infoDataDialog(value);
+        if (result != null && result == true) {
+          onReloadData();
+        }
+      });
     }
   }
 
@@ -268,7 +432,7 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
     isLoading = true;
     setState(() {
       widget.viewModel.loadData(widget.initialFilters);
-      widget.streamList.listen((value) {
+      widget.streamList!.listen((value) {
         dataSource.setData(value.map((e) {
           return e.toJson();
         }).toList());
@@ -303,9 +467,15 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
         (states) => Colors.grey.withOpacity(0.7),
       ),
       header: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
         children: [
-          ...widget.actions.toList(),
+          Text(widget.titleTable),
+          Row(
+            children: [
+              ...widget.actions.toList(),
+            ],
+          )
         ],
       ),
       rowsPerPage: _pageSize,

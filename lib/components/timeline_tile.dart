@@ -27,18 +27,18 @@ class TimelineAppTile extends StatelessWidget {
         isLast: isLast,
         beforeLineStyle: LineStyle(
           color: isPast
-              ? const Color(0xff1f005c)
-              : Colors.deepPurple.shade100,
+              ? Theme.of(context).colorScheme.primary// const Color(0xff1f005c)
+              : Colors.grey.withOpacity(0.7),// Colors.deepPurple.shade100,
         ),
         indicatorStyle: IndicatorStyle(
           color: isPast
-              ? const Color(0xff1f005c)
-              : Colors.deepPurple.shade100,
+              ? Theme.of(context).colorScheme.primary// const Color(0xff1f005c)
+              : Colors.grey.withOpacity(0.9),// Colors.deepPurple.shade100,
           width: 40,
           iconStyle: IconStyle(
             color: isPast
-              ? Colors.white
-              : Colors.deepPurple.shade100,
+              ? Theme.of(context).colorScheme.onPrimary// const Color(0xff1f005c)
+              : Colors.grey.withOpacity(0),// Colors.deepPurple.shade100,,
             iconData: iconInfo,
           ),
         ),

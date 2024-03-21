@@ -1,36 +1,21 @@
-import 'dart:async';
+import 'package:viggo_core_frontend/form/base_form.dart';
+import 'package:viggo_core_frontend/form/field/field.dart';
+import 'package:viggo_core_frontend/form/field/stringfield.dart';
 
-import 'package:rxdart/rxdart.dart';
-import 'package:viggo_pay_core_frontend/form/base_form.dart';
-import 'package:viggo_pay_core_frontend/form/validator.dart';
-
-class HeaderSearchFormFields extends BaseForm
-    with HeaderSearchFormFieldsValidation {
-  final _searchFieldController = BehaviorSubject<String>();
-  Stream<String> get searchField =>
-      _searchFieldController.stream.transform(searchValidation);
-  Function(String) get onSearchChange => _searchFieldController.sink.add;
+class HeaderSearchFormFields extends BaseForm {
+  final searchField = StringField();
 
   @override
-  List<Stream<String>> getStreams() => [searchField];
+  List<Field> getFields() {
+    return [searchField];
+  }
 
   @override
-  Map<String, String>? getFields() {
-    var searchField = _searchFieldController.valueOrNull;
-
-    if (searchField == null) return null;
+  Map<String, String>? getValues() {
+    if (!searchField.isValid) return null;
 
     return {
-      'searchField': searchField,
+      'searchField': searchField.value!,
     };
   }
-}
-
-mixin HeaderSearchFormFieldsValidation {
-  final searchValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
 }

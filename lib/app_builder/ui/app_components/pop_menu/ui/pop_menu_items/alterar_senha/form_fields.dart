@@ -29,7 +29,7 @@ class _FormFieldsAlterarSenhaState extends State<FormFieldsAlterarSenha> {
       child: Column(
         children: [
           StreamBuilder<String>(
-            stream: widget.viewModel.formSenha.senhaAntiga,
+            stream: widget.viewModel.formSenha.senhaAntiga.field,
             builder: (context, snapshot) {
               senhaAntigaFieldController.value = senhaAntigaFieldController
                   .value
@@ -55,7 +55,7 @@ class _FormFieldsAlterarSenhaState extends State<FormFieldsAlterarSenha> {
                 ),
                 controller: senhaAntigaFieldController,
                 onChanged: (value) {
-                  widget.viewModel.formSenha.onSenhaAntigaChange(value);
+                  widget.viewModel.formSenha.senhaAntiga.onValueChange(value);
                 },
                 // onFieldSubmitted: (value) {
                 //   if (_validateForm()) {
@@ -77,7 +77,7 @@ class _FormFieldsAlterarSenhaState extends State<FormFieldsAlterarSenha> {
             height: 10,
           ),
           StreamBuilder<String>(
-            stream: widget.viewModel.formSenha.novaSenha,
+            stream: widget.viewModel.formSenha.novaSenha.field,
             builder: (context, snapshot) {
               novaSenhaFieldController.value =
                   novaSenhaFieldController.value.copyWith(text: snapshot.data);
@@ -102,7 +102,7 @@ class _FormFieldsAlterarSenhaState extends State<FormFieldsAlterarSenha> {
                 ),
                 controller: novaSenhaFieldController,
                 onChanged: (value) {
-                  widget.viewModel.formSenha.onNovaSenhaChange(value);
+                  widget.viewModel.formSenha.novaSenha.onValueChange(value);
                 },
                 // onFieldSubmitted: (value) {
                 //   if (_validateForm()) {
@@ -124,7 +124,7 @@ class _FormFieldsAlterarSenhaState extends State<FormFieldsAlterarSenha> {
             height: 10,
           ),
           StreamBuilder<String>(
-            stream: widget.viewModel.formSenha.confirmarSenha,
+            stream: widget.viewModel.formSenha.confirmarSenha.field,
             builder: (context, snapshot) {
               confirmarSenhaFieldController.value =
                   confirmarSenhaFieldController.value
@@ -150,7 +150,8 @@ class _FormFieldsAlterarSenhaState extends State<FormFieldsAlterarSenha> {
                 ),
                 controller: confirmarSenhaFieldController,
                 onChanged: (value) {
-                  widget.viewModel.formSenha.onConfirmarSenha(value);
+                  widget.viewModel.formSenha.confirmarSenha
+                      .onValueChange(value);
                 },
                 // onFieldSubmitted: (value) {
                 //   if (_validateForm()) {

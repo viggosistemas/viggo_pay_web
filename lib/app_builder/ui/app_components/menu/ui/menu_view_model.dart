@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/get_user_use_case.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/models/destination.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
-import 'package:viggo_pay_core_frontend/route/data/models/route_api_dto.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/get_user_use_case.dart';
 
 class MenuViewModel {
   MenuViewModel({
@@ -110,7 +110,7 @@ class MenuViewModel {
         Routes.APPLICATIONS,
         ['/applications'],
         ['/GET'],
-        null,
+        Icons.domain_outlined,
       ),
       Destination(
         'Rota',
@@ -120,7 +120,7 @@ class MenuViewModel {
         Routes.ROUTES,
         ['/routes'],
         ['/GET'],
-        null,
+        Icons.route_outlined,
       ),
       Destination(
         'Papéis de Usuário',
@@ -130,7 +130,7 @@ class MenuViewModel {
         Routes.ROLES,
         ['/roles/<id>'],
         ['/GET'],
-        null,
+        Icons.supervisor_account_outlined,
       ),
       Destination(
         'Organização',
@@ -140,7 +140,17 @@ class MenuViewModel {
         Routes.DOMAINS,
         ['/domains'],
         ['/GET'],
-        null,
+        Icons.cases_outlined,
+      ),
+      Destination(
+        'Usuários por domínio',
+        const Icon(Icons.engineering_outlined),
+        6,
+        const Icon(Icons.engineering_outlined),
+        Routes.USERS_FOR_DOMAIN,
+        ['/domains/<id>/settings'],
+        ['/DELETE'],
+        Icons.engineering_outlined,
       ),
     ]);
     return submenu;
@@ -156,7 +166,7 @@ class MenuViewModel {
         Routes.USERS,
         ['/users'],
         ['/GET'],
-        null,
+        Icons.person_outline,
       ),
     ]);
 

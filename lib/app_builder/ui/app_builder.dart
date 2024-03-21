@@ -1,10 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
+import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
+import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/app_bar.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/ui/main_rail.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu.dart';
-import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
+import 'package:viggo_pay_admin/utils/constants.dart';
+
+enum SampleItem { itemOne, itemTwo, itemThree }
 
 class AppBuilder extends StatefulWidget {
   const AppBuilder({
@@ -22,14 +30,16 @@ class AppBuilder extends StatefulWidget {
 }
 
 class _AppBuilderState extends State<AppBuilder> {
+  AppBuilderViewModel viewModel = locator.get<AppBuilderViewModel>();
+  SharedPreferences sharedPrefs = locator.get<SharedPreferences>();
+  SampleItem? selectedItem;
+
   var iconMode = Icons.dark_mode_outlined;
   dynamic colorIconMode = Colors.white;
   bool isActioned = false;
 
   @override
   Widget build(context) {
-    final viewModel = Provider.of<AppBuilderViewModel>(context);
-
     // final width = MediaQuery.of(context).size.width;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
@@ -50,31 +60,123 @@ class _AppBuilderState extends State<AppBuilder> {
       });
     }
 
-    Widget getAvatar(String? photoId) {
-      if (photoId == null) {
-        return const CircleAvatar(
-          backgroundImage: NetworkImage(
-            'assets/images/avatar.png',
-          ),
+    Widget getAvatar(UserApiDto user) {
+      if (user.photoId != null) {
+        var photoUrl = viewModel.parseImage.invoke(user.photoId!);
+        return Row(
+          children: [
+            CircleAvatar(
+              backgroundImage: NetworkImage(photoUrl),
+            ),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  user.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                StreamBuilder<DomainApiDto?>(
+                    stream: viewModel.domainDto,
+                    builder: (context, snapshot) {
+                      if (snapshot.data == null) {
+                        viewModel.getDomain();
+                        return const CircularProgressIndicator();
+                      } else {
+                        return Text(
+                          snapshot.data?.name ??
+                              snapshot.data?.displayName ??
+                              '',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        );
+                      }
+                    }),
+              ],
+            ),
+          ],
         );
       } else {
-        var photoUrl = viewModel.parseImage.invoke(photoId);
-        return CircleAvatar(
-          backgroundImage: NetworkImage(
-            photoUrl,
-          ),
+        return Row(
+          children: [
+            const CircleAvatar(
+              backgroundImage: AssetImage(
+                'assets/images/avatar.png',
+              ),
+            ),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  user.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                StreamBuilder<DomainApiDto?>(
+                    stream: viewModel.domainDto,
+                    builder: (context, snapshot) {
+                      if (snapshot.data == null) {
+                        viewModel.getDomain();
+                        return const CircularProgressIndicator();
+                      } else {
+                        return Text(
+                          snapshot.data?.name ??
+                              snapshot.data?.displayName ??
+                              '',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        );
+                      }
+                    }),
+              ],
+            ),
+          ],
         );
       }
     }
 
     return StreamBuilder<UserApiDto?>(
-        stream: viewModel.userDto,
-        builder: (context, snapshot) {
-          if (snapshot.data == null) viewModel.getUser();
+      stream: viewModel.userDto,
+      builder: (context, snapshot) {
+        if (snapshot.data == null) {
+          viewModel.getUser();
+          return const CircularProgressIndicator();
+        } else {
           return Scaffold(
-            appBar: AppBarPrivate(
-              toolbarHeight: 50,
-              // showDrawerOrBack: true, TODO: USAR NO DRAWER
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              toolbarHeight: 70,
+              title: GestureDetector(
+                onTap: () {
+                  sharedPrefs.setString('SELECTED_INDEX', jsonEncode(0));
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Navigator.of(context)
+                        .pushReplacementNamed(Routes.WORKSPACE);
+                  });
+                },
+                child: Tooltip(
+                  message: 'Ir para início',
+                  child: OnHoverButton(
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: 70,
+                      height: 70,
+                      fit: BoxFit.contain,
+                      alignment: Alignment.center,
+                    ),
+                  ),
+                ),
+              ),
+              shadowColor: const Color.fromRGBO(0, 0, 0, 1),
+              elevation: 8,
               actions: [
                 // IconButton(
                 //   style: IconButton.styleFrom(
@@ -99,15 +201,18 @@ class _AppBuilderState extends State<AppBuilder> {
                 //     color: colorIconMode,
                 //   ),
                 // ),
-                // const SizedBox(
-                //   width: 20,
-                // ),
-                getAvatar(snapshot.data?.photoId),
+                const SizedBox(
+                  width: 20,
+                ),
+                getAvatar(snapshot.data!),
                 const SizedBox(
                   width: 20,
                 ),
                 PopUpMenuUser(
                   onSelectScreen: setScreen,
+                  updateUser: () {
+                    viewModel.getUser();
+                  },
                 )
               ],
             ),
@@ -115,7 +220,9 @@ class _AppBuilderState extends State<AppBuilder> {
             // drawer: MainDrawer(
             //   onSelectScreen: setScreen,
             // ),
-            // body: child,
+            // body: Center(
+            //   child: widget.child,
+            // ),
             body: SafeArea(
               bottom: false,
               top: false,
@@ -123,16 +230,29 @@ class _AppBuilderState extends State<AppBuilder> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: MainRail(
-                      onSelectScreen: setScreen,
-                    ),
+                    child: StreamBuilder<List<RouteApiDto>?>(
+                        stream: viewModel.routesDto,
+                        builder: (context, snapshot) {
+                          if (snapshot.data != null) {
+                            viewModel.getRoutes();
+                            return const CircularProgressIndicator();
+                          } else {
+                            return MainRail(
+                              onSelectScreen: setScreen,
+                            );
+                          }
+                        }),
                   ),
                   const VerticalDivider(thickness: 1, width: 1),
-                  widget.child,
+                  Expanded(
+                    child: widget.child,
+                  ),
                 ],
               ),
             ),
           );
-        });
+        }
+      },
+    );
   }
 }

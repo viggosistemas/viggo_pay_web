@@ -115,7 +115,7 @@ class AlterarSenha {
                         ),
                         label: const Text('Salvar'),
                         onPressed: () {
-                          var formFields = viewModel.formSenha.getFields();
+                          var formFields = viewModel.formSenha.getValues();
                           var novaSenha = formFields?['novaSenha'] ?? '';
                           var confirmarSenha =
                               formFields?['confirmarSenha'] ?? '';

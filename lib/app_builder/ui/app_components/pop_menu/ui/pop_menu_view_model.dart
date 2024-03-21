@@ -2,18 +2,18 @@ import 'dart:async';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/image/domain/usecases/parse_image_url_use_case.dart';
+import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/delete_photo_use_case%20.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/get_user_by_id_use_case.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/get_user_use_case.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/set_user_use_case.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/update_password_use_case.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/update_user_use_case.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/upload_photo_use_case.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_items/alterar_senha/alterar_senha_form_fields.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_items/info_user/info_user_form_fields.dart';
-import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
-import 'package:viggo_pay_core_frontend/image/domain/usecases/parse_image_url_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/delete_photo_use_case%20.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/get_user_by_id_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/get_user_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/set_user_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/update_password_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/update_user_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/upload_photo_use_case.dart';
 
 class PopMenuViewModel extends BaseViewModel {
   final UpdateUserUseCase updateUserUseCase;
@@ -76,7 +76,7 @@ class PopMenuViewModel extends BaseViewModel {
       'id': user!.id,
       'nickname': '',
     };
-    var formFields = form.getFields();
+    var formFields = form.getValues();
     params['nickname'] = formFields?['nickname'] ?? '';
 
     var result = await updateUserUseCase.invoke(id: user!.id, body: params);
@@ -103,7 +103,7 @@ class PopMenuViewModel extends BaseViewModel {
       'old_password': '',
       'password': '',
     };
-    var formFields = formSenha.getFields();
+    var formFields = formSenha.getValues();
     params['old_password'] = formFields?['senhaAntiga'] ?? '';
     params['password'] = formFields?['novaSenha'] ?? '';
 

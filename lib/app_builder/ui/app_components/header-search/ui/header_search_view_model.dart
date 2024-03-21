@@ -12,7 +12,10 @@ class HeaderSearchViewModel extends ChangeNotifier {
     // notifyListeners();
   }
 
-  void onSearch(BuildContext context, List<Map<String, dynamic>> listFilters) {
+  void onSearch(
+    BuildContext context,
+    List<Map<String, dynamic>> listFilters,
+  ) {
     print(listFilters);
   }
 }
