@@ -1,16 +1,16 @@
 import 'dart:async';
 
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/domain/ui/list_domain_form_fields.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/change_active_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_config_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_accounts_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
-import 'package:viggo_pay_core_frontend/domain/ui/list_domain_form_fields.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
 
 class ListDomainAccountViewModel extends BaseViewModel {
   final GetDomainAccountByIdUseCase getDomainAccount;
@@ -69,7 +69,7 @@ class ListDomainAccountViewModel extends BaseViewModel {
     if (isLoading) return;
 
     setLoading();
-    Map<String, String>? formFields = form.getFields();
+    Map<String, String>? formFields = form.getValues();
 
     if (formFields != null) {
       for (var e in formFields.keys) {

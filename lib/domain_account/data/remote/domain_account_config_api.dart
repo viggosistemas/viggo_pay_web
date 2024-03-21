@@ -3,9 +3,9 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:viggo_core_frontend/base/base_api.dart';
+import 'package:viggo_core_frontend/network/network_exceptions.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/response_domain_account_config.dart';
-import 'package:viggo_pay_core_frontend/base/base_api.dart';
-import 'package:viggo_pay_core_frontend/network/network_exceptions.dart';
 
 class DomainAccountConfigApi extends BaseApi {
   DomainAccountConfigApi({required super.settings});

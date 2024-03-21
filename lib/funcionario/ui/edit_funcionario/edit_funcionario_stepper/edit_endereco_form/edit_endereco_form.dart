@@ -31,23 +31,28 @@ class EditEnderecoForm extends StatelessWidget {
     final municipioControll = TextEditingController();
 
     if (entity != null) {
-      viewModel.formEndereco.onLogradouroChange(entity!.logradouro);
+      viewModel.formEndereco.logradouro.onValueChange(entity!.logradouro);
     }
-    if (entity != null) viewModel.formEndereco.onNumeroChange(entity!.numero);
     if (entity != null) {
-      viewModel.formEndereco.onComplementoChange(entity!.complemento);
+      viewModel.formEndereco.numero.onValueChange(entity!.numero);
     }
-    if (entity != null) viewModel.formEndereco.onBairroChange(entity!.bairro);
-    if (entity != null) viewModel.formEndereco.onCepChange(entity!.cep);
     if (entity != null) {
-      viewModel.formEndereco.onMunicipioChange(entity!.municipioId);
+      viewModel.formEndereco.complemento.onValueChange(entity!.complemento);
+    }
+    if (entity != null) {
+      viewModel.formEndereco.bairro.onValueChange(entity!.bairro);
+    }
+    if (entity != null) viewModel.formEndereco.cep.onValueChange(entity!.cep);
+    if (entity != null) {
+      viewModel.formEndereco.municipio.onValueChange(entity!.municipioId);
       if (entity!.municipio != null) {
-        viewModel.formEndereco.onMunicipioNameChange(
+        viewModel.formEndereco.municipioName.onValueChange(
             '${entity!.municipio!.nome}/${entity!.municipio!.siglaUf}');
       }
     }
     if (entity != null) {
-      viewModel.formEndereco.onPontoReferenciaChange(entity!.pontoReferencia);
+      viewModel.formEndereco.pontoReferencia
+          .onValueChange(entity!.pontoReferencia);
     }
 
     return Column(
@@ -62,7 +67,7 @@ class EditEnderecoForm extends StatelessWidget {
               SizedBox(
                 width: 200,
                 child: StreamBuilder<String>(
-                  stream: viewModel.formEndereco.cep,
+                  stream: viewModel.formEndereco.cep.field,
                   builder: (context, snapshot) {
                     cepControll.value =
                         cepControll.value.copyWith(text: snapshot.data);
@@ -81,11 +86,13 @@ class EditEnderecoForm extends StatelessWidget {
                           CepInputFormatter()
                         ],
                         onChanged: (value) {
-                          viewModel.formEndereco.onCepChange(value);
+                          viewModel.formEndereco.cep.onValueChange(value);
                           if (value.isEmpty) {
-                            viewModel.formEndereco.onMunicipioChange('');
-                            viewModel.formEndereco.onMunicipioNameChange('');
-                            municipioControll.value = municipioControll.value.copyWith(text: '');
+                            viewModel.formEndereco.municipio.onValueChange('');
+                            viewModel.formEndereco.municipioName
+                                .onValueChange('');
+                            municipioControll.value =
+                                municipioControll.value.copyWith(text: '');
                           }
                         });
                   },
@@ -97,7 +104,7 @@ class EditEnderecoForm extends StatelessWidget {
               SizedBox(
                 width: 470,
                 child: StreamBuilder<String>(
-                  stream: viewModel.formEndereco.municipioName,
+                  stream: viewModel.formEndereco.municipioName.field,
                   builder: (context, snapshot) {
                     municipioControll.value =
                         municipioControll.value.copyWith(text: snapshot.data);
@@ -130,7 +137,7 @@ class EditEnderecoForm extends StatelessWidget {
           height: 10,
         ),
         StreamBuilder<String>(
-          stream: viewModel.formEndereco.logradouro,
+          stream: viewModel.formEndereco.logradouro.field,
           builder: (context, snapshot) {
             logradouroControll.value =
                 logradouroControll.value.copyWith(text: snapshot.data);
@@ -145,7 +152,7 @@ class EditEnderecoForm extends StatelessWidget {
                   errorText: snapshot.error?.toString(),
                 ),
                 onChanged: (value) {
-                  viewModel.formEndereco.onLogradouroChange(value);
+                  viewModel.formEndereco.logradouro.onValueChange(value);
                 });
           },
         ),
@@ -159,7 +166,7 @@ class EditEnderecoForm extends StatelessWidget {
               SizedBox(
                 width: 570,
                 child: StreamBuilder<String>(
-                  stream: viewModel.formEndereco.bairro,
+                  stream: viewModel.formEndereco.bairro.field,
                   builder: (context, snapshot) {
                     bairroControll.value =
                         bairroControll.value.copyWith(text: snapshot.data);
@@ -174,7 +181,7 @@ class EditEnderecoForm extends StatelessWidget {
                           errorText: snapshot.error?.toString(),
                         ),
                         onChanged: (value) {
-                          viewModel.formEndereco.onBairroChange(value);
+                          viewModel.formEndereco.bairro.onValueChange(value);
                         });
                   },
                 ),
@@ -185,7 +192,7 @@ class EditEnderecoForm extends StatelessWidget {
               SizedBox(
                 width: 100,
                 child: StreamBuilder<String>(
-                  stream: viewModel.formEndereco.numero,
+                  stream: viewModel.formEndereco.numero.field,
                   builder: (context, snapshot) {
                     numeroControll.value =
                         numeroControll.value.copyWith(text: snapshot.data);
@@ -200,7 +207,7 @@ class EditEnderecoForm extends StatelessWidget {
                           errorText: snapshot.error?.toString(),
                         ),
                         onChanged: (value) {
-                          viewModel.formEndereco.onNumeroChange(value);
+                          viewModel.formEndereco.numero.onValueChange(value);
                         });
                   },
                 ),
@@ -212,7 +219,7 @@ class EditEnderecoForm extends StatelessWidget {
           height: 10,
         ),
         StreamBuilder<String>(
-          stream: viewModel.formEndereco.complemento,
+          stream: viewModel.formEndereco.complemento.field,
           builder: (context, snapshot) {
             complementoControll.value =
                 complementoControll.value.copyWith(text: snapshot.data);
@@ -227,7 +234,7 @@ class EditEnderecoForm extends StatelessWidget {
                   errorText: snapshot.error?.toString(),
                 ),
                 onChanged: (value) {
-                  viewModel.formEndereco.onComplementoChange(value);
+                  viewModel.formEndereco.complemento.onValueChange(value);
                 });
           },
         ),
@@ -235,7 +242,7 @@ class EditEnderecoForm extends StatelessWidget {
           height: 10,
         ),
         StreamBuilder<String>(
-          stream: viewModel.formEndereco.pontoReferencia,
+          stream: viewModel.formEndereco.pontoReferencia.field,
           builder: (context, snapshot) {
             pontoReferenciaControll.value =
                 pontoReferenciaControll.value.copyWith(text: snapshot.data);
@@ -250,7 +257,7 @@ class EditEnderecoForm extends StatelessWidget {
                   errorText: snapshot.error?.toString(),
                 ),
                 onChanged: (value) {
-                  viewModel.formEndereco.onPontoReferenciaChange(value);
+                  viewModel.formEndereco.pontoReferencia.onValueChange(value);
                 });
           },
         ),

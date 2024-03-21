@@ -1,9 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:either_dart/either.dart';
+import 'package:viggo_core_frontend/network/network_exceptions.dart';
+import 'package:viggo_core_frontend/network/no_content_response.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_dto_pagination.dart';
-import 'package:viggo_pay_core_frontend/network/network_exceptions.dart';
-import 'package:viggo_pay_core_frontend/network/no_content_response.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
 abstract class DomainAccountRemoteDataSource {
   
@@ -31,5 +33,11 @@ abstract class DomainAccountRemoteDataSource {
   Future<Either<NetworkException, DomainAccountApiDto>> addDocuments({
     required String id,
     required Map<String, dynamic> body,
+  });
+
+  Future<Either<NetworkException, Uint8List>> extratoPDF({
+    required String id,
+    required String de,
+    required String ate,
   });
 }

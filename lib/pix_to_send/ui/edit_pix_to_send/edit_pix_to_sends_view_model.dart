@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/destinatario_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/consultar_alias_destinatario_use_case.dart';
@@ -8,8 +10,6 @@ import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/create_pix_to_send_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/update_pix_to_send_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/ui/edit_pix_to_send/edit_pix_to_sends_form/edit_form_fields.dart';
-import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
-import 'package:viggo_pay_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
 
 class EditPixToSendViewModel extends BaseViewModel {
   String materaId = '';
@@ -126,7 +126,7 @@ class EditPixToSendViewModel extends BaseViewModel {
   }
 
   preencherEntity(DestinatarioApiDto destinatario) {
-    var formFields = form.getFields()!;
+    var formFields = form.getValues()!;
 
     entity['alias'] = formFields['alias'];
     entity['alias_type'] = formFields['aliasType'];

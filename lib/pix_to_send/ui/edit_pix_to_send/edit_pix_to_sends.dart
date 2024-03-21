@@ -14,11 +14,11 @@ class EditPixToSends {
 
   clearFields(String? alias) {
     if (alias == null) {
-      viewModel.form.onAliasChange('');
+      viewModel.form.alias.onValueChange('');
     } else {
-      viewModel.form.onAliasChange(alias);
+      viewModel.form.alias.onValueChange(alias);
     }
-    viewModel.form.onAliasTypeChange('');
+    viewModel.form.aliasType.onValueChange('');
     viewModel.onDestinatarioChange(null);
   }
 
@@ -169,7 +169,7 @@ class EditPixToSends {
                                           ? viewModel.loadInfoDestinatario(
                                               'BR',
                                               viewModel.form
-                                                  .getFields()!['alias']!,
+                                                  .getValues()!['alias']!,
                                             )
                                           : {},
                                       style: TextButton.styleFrom(
@@ -328,7 +328,7 @@ class EditPixToSends {
                                           ? viewModel.loadInfoDestinatario(
                                               'BR',
                                               viewModel.form
-                                                  .getFields()!['alias']!,
+                                                  .getValues()!['alias']!,
                                             )
                                           : {},
                                       style: TextButton.styleFrom(

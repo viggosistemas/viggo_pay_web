@@ -1,3 +1,9 @@
+import 'package:viggo_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
+import 'package:viggo_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/preferences_settings.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/domain_account_config_data_source.dart';
 import 'package:viggo_pay_admin/domain_account/data/domain_account_config_repository_impl.dart';
@@ -15,17 +21,12 @@ import 'package:viggo_pay_admin/domain_account/domain/usecases/change_active_dom
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_config_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_accounts_by_params_use_case.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/get_extrato_pdf_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/update_config_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/update_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/update_password_pix_matera_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_view_model.dart';
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_view_model.dart';
-import 'package:viggo_pay_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/preferences_settings.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
 
 class DomainAccountLocator {
   void setup() {
@@ -95,6 +96,11 @@ class DomainAccountLocator {
     );
     locator.registerFactory(
       () => AddDomainAccountDocumentsUseCase(
+        repository: locator.get(),
+      ),
+    );
+    locator.registerFactory(
+      () => GetExtratoPdfDomainAccountUseCase(
         repository: locator.get(),
       ),
     );

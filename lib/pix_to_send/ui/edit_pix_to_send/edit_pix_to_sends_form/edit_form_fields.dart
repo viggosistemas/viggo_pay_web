@@ -1,57 +1,33 @@
-import 'dart:async';
+import 'package:viggo_core_frontend/form/base_form.dart';
+import 'package:viggo_core_frontend/form/field/field.dart';
+import 'package:viggo_core_frontend/form/field/stringfield.dart';
+import 'package:viggo_core_frontend/form/validator.dart';
 
-import 'package:rxdart/rxdart.dart';
-import 'package:viggo_pay_core_frontend/form/base_form.dart';
-import 'package:viggo_pay_core_frontend/form/validator.dart';
+class EditPixToSendFormFields extends BaseForm {
+  final alias = StringField(
+    isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+    ],
+  );
 
-class EditPixToSendFormFields extends BaseForm
-    with EditPixToSendsFormFieldsValidation {
-  final _aliasController = BehaviorSubject<String>();
-  Stream<String> get alias =>
-      _aliasController.stream.transform(aliasValidation);
-  Function(String) get onAliasChange => _aliasController.sink.add;
+  final aliasType = StringField(
+    isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+    ],
+  );
 
-  final _aliasTypeController = BehaviorSubject<String>();
-  Stream<String> get aliasType =>
-      _aliasTypeController.stream.transform(aliasTypeValidation);
-  Function(String) get onAliasTypeChange => _aliasTypeController.sink.add;
-  
   @override
-  List<Stream<String>> getStreams() => [alias, aliasType];
+  List<Field> getFields() => [alias, aliasType];
 
   @override
-  Map<String, String>? getFields() {
-    var alias = _aliasController.valueOrNull;
-    var aliasType = _aliasTypeController.valueOrNull;
-
-    if (alias == null ||
-        aliasType == null) return null;
+  Map<String, String>? getValues() {
+    if (!alias.isValid || !aliasType.isValid) return null;
 
     return {
-      'alias': alias,
-      'aliasType': aliasType,
+      'alias': alias.value!,
+      'aliasType': aliasType.value!,
     };
   }
-}
-
-mixin EditPixToSendsFormFieldsValidation {
-  final aliasValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-        Validator().isEmptyValue,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
-
-  final aliasTypeValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-        Validator().isEmptyValue,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
 }

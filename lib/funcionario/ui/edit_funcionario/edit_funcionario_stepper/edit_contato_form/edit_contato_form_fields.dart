@@ -1,45 +1,25 @@
-import 'dart:async';
+import 'package:viggo_core_frontend/form/base_form.dart';
+import 'package:viggo_core_frontend/form/field/field.dart';
+import 'package:viggo_core_frontend/form/field/stringfield.dart';
+import 'package:viggo_core_frontend/form/field_length_validator.dart';
+import 'package:viggo_core_frontend/form/validator.dart';
 
-import 'package:rxdart/rxdart.dart';
-import 'package:viggo_pay_core_frontend/form/base_form.dart';
-import 'package:viggo_pay_core_frontend/form/field_length_validator.dart';
-import 'package:viggo_pay_core_frontend/form/validator.dart';
+class EditContatoFormFields extends BaseForm {
+  final contato = StringField(validators: [
+    Validator().isEmptyValue,
+    FieldLengthValidator().maiorQ100,
+  ]);
 
-class EditContatoFormFields extends BaseForm
-    with EditContatoFormFieldsValidation {
-  final _contatoController = BehaviorSubject<String>();
-  Stream<String> get contato =>
-      _contatoController.stream.transform(contatoValidation);
-  Function(String) get onContatoChange => _contatoController.sink.add;
-
-  final _contatosController = BehaviorSubject<String>();
-  Stream<String> get contatos =>
-      _contatosController.stream;
-  Function(String) get onContatosChange => _contatosController.sink.add;
+  final contatos = StringField();
 
   @override
-  List<Stream<String>> getStreams() => [contato];
+  List<Field> getFields() => [contato];
 
   @override
-  Map<String, String>? getFields() {
-    var contato = _contatoController.valueOrNull;
-    var contatos = _contatosController.valueOrNull;
-
+  Map<String, String>? getValues() {
     return {
-      'contato': contato ?? '',
-      'contatos': contatos ?? ''
+      'contato': contato.value ?? '',
+      'contatos': contatos.value ?? '',
     };
   }
-}
-
-mixin EditContatoFormFieldsValidation {
-  final contatoValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isEmptyValue,
-        FieldLengthValidator().maiorQ100,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
 }

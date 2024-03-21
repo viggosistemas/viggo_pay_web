@@ -1,9 +1,9 @@
 
 
 import 'package:either_dart/either.dart';
+import 'package:viggo_core_frontend/network/network_exceptions.dart';
 import 'package:viggo_pay_admin/parceiro/data/models/parceiro_api_dto.dart';
 import 'package:viggo_pay_admin/parceiro/domain/parceiro_repository.dart';
-import 'package:viggo_pay_core_frontend/network/network_exceptions.dart';
 
 class GetParceiroByIdUseCase {
   final ParceiroRepository repository;

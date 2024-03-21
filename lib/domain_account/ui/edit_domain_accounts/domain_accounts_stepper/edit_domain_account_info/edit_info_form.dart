@@ -35,25 +35,26 @@ class EditDomainAccountInfo extends StatelessWidget {
         TextEditingController(text: entity?.clientMobilePhoneCountry ?? 'BRA');
 
     if (entity != null) {
-      viewModel.form.onNameChange(entity!.clientName);
+      viewModel.form.name.onValueChange(entity!.clientName);
     }
     if (entity != null) {
-      viewModel.form.onTaxIdChange(entity!.clientTaxIdentifierTaxId);
+      viewModel.form.taxId.onValueChange(entity!.clientTaxIdentifierTaxId);
     }
     if (entity != null) {
-      viewModel.form.onEmailChange(entity!.clientEmail);
+      viewModel.form.email.onValueChange(entity!.clientEmail);
     }
     if (entity != null) {
-      viewModel.form.onPhoneChange(entity!.clientMobilePhone);
+      viewModel.form.phone.onValueChange(entity!.clientMobilePhone);
     }
     if (entity != null) {
-      viewModel.form.onCountryPhoneChange(entity!.clientMobilePhoneCountry);
+      viewModel.form.countryPhone
+          .onValueChange(entity!.clientMobilePhoneCountry);
     }
 
     return Column(
       children: [
         StreamBuilder<String>(
-            stream: viewModel.form.taxId,
+            stream: viewModel.form.taxId.field,
             builder: (context, snapshot) {
               taxIdFieldController.value =
                   taxIdFieldController.value.copyWith(text: snapshot.data);
@@ -77,14 +78,14 @@ class EditDomainAccountInfo extends StatelessWidget {
                     FilteringTextInputFormatter.digitsOnly,
                   ],
                   onChanged: (value) {
-                    viewModel.form.onTaxIdChange(value);
+                    viewModel.form.taxId.onValueChange(value);
                   });
             }),
         const SizedBox(
           height: 10,
         ),
         StreamBuilder<String>(
-            stream: viewModel.form.name,
+            stream: viewModel.form.name.field,
             builder: (context, snapshot) {
               nameFielController.value =
                   nameFielController.value.copyWith(text: snapshot.data);
@@ -100,14 +101,14 @@ class EditDomainAccountInfo extends StatelessWidget {
                     errorText: snapshot.error?.toString(),
                   ),
                   onChanged: (value) {
-                    viewModel.form.onNameChange(value);
+                    viewModel.form.name.onValueChange(value);
                   });
             }),
         const SizedBox(
           height: 10,
         ),
         StreamBuilder<String>(
-            stream: viewModel.form.phone,
+            stream: viewModel.form.phone.field,
             builder: (context, snapshot) {
               phoneFieldController.value =
                   phoneFieldController.value.copyWith(text: snapshot.data);
@@ -138,13 +139,14 @@ class EditDomainAccountInfo extends StatelessWidget {
                   ),
                 ),
                 onChanged: (value) {
-                  viewModel.form.onPhoneChange(value.number);
-                  viewModel.form.onCountryPhoneChange(value.countryISOCode);
-                  viewModel.form.onClientTaxCountryChange(value.countryISOCode);
+                  viewModel.form.phone.onValueChange(value.number);
+                  viewModel.form.countryPhone
+                      .onValueChange(value.countryISOCode);
+                  viewModel.form.countryTax.onValueChange(value.countryISOCode);
                 },
                 onCountryChanged: (country) {
-                  viewModel.form.onCountryPhoneChange(country.code);
-                  viewModel.form.onClientTaxCountryChange(country.code);
+                  viewModel.form.countryPhone.onValueChange(country.code);
+                  viewModel.form.countryTax.onValueChange(country.code);
                 },
               );
             }),
@@ -165,14 +167,14 @@ class EditDomainAccountInfo extends StatelessWidget {
         //             errorText: snapshot.error?.toString(),
         //           ),
         //           onChanged: (value) {
-        //             viewModel.form.onPhoneChange(value);
+        //             viewModel.form.phone.onValueChange(value);
         //           });
         //     }),
         const SizedBox(
           height: 10,
         ),
         StreamBuilder<String>(
-            stream: viewModel.form.email,
+            stream: viewModel.form.email.field,
             builder: (context, snapshot) {
               emailFieldController.value =
                   emailFieldController.value.copyWith(text: snapshot.data);
@@ -188,7 +190,7 @@ class EditDomainAccountInfo extends StatelessWidget {
                     errorText: snapshot.error?.toString(),
                   ),
                   onChanged: (value) {
-                    viewModel.form.onEmailChange(value);
+                    viewModel.form.email.onValueChange(value);
                   });
             }),
       ],

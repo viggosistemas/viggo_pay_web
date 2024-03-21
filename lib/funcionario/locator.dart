@@ -1,4 +1,11 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:viggo_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
+import 'package:viggo_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/preferences_settings.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
+import 'package:viggo_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/get_users_disponiveis_use_case.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/funcionario/data/funcionario_remote_data_source.dart';
 import 'package:viggo_pay_admin/funcionario/data/funcionario_repository_impl.dart';
@@ -14,13 +21,6 @@ import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/funcionario_view
 import 'package:viggo_pay_admin/funcionario/ui/list_funcionario/list_funcionario_view_model.dart';
 import 'package:viggo_pay_admin/parceiro/domain/usecases/create_parceiro_use_case.dart';
 import 'package:viggo_pay_admin/parceiro/domain/usecases/update_parceiro_use_case.dart';
-import 'package:viggo_pay_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/preferences_settings.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/usecases/update_selected_item_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/get_users_disponiveis_use_case.dart';
 class FuncionarioLocator {
   void setup() {
       // api

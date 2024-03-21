@@ -1,62 +1,40 @@
-import 'dart:async';
+import 'package:viggo_core_frontend/form/base_form.dart';
+import 'package:viggo_core_frontend/form/field/doublefield.dart';
+import 'package:viggo_core_frontend/form/field/field.dart';
+import 'package:viggo_core_frontend/form/field/stringfield.dart';
+import 'package:viggo_core_frontend/form/validator.dart';
 
-import 'package:rxdart/rxdart.dart';
-import 'package:viggo_pay_core_frontend/form/base_form.dart';
-import 'package:viggo_pay_core_frontend/form/validator.dart';
-
-class ConfigDomainAccountFormFields extends BaseForm
-    with ConfigDomainAccountsFormFieldsValidation {
-  final _porcentagemController = BehaviorSubject<bool>();
-  Stream<bool> get porcentagem => _porcentagemController.stream;
-  Function(bool) get onPorcentagemChange => _porcentagemController.sink.add;
-
-  final _taxaController = BehaviorSubject<String>();
-  Stream<String> get taxa => _taxaController.stream.transform(taxaValidation);
-  Function(String) get onTaxaChange => _taxaController.sink.add;
-
-  @override
-  List<Stream<String>> getStreams() => [taxa];
+class ConfigDomainAccountFormFields extends BaseForm {
+  final porcentagem = StringField(
+    isRequired: true,
+  );
+  final taxa = DoubleField(
+    isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+    ],
+  );
 
   @override
-  Map<String, String>? getFields() {
-    var porcentagem = _porcentagemController.valueOrNull;
-    var taxa = _taxaController.valueOrNull;
+  List<Field> getFields() => [taxa];
 
-    if (porcentagem == null && taxa == null) {
+  @override
+  Map<String, String>? getValues() {
+    if (!porcentagem.isValid && !taxa.isValid) {
       return null;
-    } else if (porcentagem == null) {
+    } else if (!porcentagem.isValid) {
       return {
-        'taxa': taxa.toString(),
+        'taxa': taxa.value.toString(),
       };
-    } else if (taxa == null) {
+    } else if (!taxa.isValid) {
       return {
-        'porcentagem': porcentagem.toString(),
+        'porcentagem': porcentagem.value.toString(),
       };
     } else {
       return {
-        'porcentagem': porcentagem.toString(),
-        'taxa': taxa.toString(),
+        'porcentagem': porcentagem.value.toString(),
+        'taxa': taxa.value.toString(),
       };
     }
   }
-}
-
-mixin ConfigDomainAccountsFormFieldsValidation {
-  final porcentagemValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-        Validator().isEmptyValue,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
-  final taxaValidation = StreamTransformer<String, String>.fromHandlers(
-    handleData: (value, sink) {
-      List<Function(String)> validators = [
-        Validator().isRequired,
-      ];
-      Validator().validateField(validators, value, sink.add, sink.addError);
-    },
-  );
 }

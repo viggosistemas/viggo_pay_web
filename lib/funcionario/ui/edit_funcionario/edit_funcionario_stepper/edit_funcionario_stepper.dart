@@ -33,7 +33,7 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
   bool jaPreencheu = false;
 
   initFormEndereco() {
-    var formEnderecoValues = widget.viewModel.formEndereco.getFields();
+    var formEnderecoValues = widget.viewModel.formEndereco.getValues();
     if (formEnderecoValues == null) {
       return ParceiroEndereco.fromJson({
         'logradouro': '',

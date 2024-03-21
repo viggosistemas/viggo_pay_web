@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
@@ -8,7 +9,6 @@ import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/config_do
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts.dart';
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
 class ListDomainAccountsGrid extends StatefulWidget {
   const ListDomainAccountsGrid({super.key});

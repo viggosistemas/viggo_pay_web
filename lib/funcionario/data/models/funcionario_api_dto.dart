@@ -1,6 +1,6 @@
+import 'package:viggo_core_frontend/base/entity_api_dto.dart';
+import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_pay_admin/parceiro/data/models/parceiro_api_dto.dart';
-import 'package:viggo_pay_core_frontend/base/entity_api_dto.dart';
-import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
 
 class FuncionarioApiDto extends EntityDto {
   late String domainAccountId;

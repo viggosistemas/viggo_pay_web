@@ -3,9 +3,9 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:viggo_core_frontend/base/base_api.dart';
+import 'package:viggo_core_frontend/network/network_exceptions.dart';
 import 'package:viggo_pay_admin/parceiro/data/models/response.dart';
-import 'package:viggo_pay_core_frontend/base/base_api.dart';
-import 'package:viggo_pay_core_frontend/network/network_exceptions.dart';
 
 class ParceiroApi extends BaseApi {
   ParceiroApi({required super.settings});

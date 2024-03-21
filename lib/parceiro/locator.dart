@@ -1,3 +1,4 @@
+import 'package:viggo_core_frontend/preferences/domain/preferences_settings.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/parceiro/data/parceiro_remote_data_source.dart';
 import 'package:viggo_pay_admin/parceiro/data/parceiro_repository_impl.dart';
@@ -9,7 +10,6 @@ import 'package:viggo_pay_admin/parceiro/domain/usecases/create_parceiro_use_cas
 import 'package:viggo_pay_admin/parceiro/domain/usecases/get_parceiro_by_id_use_case.dart';
 import 'package:viggo_pay_admin/parceiro/domain/usecases/get_parceiro_by_params_use_case.dart';
 import 'package:viggo_pay_admin/parceiro/domain/usecases/update_parceiro_use_case.dart';
-import 'package:viggo_pay_core_frontend/preferences/domain/preferences_settings.dart';
 class ParceiroLocator {
   void setup() {
       // api

@@ -1,5 +1,5 @@
-import 'package:viggo_pay_core_frontend/base/entity_api_dto.dart';
-import 'package:viggo_pay_core_frontend/localidades/data/models/municipio_dto.dart';
+import 'package:viggo_core_frontend/base/entity_api_dto.dart';
+import 'package:viggo_core_frontend/localidades/data/models/municipio_dto.dart';
 
 class ParceiroApiDto extends EntityDto {
   late String domainId;

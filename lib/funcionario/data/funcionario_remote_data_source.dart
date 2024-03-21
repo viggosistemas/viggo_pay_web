@@ -1,8 +1,8 @@
 import 'package:either_dart/either.dart';
+import 'package:viggo_core_frontend/network/network_exceptions.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/funcionario/data/models/funcionario_api_dto.dart';
 import 'package:viggo_pay_admin/funcionario/data/models/funcionario_dto_pagination.dart';
-import 'package:viggo_pay_core_frontend/network/network_exceptions.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
 abstract class FuncionarioRemoteDataSource {
   Future<Either<NetworkException, FuncionarioDtoPagination>> getEntitiesByParams({

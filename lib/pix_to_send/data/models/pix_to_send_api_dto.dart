@@ -1,4 +1,4 @@
-import 'package:viggo_pay_core_frontend/base/entity_api_dto.dart';
+import 'package:viggo_core_frontend/base/entity_api_dto.dart';
 
 // ignore: constant_identifier_names
 enum Aliastype { TAX_ID, EMAIL, PHONE, EVP }

@@ -3,6 +3,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
+import 'package:viggo_core_frontend/localidades/data/models/address_via_cep_dto.dart';
+import 'package:viggo_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
+import 'package:viggo_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/get_users_disponiveis_use_case.dart';
+import 'package:viggo_core_frontend/util/constants.dart';
 import 'package:viggo_pay_admin/funcionario/domain/usecases/create_funcionario_use_case.dart';
 import 'package:viggo_pay_admin/funcionario/domain/usecases/update_funcionario_use_case.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario_stepper/edit_contato_form/edit_contato_form_fields.dart';
@@ -10,14 +17,6 @@ import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario_stepper/edit_funcionario_form/edit_funcionario_form_fields.dart';
 import 'package:viggo_pay_admin/parceiro/domain/usecases/create_parceiro_use_case.dart';
 import 'package:viggo_pay_admin/parceiro/domain/usecases/update_parceiro_use_case.dart';
-import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
-import 'package:viggo_pay_core_frontend/domain/data/models/domain_api_dto.dart';
-import 'package:viggo_pay_core_frontend/localidades/data/models/address_via_cep_dto.dart';
-import 'package:viggo_pay_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
-import 'package:viggo_pay_core_frontend/user/data/models/user_api_dto.dart';
-import 'package:viggo_pay_core_frontend/user/domain/usecases/get_users_disponiveis_use_case.dart';
-import 'package:viggo_pay_core_frontend/util/constants.dart';
 
 class EditFuncionarioViewModel extends BaseViewModel {
   final SharedPreferences sharedPrefs;
@@ -37,10 +36,6 @@ class EditFuncionarioViewModel extends BaseViewModel {
       StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
-  final StreamController<List<UserApiDto>> _streamControllerUsers =
-      StreamController<List<UserApiDto>>.broadcast();
-  Stream<List<UserApiDto>> get listUsers => _streamControllerUsers.stream;
-
   EditFuncionarioViewModel({
     required this.sharedPrefs,
     required this.updateFuncionario,
@@ -52,7 +47,7 @@ class EditFuncionarioViewModel extends BaseViewModel {
     required this.getMunicipio,
   });
 
-  Future<void> loadUsers(Map<String, String> filters) async {
+  Future loadUsers(Map<String, String> filters) async {
     if (isLoading) return;
     setLoading();
 
@@ -67,7 +62,7 @@ class EditFuncionarioViewModel extends BaseViewModel {
     setLoading();
 
     if (result.isRight) {
-      _streamControllerUsers.sink.add(result.right);
+      return result.right;
     } else if (result.isLeft) {
       postError(result.left.message);
     }
@@ -82,9 +77,9 @@ class EditFuncionarioViewModel extends BaseViewModel {
     setLoading();
 
     dynamic result;
-    var dadosFormFields = formDados.getFields()!;
-    var enderecosFormFields = formEndereco.getFields()!;
-    var contatosFormFields = formContato.getFields()!;
+    var dadosFormFields = formDados.getValues()!;
+    var enderecosFormFields = formEndereco.getValues()!;
+    var contatosFormFields = formContato.getValues()!;
     String? domainJson = sharedPrefs.getString(CoreUserPreferences.DOMAIN);
     DomainApiDto domain = DomainApiDto.fromJson(jsonDecode(domainJson!));
 
@@ -138,7 +133,7 @@ class EditFuncionarioViewModel extends BaseViewModel {
     if (isLoading) return;
     setLoading();
 
-    var dadosFormFields = formDados.getFields()!;
+    var dadosFormFields = formDados.getValues()!;
     dynamic result;
     String? domainJson = sharedPrefs.getString(CoreUserPreferences.DOMAIN);
     DomainApiDto domain = DomainApiDto.fromJson(jsonDecode(domainJson!));
@@ -191,8 +186,8 @@ class EditFuncionarioViewModel extends BaseViewModel {
     );
 
     if (result.isRight) {
-      formEndereco.onMunicipioChange(result.right.municipios[0].id);
-      formEndereco.onMunicipioNameChange(
+      formEndereco.municipio.onValueChange(result.right.municipios[0].id);
+      formEndereco.municipioName.onValueChange(
           '${result.right.municipios[0].nome}/${result.right.municipios[0].siglaUf}');
     } else if (result.isLeft) {
       postError(result.left.message);

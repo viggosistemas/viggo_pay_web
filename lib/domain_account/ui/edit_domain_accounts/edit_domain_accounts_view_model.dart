@@ -4,6 +4,10 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/localidades/data/models/address_via_cep_dto.dart';
+import 'package:viggo_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
+import 'package:viggo_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/add_config_domain_account_use_case.dart';
@@ -13,10 +17,6 @@ import 'package:viggo_pay_admin/domain_account/domain/usecases/update_domain_acc
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/config_domain_accounts/config_domain_accounts_form_fields.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/domain_accounts_stepper/edit_domain_account_address/edit_form_fields.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/domain_accounts_stepper/edit_domain_account_info/edit_form_fields.dart';
-import 'package:viggo_pay_core_frontend/base/base_view_model.dart';
-import 'package:viggo_pay_core_frontend/localidades/data/models/address_via_cep_dto.dart';
-import 'package:viggo_pay_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
-import 'package:viggo_pay_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
 
 class EditDomainAccountViewModel extends BaseViewModel
     with RegisterDomainAccountDocumentsTransformer {
@@ -56,7 +56,7 @@ class EditDomainAccountViewModel extends BaseViewModel
     if (isLoading) return;
 
     setLoading();
-    var formFields = form.getFields();
+    var formFields = form.getValues();
 
     Map<String, dynamic> data = {
       'id': id,
@@ -84,7 +84,7 @@ class EditDomainAccountViewModel extends BaseViewModel
 
     setLoading();
     dynamic result;
-    var form = formConfig.getFields();
+    var form = formConfig.getValues();
     var taxa = form!['taxa'] ?? entity.taxa;
 
     Map<String, dynamic> data = entity.id.isNotEmpty
@@ -137,9 +137,9 @@ class EditDomainAccountViewModel extends BaseViewModel
     );
 
     if (result.isRight) {
-      formAddress.onEstadoChange(result.right.municipios[0].siglaUf);
+      formAddress.estado.onValueChange(result.right.municipios[0].siglaUf);
       estadoAddress = result.right.municipios[0].siglaUf;
-      formAddress.onCidadeChange(result.right.municipios[0].nome);
+      formAddress.cidade.onValueChange(result.right.municipios[0].nome);
     } else if (result.isLeft) {
       postError(result.left.message);
     }
@@ -151,8 +151,10 @@ class EditDomainAccountViewModel extends BaseViewModel
   Stream<List<Map<String, dynamic>>> get fileList => _fileList.stream;
   Stream<int> get fileListSize => _fileList.stream.transform(fileListMaxFiles);
 
-  Future<void> onLoadDomainAccount(Function onError, DomainAccountApiDto? domainAccount) async {
-    _fileList.sink.add(domainAccount?.documents.map((e) => e.toJson()).toList() ?? []);
+  Future<void> onLoadDomainAccount(
+      Function onError, DomainAccountApiDto? domainAccount) async {
+    _fileList.sink
+        .add(domainAccount?.documents.map((e) => e.toJson()).toList() ?? []);
   }
 
   Future<void> onSelectedFile(PlatformFile file, Function onError) async {
@@ -205,8 +207,8 @@ class EditDomainAccountViewModel extends BaseViewModel
       return;
     }
 
-    var result =
-        await addDomainAccountDocuments.invoke(domainAccountId, {'documents': itens});
+    var result = await addDomainAccountDocuments
+        .invoke(domainAccountId, {'documents': itens});
     if (result.isLeft) {
       postError(result.left.message);
       return;

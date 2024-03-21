@@ -1,8 +1,8 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:viggo_core_frontend/base/entity_api_dto.dart';
+import 'package:viggo_core_frontend/util/date_converter.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_document_api_dto.dart';
-import 'package:viggo_pay_core_frontend/base/entity_api_dto.dart';
-import 'package:viggo_pay_core_frontend/util/date_converter.dart';
 
 class DomainAccountApiDto extends EntityDto {
   late String? materaId;

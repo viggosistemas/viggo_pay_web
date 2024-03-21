@@ -1,13 +1,16 @@
+import 'dart:typed_data';
+
 import 'package:either_dart/either.dart';
+import 'package:viggo_core_frontend/network/bytes_response.dart';
+import 'package:viggo_core_frontend/network/network_exceptions.dart';
+import 'package:viggo_core_frontend/network/no_content_response.dart';
+import 'package:viggo_core_frontend/network/safe_api_call.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/domain_account/data/domain_account_data_source.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_dto_pagination.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/response.dart';
 import 'package:viggo_pay_admin/domain_account/data/remote/domain_account_api.dart';
-import 'package:viggo_pay_core_frontend/network/network_exceptions.dart';
-import 'package:viggo_pay_core_frontend/network/no_content_response.dart';
-import 'package:viggo_pay_core_frontend/network/safe_api_call.dart';
-import 'package:viggo_pay_core_frontend/util/list_options.dart';
 
 class DomainAccountRemoteDataSourceImpl
     implements DomainAccountRemoteDataSource {
@@ -75,4 +78,14 @@ class DomainAccountRemoteDataSourceImpl
         .mapRight((right) => (right as DomainAccountResponse).domainAccount);
   }
 
+  @override
+  Future<Either<NetworkException, Uint8List>> extratoPDF({
+    required String id,
+    required String de,
+    required String ate,
+  }) {
+    Map<String, dynamic> params = {'id': id, 'de': de, 'ate': ate};
+    return safeApiCall(api.extratoPDF, params: params)
+        .mapRight((right) => (right as BytesResponse).bytes);
+  }
 }

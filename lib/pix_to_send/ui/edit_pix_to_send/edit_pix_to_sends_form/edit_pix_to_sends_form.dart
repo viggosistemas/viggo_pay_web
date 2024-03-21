@@ -178,10 +178,10 @@ class _EditPixToSendsFormState extends State<EditPixToSendsForm> {
     final aliasTypeFieldControll = TextEditingController();
 
     if (widget.entity != null) {
-      widget.viewModel.form.onAliasChange(widget.entity!.alias);
+      widget.viewModel.form.alias.onValueChange(widget.entity!.alias);
     }
     if (widget.entity != null) {
-      widget.viewModel.form.onAliasTypeChange(widget.entity!.aliasType);
+      widget.viewModel.form.aliasType.onValueChange(widget.entity!.aliasType);
     }
 
     return Column(
@@ -190,7 +190,7 @@ class _EditPixToSendsFormState extends State<EditPixToSendsForm> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         StreamBuilder<String>(
-          stream: widget.viewModel.form.aliasType,
+          stream: widget.viewModel.form.aliasType.field,
           builder: (context, snapshot) {
             aliasTypeFieldControll.value =
                 aliasTypeFieldControll.value.copyWith(text: snapshot.data);
@@ -205,11 +205,11 @@ class _EditPixToSendsFormState extends State<EditPixToSendsForm> {
                 errorText: snapshot.error?.toString(),
               ),
               onChanged: (val) {
-                widget.viewModel.form.onAliasTypeChange(val);
+                widget.viewModel.form.aliasType.onValueChange(val);
                 widget.viewModel.onDestinatarioChange(null);
               },
               onSaved: (val) {
-                widget.viewModel.form.onAliasTypeChange(val ?? '');
+                widget.viewModel.form.aliasType.onValueChange(val ?? '');
                 widget.viewModel.onDestinatarioChange(null);
               },
             );
@@ -219,7 +219,7 @@ class _EditPixToSendsFormState extends State<EditPixToSendsForm> {
           height: 10,
         ),
         StreamBuilder<String>(
-          stream: widget.viewModel.form.alias,
+          stream: widget.viewModel.form.alias.field,
           builder: (context, snapshot) {
             aliasFieldControll.value =
                 aliasFieldControll.value.copyWith(text: snapshot.data);
@@ -235,7 +235,7 @@ class _EditPixToSendsFormState extends State<EditPixToSendsForm> {
                   errorText: snapshot.error?.toString(),
                 ),
                 onChanged: (value) {
-                  widget.viewModel.form.onAliasChange(value);
+                  widget.viewModel.form.alias.onValueChange(value);
                   widget.viewModel.onDestinatarioChange(null);
                 });
           },

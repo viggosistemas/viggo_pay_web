@@ -33,20 +33,21 @@ class _EditContatoFormState extends State<EditContatoForm> {
   submitContato(List<Map<String, dynamic>> tags) {
     setState(() {
       contatos.add({
-        'contato': widget.viewModel.formContato.getFields()!['contato'],
+        'contato': widget.viewModel.formContato.getValues()!['contato'],
         'tag': tags.map((e) => e['label']).toString(),
         'subtitle': tags
       });
       contatosSave.add(ParceiroContato.fromJson({
-        'contato': widget.viewModel.formContato.getFields()!['contato'],
+        'contato': widget.viewModel.formContato.getValues()!['contato'],
         'tag': tags
             .map((e) => e['label'])
             .toString()
             .replaceAll('(', '')
             .replaceAll(')', ''),
       }));
-      widget.viewModel.formContato.onContatosChange(jsonEncode(contatosSave));
-      widget.viewModel.formContato.onContatoChange('');
+      widget.viewModel.formContato.contatos
+          .onValueChange(jsonEncode(contatosSave));
+      widget.viewModel.formContato.contato.onValueChange('');
     });
   }
 
@@ -83,7 +84,7 @@ class _EditContatoFormState extends State<EditContatoForm> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: StreamBuilder<String>(
-              stream: widget.viewModel.formContato.contato,
+              stream: widget.viewModel.formContato.contato.field,
               builder: (context, snapshot) {
                 contatoController.value =
                     contatoController.value.copyWith(text: snapshot.data);
@@ -98,7 +99,7 @@ class _EditContatoFormState extends State<EditContatoForm> {
                       errorText: snapshot.error?.toString(),
                     ),
                     onChanged: (value) {
-                      widget.viewModel.formContato.onContatoChange(value);
+                      widget.viewModel.formContato.contato.onValueChange(value);
                     });
               },
             ),
@@ -169,8 +170,8 @@ class _EditContatoFormState extends State<EditContatoForm> {
                                   (element) =>
                                       element.contato == option['contato'],
                                 );
-                                widget.viewModel.formContato
-                                    .onContatosChange(jsonEncode(contatosSave));
+                                widget.viewModel.formContato.contatos
+                                    .onValueChange(jsonEncode(contatosSave));
                               });
                             },
                             tooltip: 'Remover',

@@ -22,7 +22,8 @@ class _EditConfigFormState extends State<EditConfigForm> {
   @override
   void initState() {
     isPercentualTaxa = widget.entity.porcentagem!;
-    widget.viewModel.formConfig.onPorcentagemChange(widget.entity.porcentagem!);
+    widget.viewModel.formConfig.porcentagem
+        .onValueChange(widget.entity.porcentagem!.toString());
     super.initState();
   }
 
@@ -34,7 +35,7 @@ class _EditConfigFormState extends State<EditConfigForm> {
     return Column(
       children: [
         StreamBuilder<String>(
-          stream: widget.viewModel.formConfig.taxa,
+          stream: widget.viewModel.formConfig.taxa.field,
           builder: (context, snapshot) {
             taxaFieldControll.value =
                 taxaFieldControll.value.copyWith(text: snapshot.data);
@@ -51,7 +52,7 @@ class _EditConfigFormState extends State<EditConfigForm> {
                   errorText: snapshot.error?.toString(),
                 ),
                 onChanged: (value) {
-                  widget.viewModel.formConfig.onTaxaChange(value);
+                  widget.viewModel.formConfig.taxa.onValueChange(value);
                 });
           },
         ),
@@ -60,14 +61,17 @@ class _EditConfigFormState extends State<EditConfigForm> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            StreamBuilder<bool>(
-              stream: widget.viewModel.formConfig.porcentagem,
+            StreamBuilder<String>(
+              stream: widget.viewModel.formConfig.porcentagem.field,
               builder: (context, snapshot) {
-                isPercentualTaxa = snapshot.data ?? widget.entity.porcentagem!;
+                isPercentualTaxa =
+                    snapshot.data?.parseBool() ?? widget.entity.porcentagem!;
                 return Checkbox(
-                  value: snapshot.data ?? widget.entity.porcentagem,
+                  value:
+                      snapshot.data?.parseBool() ?? widget.entity.porcentagem!,
                   onChanged: (value) {
-                    widget.viewModel.formConfig.onPorcentagemChange(value!);
+                    widget.viewModel.formConfig.porcentagem
+                        .onValueChange(value!.toString());
                     setState(() {
                       isPercentualTaxa = value;
                     });

@@ -1,7 +1,7 @@
 import 'package:either_dart/either.dart';
+import 'package:viggo_core_frontend/network/network_exceptions.dart';
+import 'package:viggo_core_frontend/network/no_content_response.dart';
 import 'package:viggo_pay_admin/domain_account/domain/domain_account_repository.dart';
-import 'package:viggo_pay_core_frontend/network/network_exceptions.dart';
-import 'package:viggo_pay_core_frontend/network/no_content_response.dart';
 
 class UpdatePasswordPixUseCase {
   final DomainAccountRepository repository;

@@ -12,23 +12,23 @@ class EditFuncionario {
   final viewModel = locator.get<EditFuncionarioViewModel>();
 
   clearFields() {
-    viewModel.formDados.onNomeRazaoSocialChange('');
-    viewModel.formDados.onCpfCnpjChange('');
-    viewModel.formDados.onApelidoNomeFantasiaChange('');
-    viewModel.formDados.onRgInscEstChange('');
-    viewModel.formDados.onUserIdChange('');
+    viewModel.formDados.nomeRazaoSocial.onValueChange('');
+    viewModel.formDados.cpfCnpj.onValueChange('');
+    viewModel.formDados.apelidoNomeFantasia.onValueChange('');
+    viewModel.formDados.rgInscEst.onValueChange('');
+    viewModel.formDados.userId.onValueChange('');
 
-    viewModel.formEndereco.onLogradouroChange('');
-    viewModel.formEndereco.onBairroChange('');
-    viewModel.formEndereco.onMunicipioChange('');
-    viewModel.formEndereco.onMunicipioNameChange('');
-    viewModel.formEndereco.onComplementoChange('');
-    viewModel.formEndereco.onCepChange('');
-    viewModel.formEndereco.onNumeroChange('');
-    viewModel.formEndereco.onPontoReferenciaChange('');
+    viewModel.formEndereco.logradouro.onValueChange('');
+    viewModel.formEndereco.bairro.onValueChange('');
+    viewModel.formEndereco.municipio.onValueChange('');
+    viewModel.formEndereco.municipioName.onValueChange('');
+    viewModel.formEndereco.complemento.onValueChange('');
+    viewModel.formEndereco.cep.onValueChange('');
+    viewModel.formEndereco.numero.onValueChange('');
+    viewModel.formEndereco.pontoReferencia.onValueChange('');
 
-    viewModel.formContato.onContatoChange('');
-    viewModel.formContato.onContatosChange('');
+    viewModel.formContato.contato.onValueChange('');
+    viewModel.formContato.contatos.onValueChange('');
   }
 
   Future<void> addDialog() {
