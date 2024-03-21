@@ -16,6 +16,6 @@ class HeaderSearchViewModel extends ChangeNotifier {
     BuildContext context,
     List<Map<String, dynamic>> listFilters,
   ) {
-    print(listFilters);
+    // print(listFilters);
   }
 }
