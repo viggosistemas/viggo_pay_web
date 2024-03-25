@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_alterar_senha_pix/dialog_alterar_senha_pix.dart';
@@ -159,30 +160,32 @@ class _TransferenciaCardState extends State<TransferenciaCard> {
                                       fontWeight: FontWeight.normal,
                                     ),
                                   ),
-                                  IconButton(
-                                    onPressed: () {
-                                      if (widget.matrizAccount.password ==
-                                          null) {
-                                        viewModel.formSenha.senhaAntiga
-                                            .onValueChange('senha1');
-                                      } else {
-                                        viewModel.formSenha.senhaAntiga
+                                  OnHoverButton(
+                                    child: IconButton(
+                                      onPressed: () {
+                                        if (widget.matrizAccount.password ==
+                                            null) {
+                                          viewModel.formSenha.senhaAntiga
+                                              .onValueChange('senha1');
+                                        } else {
+                                          viewModel.formSenha.senhaAntiga
+                                              .onValueChange('');
+                                        }
+                                        viewModel.formSenha.novaSenha
                                             .onValueChange('');
-                                      }
-                                      viewModel.formSenha.novaSenha
-                                          .onValueChange('');
-                                      viewModel.formSenha.confirmarSenha
-                                          .onValueChange('');
-                                      DialogAlterarSenha(context: context)
-                                          .showFormDialog(
-                                              widget.matrizAccount.password !=
-                                                  null);
-                                    },
-                                    icon: const Icon(Icons.lock_outline),
-                                    tooltip:
-                                        widget.matrizAccount.password != null
-                                            ? 'Alterar senha'
-                                            : 'Criar senha',
+                                        viewModel.formSenha.confirmarSenha
+                                            .onValueChange('');
+                                        DialogAlterarSenha(context: context)
+                                            .showFormDialog(
+                                                widget.matrizAccount.password !=
+                                                    null);
+                                      },
+                                      icon: const Icon(Icons.lock_outline),
+                                      tooltip:
+                                          widget.matrizAccount.password != null
+                                              ? 'Alterar senha'
+                                              : 'Criar senha',
+                                    ),
                                   ),
                                 ],
                               );
@@ -270,18 +273,20 @@ class _TransferenciaCardState extends State<TransferenciaCard> {
                                                 .primary,
                                           ),
                                         ),
-                                        IconButton(
-                                          icon: Icon(
-                                            isObscureSaldo
-                                                ? Icons.visibility
-                                                : Icons.visibility_off,
-                                            size: 18,
+                                        OnHoverButton(
+                                          child: IconButton(
+                                            icon: Icon(
+                                              isObscureSaldo
+                                                  ? Icons.visibility
+                                                  : Icons.visibility_off,
+                                              size: 18,
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                isObscureSaldo = !isObscureSaldo;
+                                              });
+                                            },
                                           ),
-                                          onPressed: () {
-                                            setState(() {
-                                              isObscureSaldo = !isObscureSaldo;
-                                            });
-                                          },
                                         ),
                                       ],
                                     ),
@@ -304,44 +309,46 @@ class _TransferenciaCardState extends State<TransferenciaCard> {
                                       message: saldoData.data!.real == 0
                                           ? 'Não há saldo disponível!'
                                           : '',
-                                      child: Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: ElevatedButton.icon(
-                                          style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  saldoData.data!.real > 0
-                                                      ? Theme.of(context)
-                                                          .colorScheme
-                                                          .primary
-                                                      : Colors.grey),
-                                          icon: const Icon(
-                                            Icons.attach_money_outlined,
-                                            size: 20,
-                                          ),
-                                          onPressed: () async {
-                                            if (saldoData.data!.real > 0) {
-                                              var result = await dialogs
-                                                  .transferenciaDialog(
-                                                saldo: saldoData.data!,
-                                                pixToSendList:
-                                                    pixToSendData.data!,
-                                              );
-                                              if (result != null &&
-                                                  result == true &&
-                                                  context.mounted) {
-                                                showInfoMessage(
-                                                  context,
-                                                  2,
-                                                  Colors.green,
-                                                  'Transferência realizada com sucesso!',
-                                                  'X',
-                                                  () {},
-                                                  Colors.white,
+                                      child: OnHoverButton(
+                                        child: Directionality(
+                                          textDirection: TextDirection.rtl,
+                                          child: ElevatedButton.icon(
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    saldoData.data!.real > 0
+                                                        ? Theme.of(context)
+                                                            .colorScheme
+                                                            .primary
+                                                        : Colors.grey),
+                                            icon: const Icon(
+                                              Icons.attach_money_outlined,
+                                              size: 20,
+                                            ),
+                                            onPressed: () async {
+                                              if (saldoData.data!.real > 0) {
+                                                var result = await dialogs
+                                                    .transferenciaDialog(
+                                                  saldo: saldoData.data!,
+                                                  pixToSendList:
+                                                      pixToSendData.data!,
                                                 );
+                                                if (result != null &&
+                                                    result == true &&
+                                                    context.mounted) {
+                                                  showInfoMessage(
+                                                    context,
+                                                    2,
+                                                    Colors.green,
+                                                    'Transferência realizada com sucesso!',
+                                                    'X',
+                                                    () {},
+                                                    Colors.white,
+                                                  );
+                                                }
                                               }
-                                            }
-                                          },
-                                          label: const Text('Transferir'),
+                                            },
+                                            label: const Text('Transferir'),
+                                          ),
                                         ),
                                       ),
                                     );

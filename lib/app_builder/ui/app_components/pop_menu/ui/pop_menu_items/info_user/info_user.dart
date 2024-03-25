@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_view_model.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
@@ -35,7 +36,6 @@ class InfoUserDialog {
   }
 
   Future showFormDialog() {
-    final formKey = GlobalKey<FormState>();
     final nickNameController = TextEditingController();
     viewModel.form.nickname.onValueChange(viewModel.user!.nickname ?? '');
 
@@ -131,34 +131,33 @@ class InfoUserDialog {
                   ),
                 ],
               ),
-              content: Form(
-                key: formKey,
-                child: SizedBox(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        StreamBuilder<UserApiDto>(
-                            stream: viewModel.userController,
-                            builder: (context, snapshot) {
-                              return Center(
-                                child: SizedBox(
-                                  height: 100,
-                                  width: 100,
-                                  child: getImagem(snapshot.data?.photoId),
-                                ),
-                              );
-                            }),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
+              content: SizedBox(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      StreamBuilder<UserApiDto>(
+                          stream: viewModel.userController,
+                          builder: (context, snapshot) {
+                            return Center(
+                              child: SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: getImagem(snapshot.data?.photoId),
+                              ),
+                            );
+                          }),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          OnHoverButton(
+                            child: IconButton(
                               onPressed: () {
                                 if (viewModel.user!.photoId != null) {
                                   return viewModel.removePhoto();
@@ -171,82 +170,84 @@ class InfoUserDialog {
                                     : Colors.grey,
                               ),
                             ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            IconButton(
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          OnHoverButton(
+                            child: IconButton(
                               onPressed: () => onUploadPhoto(),
                               icon: const Icon(Icons.camera_alt_outlined),
                               style: IconButton.styleFrom(
                                   backgroundColor:
                                       Theme.of(context).colorScheme.primary),
                             ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        StreamBuilder<String>(
-                          stream: viewModel.form.nickname.field,
-                          builder: (context, snapshot) {
-                            nickNameController.value = nickNameController.value
-                                .copyWith(text: snapshot.data);
-                            return TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'Nickname',
-                                border: const OutlineInputBorder(),
-                                errorText: snapshot.error?.toString(),
-                              ),
-                              controller: nickNameController,
-                              onChanged: (value) {
-                                viewModel.form.nickname.onValueChange(value);
-                              },
-                              // onFieldSubmitted: (value) {
-                              //   if (_validateForm()) {
-                              //     viewModel.onSearch(
-                              //       _domainController.text,
-                              //       _userController.text,
-                              //       _passwordController.text,
-                              //       showInfoMessage,
-                              //       context,
-                              //     );
-                              //   }
-                              // },
-                            );
-                          },
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.person_outline,
-                              color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      StreamBuilder<String>(
+                        stream: viewModel.form.nickname.field,
+                        builder: (context, snapshot) {
+                          nickNameController.value = nickNameController.value
+                              .copyWith(text: snapshot.data);
+                          return TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Nickname',
+                              border: const OutlineInputBorder(),
+                              errorText: snapshot.error?.toString(),
                             ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            Text(viewModel.user!.name),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.mail_outline,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            Text(viewModel.user!.email),
-                          ],
-                        ),
-                      ],
-                    ),
+                            controller: nickNameController,
+                            onChanged: (value) {
+                              viewModel.form.nickname.onValueChange(value);
+                            },
+                            // onFieldSubmitted: (value) {
+                            //   if (_validateForm()) {
+                            //     viewModel.onSearch(
+                            //       _domainController.text,
+                            //       _userController.text,
+                            //       _passwordController.text,
+                            //       showInfoMessage,
+                            //       context,
+                            //     );
+                            //   }
+                            // },
+                          );
+                        },
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.person_outline,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Text(viewModel.user!.name),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.mail_outline,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Text(viewModel.user!.email),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -254,30 +255,34 @@ class InfoUserDialog {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        size: 20,
-                      ),
-                      label: const Text('Cancelar'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
-                      ),
-                    ),
-                    Directionality(
-                      textDirection: TextDirection.rtl,
+                    OnHoverButton(
                       child: TextButton.icon(
                         icon: const Icon(
-                          Icons.save_alt_outlined,
+                          Icons.cancel_outlined,
                           size: 20,
                         ),
-                        label: const Text('Salvar'),
-                        onPressed: () => onSubmit(),
+                        label: const Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.green,
+                          foregroundColor: Colors.red,
+                        ),
+                      ),
+                    ),
+                    OnHoverButton(
+                      child: Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: TextButton.icon(
+                          icon: const Icon(
+                            Icons.save_alt_outlined,
+                            size: 20,
+                          ),
+                          label: const Text('Salvar'),
+                          onPressed: () => onSubmit(),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.green,
+                          ),
                         ),
                       ),
                     ),

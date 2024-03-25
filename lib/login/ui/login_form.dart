@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/login/ui/fields_form/actions_remember.dart';
 import 'package:viggo_pay_admin/login/ui/fields_form/fields_form.dart';
 import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
@@ -18,7 +19,7 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final _formKey = GlobalKey<FormState>();
+  LoginViewModel viewModel = locator.get<LoginViewModel>();
 
   onForgetPassword() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -77,13 +78,15 @@ class _LoginFormState extends State<LoginForm> {
           Positioned(
             top: 0,
             right: 0,
-            child: IconButton(
-              onPressed: () {
-                viewModel?.onClearRememberCredential();
-              },
-              icon: const Icon(
-                Icons.cancel,
-                color: Colors.red,
+            child: OnHoverButton(
+              child: IconButton(
+                onPressed: () {
+                  viewModel?.onClearRememberCredential();
+                },
+                icon: const Icon(
+                  Icons.cancel,
+                  color: Colors.red,
+                ),
               ),
             ),
           ),
@@ -126,13 +129,15 @@ class _LoginFormState extends State<LoginForm> {
         Positioned(
           top: 0,
           right: 0,
-          child: IconButton(
-            onPressed: () {
-              viewModel?.onClearRememberCredential();
-            },
-            icon: const Icon(
-              Icons.cancel,
-              color: Colors.red,
+          child: OnHoverButton(
+            child: IconButton(
+              onPressed: () {
+                viewModel?.onClearRememberCredential();
+              },
+              icon: const Icon(
+                Icons.cancel,
+                color: Colors.red,
+              ),
             ),
           ),
         ),
@@ -163,7 +168,6 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    final viewModel = Provider.of<LoginViewModel>(context);
 
     viewModel.isError.listen(
       (value) {
@@ -203,26 +207,25 @@ class _LoginFormState extends State<LoginForm> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 width: deviceSize.width * 0.2,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      FieldsForm(
-                        viewModel: viewModel,
-                        showImage: showImage,
-                      ),
-                      ActionsRememberForget(
-                        viewModel: viewModel,
-                        onForgetPassword: onForgetPassword,
-                      ),
-                      const SizedBox(height: 20),
-                      if (viewModel.isLoading)
-                        const CircularProgressIndicator()
-                      else
-                        StreamBuilder<bool>(
-                            stream: viewModel.form.isValid,
-                            builder: (context, snapshot) {
-                              return Directionality(
+                child: Column(
+                  children: [
+                    FieldsForm(
+                      viewModel: viewModel,
+                      showImage: showImage,
+                    ),
+                    ActionsRememberForget(
+                      viewModel: viewModel,
+                      onForgetPassword: onForgetPassword,
+                    ),
+                    const SizedBox(height: 20),
+                    if (viewModel.isLoading)
+                      const CircularProgressIndicator()
+                    else
+                      StreamBuilder<bool>(
+                          stream: viewModel.form.isValid,
+                          builder: (context, snapshot) {
+                            return OnHoverButton(
+                              child: Directionality(
                                 textDirection: TextDirection.ltr,
                                 child: ElevatedButton.icon(
                                   icon: const Icon(
@@ -261,10 +264,10 @@ class _LoginFormState extends State<LoginForm> {
                                     ),
                                   ),
                                 ),
-                              );
-                            }),
-                    ],
-                  ),
+                              ),
+                            );
+                          }),
+                  ],
                 ),
               ),
             ),

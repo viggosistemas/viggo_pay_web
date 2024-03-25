@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 
 class Dialogs {
   final BuildContext context;
@@ -18,11 +19,13 @@ class Dialogs {
         ),
         actions: <Widget>[
           Center(
-            child: TextButton(
-              child: const Text('Entendi'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+            child: OnHoverButton(
+              child: TextButton(
+                child: const Text('Entendi'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
             ),
           ),
         ],
@@ -70,17 +73,21 @@ class Dialogs {
                 ),
               ),
               actions: <Widget>[
-                TextButton(
-                  child: const Text('Cancelar'),
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
+                OnHoverButton(
+                  child: TextButton(
+                    child: const Text('Cancelar'),
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                  ),
                 ),
-                TextButton(
-                  child: const Text('Confirmar'),
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
+                OnHoverButton(
+                  child: TextButton(
+                    child: const Text('Confirmar'),
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                  ),
                 ),
               ],
             ),

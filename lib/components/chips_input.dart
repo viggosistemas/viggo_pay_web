@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 
 const List<Map<String, dynamic>> _contatoList = [
   {'label': 'Telefone', 'icon': Icons.contact_page_outlined, },//Icons.phone_outlined},
@@ -54,21 +55,23 @@ class EditableChipFieldState extends State<EditableChipField> {
                 chipBuilder: _chipBuilder,
                 onTextChanged: _onSearchChanged,
               ),
-              trailing: IconButton(
-                onPressed: () {
-                  if (_toppings.isNotEmpty) {
-                    setState(() {
-                      widget.onSubmitTags(_toppings);
-                      _toppings = [];
-                    });
-                  }
-                },
-                tooltip: 'Adicionar contato',
-                icon: Icon(
-                  Icons.add_outlined,
-                  color: _toppings.isEmpty
-                      ? Colors.grey
-                      : Theme.of(context).colorScheme.primary,
+              trailing: OnHoverButton(
+                child: IconButton(
+                  onPressed: () {
+                    if (_toppings.isNotEmpty) {
+                      setState(() {
+                        widget.onSubmitTags(_toppings);
+                        _toppings = [];
+                      });
+                    }
+                  },
+                  tooltip: 'Adicionar contato',
+                  icon: Icon(
+                    Icons.add_outlined,
+                    color: _toppings.isEmpty
+                        ? Colors.grey
+                        : Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               )),
           if (_suggestions.isNotEmpty)

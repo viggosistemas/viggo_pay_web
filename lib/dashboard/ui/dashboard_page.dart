@@ -20,12 +20,7 @@ import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 // ignore: must_be_immutable
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({
-    Key? key,
-    required this.changeTheme,
-  }) : super(key: key);
-
-  final void Function(ThemeMode themeMode) changeTheme;
+  const DashboardPage({super.key});
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -37,6 +32,8 @@ class _DashboardPageState extends State<DashboardPage> {
   SharedPreferences sharedPrefs = locator.get<SharedPreferences>();
 
   bool isObscureSaldo = true;
+
+  int lengthExtrato = 5;
 
   Widget? getImagem(String? logoId) {
     if (logoId != null && logoId.isNotEmpty) {
@@ -109,14 +106,17 @@ class _DashboardPageState extends State<DashboardPage> {
     }
 
     return AppBuilder(
-      changeTheme: widget.changeTheme,
       child: StreamBuilder<DomainApiDto?>(
         stream: viewModel.domain,
         builder: (context, domain) {
           viewModel.getDomain();
           if (domain.data == null) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(),
+              ),
             );
           } else {
             if (domain.data!.name == 'default') {
@@ -134,7 +134,11 @@ class _DashboardPageState extends State<DashboardPage> {
                       if (matriz.data == null) {
                         viewModel.catchEntity();
                         return const Center(
-                          child: CircularProgressIndicator(),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(),
+                          ),
                         );
                       } else {
                         return Container(
@@ -143,7 +147,13 @@ class _DashboardPageState extends State<DashboardPage> {
                           child: Card(
                             elevation: 8,
                             margin: const EdgeInsets.all(18),
-                            color: Theme.of(context).colorScheme.primary,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .secondary
+                                        .withOpacity(0.8),
                             child: Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: Column(
@@ -159,23 +169,29 @@ class _DashboardPageState extends State<DashboardPage> {
                                       Tooltip(
                                         message:
                                             'Editar informações da empresa',
-                                        child: IconButton(
-                                          onPressed: () {
-                                            sharedPrefs.setString(
-                                                'SELECTED_INDEX',
-                                                jsonEncode(2));
-                                            WidgetsBinding.instance
-                                                .addPostFrameCallback((_) {
-                                              Navigator.of(context)
-                                                  .pushReplacementNamed(
-                                                      Routes.MATRIZ);
-                                            });
-                                          },
-                                          icon: Icon(
-                                            Icons.edit_outlined,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onPrimary,
+                                        child: OnHoverButton(
+                                          child: IconButton(
+                                            onPressed: () {
+                                              sharedPrefs.setString(
+                                                  'SELECTED_INDEX',
+                                                  jsonEncode(2));
+                                              WidgetsBinding.instance
+                                                  .addPostFrameCallback((_) {
+                                                Navigator.of(context)
+                                                    .pushReplacementNamed(
+                                                        Routes.MATRIZ);
+                                              });
+                                            },
+                                            icon: Icon(
+                                              Icons.edit_outlined,
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? Colors.black
+                                                  : Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimary,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -200,9 +216,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                   Text(
                                     matriz.data!.clientName,
                                     style: GoogleFonts.comicNeue(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.black
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -210,10 +229,13 @@ class _DashboardPageState extends State<DashboardPage> {
                                   Text(
                                     'CNPJ: ${matriz.data!.clientTaxIdentifierTaxId}',
                                     style: GoogleFonts.lato(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary
-                                          .withOpacity(0.7),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.black.withOpacity(0.7)
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary
+                                              .withOpacity(0.7),
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -272,21 +294,23 @@ class _DashboardPageState extends State<DashboardPage> {
                                                                 .primary,
                                                           ),
                                                         ),
-                                                        IconButton(
-                                                          icon: Icon(
-                                                            isObscureSaldo
-                                                                ? Icons
-                                                                    .visibility
-                                                                : Icons
-                                                                    .visibility_off,
-                                                            size: 20,
+                                                        OnHoverButton(
+                                                          child: IconButton(
+                                                            icon: Icon(
+                                                              isObscureSaldo
+                                                                  ? Icons
+                                                                      .visibility
+                                                                  : Icons
+                                                                      .visibility_off,
+                                                              size: 20,
+                                                            ),
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                isObscureSaldo =
+                                                                    !isObscureSaldo;
+                                                              });
+                                                            },
                                                           ),
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              isObscureSaldo =
-                                                                  !isObscureSaldo;
-                                                            });
-                                                          },
                                                         ),
                                                       ],
                                                     ),
@@ -326,57 +350,65 @@ class _DashboardPageState extends State<DashboardPage> {
                                                       child: Directionality(
                                                         textDirection:
                                                             TextDirection.rtl,
-                                                        child:
-                                                            ElevatedButton.icon(
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                            backgroundColor: saldoData
-                                                                        .data!
-                                                                        .real >
-                                                                    0
-                                                                ? Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .primary
-                                                                : Colors.grey,
-                                                          ),
-                                                          icon: const Icon(
-                                                            Icons
-                                                                .attach_money_outlined,
-                                                            size: 20,
-                                                          ),
-                                                          onPressed: () async {
-                                                            if (saldoData.data!
-                                                                    .real >
-                                                                0) {
-                                                              var result =
-                                                                  await dialogs
-                                                                      .transferenciaDialog(
-                                                                saldo: saldoData
-                                                                    .data!,
-                                                                pixToSendList:
-                                                                    pixToSendData
-                                                                        .data!,
-                                                              );
-                                                              if (result != null &&
-                                                                  result ==
-                                                                      true &&
-                                                                  context
-                                                                      .mounted) {
-                                                                showInfoMessage(
-                                                                  context,
-                                                                  2,
-                                                                  Colors.green,
-                                                                  'Transferência realizada com sucesso!',
-                                                                  'X',
-                                                                  () {},
-                                                                  Colors.white,
+                                                        child: OnHoverButton(
+                                                          child: ElevatedButton
+                                                              .icon(
+                                                            style:
+                                                                ElevatedButton
+                                                                    .styleFrom(
+                                                              backgroundColor: saldoData
+                                                                          .data!
+                                                                          .real >
+                                                                      0
+                                                                  ? Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .primary
+                                                                  : Colors.grey,
+                                                            ),
+                                                            icon: const Icon(
+                                                              Icons
+                                                                  .attach_money_outlined,
+                                                              size: 20,
+                                                            ),
+                                                            onPressed:
+                                                                () async {
+                                                              if (saldoData
+                                                                      .data!
+                                                                      .real >
+                                                                  0) {
+                                                                var result =
+                                                                    await dialogs
+                                                                        .transferenciaDialog(
+                                                                  saldo:
+                                                                      saldoData
+                                                                          .data!,
+                                                                  pixToSendList:
+                                                                      pixToSendData
+                                                                          .data!,
                                                                 );
+                                                                if (result != null &&
+                                                                    result ==
+                                                                        true &&
+                                                                    context
+                                                                        .mounted) {
+                                                                  showInfoMessage(
+                                                                    context,
+                                                                    2,
+                                                                    Colors
+                                                                        .green,
+                                                                    'Transferência realizada com sucesso!',
+                                                                    'X',
+                                                                    () {},
+                                                                    Colors
+                                                                        .white,
+                                                                  );
+                                                                }
                                                               }
-                                                            }
-                                                          },
-                                                          label: const Text(
-                                                            'Transferir',
+                                                            },
+                                                            label: const Text(
+                                                              'Transferir',
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
@@ -410,7 +442,10 @@ class _DashboardPageState extends State<DashboardPage> {
                               .textTheme
                               .titleMedium!
                               .copyWith(
-                                color: Theme.of(context).colorScheme.primary,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Theme.of(context).colorScheme.secondary.withOpacity(0.8)
+                                    : Theme.of(context).colorScheme.primary,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -420,27 +455,43 @@ class _DashboardPageState extends State<DashboardPage> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            Directionality(
-                              textDirection: TextDirection.rtl,
-                              child: TextButton.icon(
-                                icon: const Icon(
-                                  Icons.keyboard_double_arrow_right_outlined,
-                                ),
-                                onPressed: () {
-                                  sharedPrefs.setString(
-                                      'SELECTED_INDEX', jsonEncode(7));
-                                  WidgetsBinding.instance
-                                      .addPostFrameCallback((_) {
-                                    Navigator.of(context)
-                                        .pushReplacementNamed(Routes.EXTRATO);
-                                  });
-                                },
-                                label: Text(
-                                  'Carregar mais',
-                                  style: GoogleFonts.lato(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    fontSize: 18,
+                            Tooltip(
+                              message: 'Carregar mais 5 itens',
+                              child: OnHoverButton(
+                                child: Directionality(
+                                  textDirection: TextDirection.rtl,
+                                  child: TextButton.icon(
+                                    icon: Icon(
+                                      Icons
+                                          .keyboard_double_arrow_right_outlined,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .secondary.withOpacity(0.8)
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        lengthExtrato += 5;
+                                      });
+                                    },
+                                    label: Text(
+                                      'Carregar mais',
+                                      style: GoogleFonts.lato(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .secondary.withOpacity(0.8)
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                        fontSize: 18,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -460,6 +511,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         return Expanded(
                           child: ExtratoTimeline(
                             listExtrato: extrato.data!,
+                            lengthExtrato: lengthExtrato,
                           ),
                         );
                       }

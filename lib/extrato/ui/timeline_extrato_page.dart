@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
-import 'package:viggo_pay_admin/extrato/ui/extrato_pdv_viewer.dart';
+import 'package:viggo_pay_admin/extrato/ui/extrato_pdf_viewer.dart';
 import 'package:viggo_pay_admin/extrato/ui/extrato_timeline/extrato_timeline.dart';
 import 'package:viggo_pay_admin/extrato/ui/timeline_extrato_view_model.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/extrato_api_dto.dart';
@@ -12,12 +13,7 @@ import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 // ignore: must_be_immutable
 class TimelineExtratoPage extends StatefulWidget {
-  const TimelineExtratoPage({
-    Key? key,
-    required this.changeTheme,
-  }) : super(key: key);
-
-  final void Function(ThemeMode themeMode) changeTheme;
+  const TimelineExtratoPage({super.key});
 
   @override
   State<TimelineExtratoPage> createState() => _TimelineExtratoPageState();
@@ -79,7 +75,6 @@ class _TimelineExtratoPageState extends State<TimelineExtratoPage> {
     }
 
     return AppBuilder(
-      changeTheme: widget.changeTheme,
       child: StreamBuilder<DomainAccountApiDto?>(
           stream: viewModel.matriz,
           builder: (context, snapshot) {
@@ -100,6 +95,9 @@ class _TimelineExtratoPageState extends State<TimelineExtratoPage> {
                   Text(
                     'Faixa de datas',
                     style: GoogleFonts.lato(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
@@ -113,26 +111,31 @@ class _TimelineExtratoPageState extends State<TimelineExtratoPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: pickDateRange,
-                            icon: const Icon(
-                              Icons.calendar_month_outlined,
-                              size: 16,
+                          child: OnHoverButton(
+                            child: ElevatedButton.icon(
+                              onPressed: pickDateRange,
+                              icon: const Icon(
+                                Icons.calendar_month_outlined,
+                                size: 16,
+                              ),
+                              label:
+                                  Text(DateFormat('dd/MM/yyyy').format(start)),
                             ),
-                            label: Text(DateFormat('dd/MM/yyyy').format(start)),
                           ),
                         ),
                         const SizedBox(
                           width: 12,
                         ),
                         Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: pickDateRange,
-                            icon: const Icon(
-                              Icons.calendar_month_outlined,
-                              size: 16,
+                          child: OnHoverButton(
+                            child: ElevatedButton.icon(
+                              onPressed: pickDateRange,
+                              icon: const Icon(
+                                Icons.calendar_month_outlined,
+                                size: 16,
+                              ),
+                              label: Text(DateFormat('dd/MM/yyyy').format(end)),
                             ),
-                            label: Text(DateFormat('dd/MM/yyyy').format(end)),
                           ),
                         ),
                       ],
@@ -141,29 +144,41 @@ class _TimelineExtratoPageState extends State<TimelineExtratoPage> {
                   const SizedBox(
                     height: 20,
                   ),
-                  TextButton.icon(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext ctx) => Dialog.fullscreen(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 14),
-                            child: ExtratoPdfViewer(
-                              domainAccountId: snapshot.data!.id,
-                              params: {
-                                'start': DateFormat('yyyy-MM-dd')
-                                    .format(dateRange.start),
-                                'ending': DateFormat('yyyy-MM-dd')
-                                    .format(dateRange.end),
-                              },
+                  OnHoverButton(
+                    child: TextButton.icon(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext ctx) => Dialog.fullscreen(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 14),
+                              child: ExtratoPdfViewer(
+                                domainAccountId: snapshot.data!.id,
+                                params: {
+                                  'start': DateFormat('yyyy-MM-dd')
+                                      .format(dateRange.start),
+                                  'ending': DateFormat('yyyy-MM-dd')
+                                      .format(dateRange.end),
+                                },
+                              ),
                             ),
                           ),
+                        );
+                      },
+                      label: Text(
+                        'Gerar extrato em PDF',
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
                         ),
-                      );
-                    },
-                    label: const Text('Gerar extrato em PDF'),
-                    icon: const Icon(
-                      Icons.picture_as_pdf_outlined,
+                      ),
+                      icon: Icon(
+                        Icons.picture_as_pdf_outlined,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                      ),
                     ),
                   ),
                   StreamBuilder<ExtratoSaldoApiDto>(

@@ -2,12 +2,12 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
 import 'package:viggo_core_frontend/token/domain/usecases/get_token_use_case.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 
-class LazyLoadingViewModel extends ChangeNotifier {
+class LazyLoadingViewModel extends BaseViewModel {
   final GetTokenUseCase getToken;
   late SharedPreferences sharedPrefs = locator.get<SharedPreferences>();
 

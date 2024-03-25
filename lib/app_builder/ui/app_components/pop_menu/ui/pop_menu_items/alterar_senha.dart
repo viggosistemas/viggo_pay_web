@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 
 class AlterarSenhaDialog {
   final BuildContext context;
@@ -18,11 +19,13 @@ class AlterarSenhaDialog {
         ),
         actions: <Widget>[
           Center(
-            child: TextButton(
-              child: const Text('Entendi'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+            child: OnHoverButton(
+              child: TextButton(
+                child: const Text('Entendi'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
             ),
           ),
         ],

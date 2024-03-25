@@ -10,9 +10,11 @@ class MainRail extends StatefulWidget {
   const MainRail({
     super.key,
     required this.onSelectScreen,
+    required this.routes,
   });
 
   final void Function(String identifier) onSelectScreen;
+  final List<RouteApiDto> routes;
 
   @override
   State<MainRail> createState() => _MainRailState();
@@ -29,8 +31,8 @@ class _MainRailState extends State<MainRail> {
 
   var screenIndex = 0;
 
-  _buildMenu(List<RouteApiDto> routes) {
-    destinations = viewModel.createMenu(routes);
+  _buildMenu() {
+    destinations = viewModel.createMenu(widget.routes);
     navDestinations = destinations.map(
       (Destination destination) {
         return NavigationRailDestination(
@@ -52,40 +54,26 @@ class _MainRailState extends State<MainRail> {
 
   @override
   Widget build(context) {
-    return StreamBuilder<List<RouteApiDto>?>(
-      stream: appViewModel.routesDto,
+    _buildMenu();
+    return StreamBuilder<int>(
+      stream: appViewModel.indexSelected,
       builder: (context, snapshot) {
         if (snapshot.data == null) {
-          appViewModel.getRoutes();
+          appViewModel.getScreenIndex();
+          return const CircularProgressIndicator();
         } else {
-          _buildMenu(snapshot.data!);
+          return NavigationRail(
+            minWidth: 50,
+            destinations: navDestinations,
+            selectedIndex: snapshot.data,
+            useIndicator: true,
+            groupAlignment: -1,
+            onDestinationSelected: (int index) {
+              appViewModel.setScreenIndex(index);
+              widget.onSelectScreen(destinations[index].route);
+            },
+          );
         }
-        return StreamBuilder<int>(
-          stream: appViewModel.indexSelected,
-          builder: (context, snapshot) {
-            if (snapshot.data == null) {
-              appViewModel.getScreenIndex();
-            }
-            return NavigationRail(
-              minWidth: 50,
-              destinations: navDestinations,
-              selectedIndex: snapshot.data,
-              useIndicator: true,
-              groupAlignment: -1,
-              selectedIconTheme: IconThemeData(
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-              indicatorColor: Theme.of(context).colorScheme.primary,
-              onDestinationSelected: (int index) {
-                // setState(() {
-                //   screenIndex = index;
-                // });
-                appViewModel.setScreenIndex(index);
-                widget.onSelectScreen(destinations[index].route);
-              },
-            );
-          },
-        );
       },
     );
   }

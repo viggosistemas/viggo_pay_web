@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/user/ui/list_users/list_users_grid.dart';
 import 'package:viggo_pay_admin/usuarios_por_dominio/ui/list_users_domain_view_model.dart';
@@ -100,18 +101,20 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
                           errorText: snapshot.error?.toString(),
                           suffix:
                               snapshot.data != null && snapshot.data!.isNotEmpty
-                                  ? IconButton(
-                                      onPressed: () {
-                                        widget.viewModel.form.domainId
-                                            .onValueChange('');
-                                        controller.setText('');
-                                      },
-                                      icon: const Icon(
-                                        Icons.cancel_outlined,
-                                        size: 18,
-                                        color: Colors.red,
+                                  ? OnHoverButton(
+                                    child: IconButton(
+                                        onPressed: () {
+                                          widget.viewModel.form.domainId
+                                              .onValueChange('');
+                                          controller.setText('');
+                                        },
+                                        icon: const Icon(
+                                          Icons.cancel_outlined,
+                                          size: 18,
+                                          color: Colors.red,
+                                        ),
                                       ),
-                                    )
+                                  )
                                   : const Text(''),
                         ),
                         controller: controller,

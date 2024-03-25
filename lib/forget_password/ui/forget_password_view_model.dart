@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
 import 'package:viggo_core_frontend/user/domain/usecases/restore_password_use_case.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_form_fields.dart';
 
-class ForgetPasswordViewModel extends ChangeNotifier {
+class ForgetPasswordViewModel extends BaseViewModel {
   final RestorePasswordUseCase restorePassword;
   final ForgetPassWordFormFields form = ForgetPassWordFormFields();
-  bool isLoading = false;
 
   final StreamController<bool> _streamController =
       StreamController<bool>.broadcast();
@@ -22,16 +22,12 @@ class ForgetPasswordViewModel extends ChangeNotifier {
     required this.restorePassword,
   });
 
-  void notifyLoading() {
-    isLoading = !isLoading;
-    // notifyListeners();
-  }
-
   void onSubmit(
     Function showMsg,
     BuildContext context,
   ) async {
-    notifyLoading();
+    if(isLoading) return;
+    setLoading();
 
     Map<String, dynamic> params = {
       'domain_name': '',
@@ -45,12 +41,12 @@ class ForgetPasswordViewModel extends ChangeNotifier {
     if (result.isLeft) {
       if (!_streamControllerError.isClosed) {
         _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
+        setLoading();
       }
     } else {
       if (!_streamController.isClosed) {
         _streamController.sink.add(true);
-        notifyLoading();
+        setLoading();
       }
     }
   }

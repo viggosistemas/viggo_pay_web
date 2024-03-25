@@ -40,9 +40,17 @@ class TimelineExtrato extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(
-                        Icons.pix_outlined,
-                        color: Colors.white,
+                      CircleAvatar(
+                        backgroundColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.onPrimary,
+                        child: Icon(
+                          Icons.pix_outlined,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Theme.of(context).colorScheme.onPrimary
+                              : Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                       const SizedBox(
                         width: 10,
@@ -50,7 +58,9 @@ class TimelineExtrato extends StatelessWidget {
                       Text(
                         extratoSaldo.extrato[index].description,
                         style: GoogleFonts.lato(
-                          color: Colors.white,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
                     ],
@@ -59,7 +69,15 @@ class TimelineExtrato extends StatelessWidget {
                     DateFormat('dd/MM/yyyy').format(
                         DateTime.parse(extratoSaldo.extrato[index].creditDate)),
                     style: GoogleFonts.lato(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.7)
+                          : Theme.of(context)
+                              .colorScheme
+                              .onPrimary
+                              .withOpacity(0.7),
                     ),
                   ),
                 ],
@@ -82,7 +100,15 @@ class TimelineExtrato extends StatelessWidget {
                   Text(
                     'Saldo: R\$ ${extratoSaldo.extrato[index].saldoPre} - R\$ ${extratoSaldo.extrato[index].saldoPos}',
                     style: GoogleFonts.lato(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.7)
+                          : Theme.of(context)
+                              .colorScheme
+                              .onPrimary
+                              .withOpacity(0.7),
                     ),
                   ),
                 ],

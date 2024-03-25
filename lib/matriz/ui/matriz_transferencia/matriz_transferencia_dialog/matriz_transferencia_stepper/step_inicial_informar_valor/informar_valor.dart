@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/saldo_api_dto.dart';
@@ -80,49 +81,53 @@ class StepInformarValor extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ElevatedButton.icon(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+            OnHoverButton(
+              child: ElevatedButton.icon(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                icon: const Icon(
+                  Icons.arrow_back_outlined,
+                  size: 18,
+                ),
+                label: const Text('Cancelar'),
               ),
-              icon: const Icon(
-                Icons.arrow_back_outlined,
-                size: 18,
-              ),
-              label: const Text('Cancelar'),
             ),
             StreamBuilder<bool>(
                 stream: viewModel.formStepValor.isValid,
                 builder: (context, snapshot) {
-                  return Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: snapshot.data != null &&
-                                snapshot.data == true &&
-                                valorTransferenciaControll.text.isNotEmpty &&
-                                double.parse(valorTransferenciaControll.text) <
-                                    saldo.real &&
-                                double.parse(valorTransferenciaControll.text) >
-                                    0
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey,
+                  return OnHoverButton(
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: snapshot.data != null &&
+                                  snapshot.data == true &&
+                                  valorTransferenciaControll.text.isNotEmpty &&
+                                  double.parse(valorTransferenciaControll.text) <
+                                      saldo.real &&
+                                  double.parse(valorTransferenciaControll.text) >
+                                      0
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.grey,
+                        ),
+                        onPressed: () {
+                          if (snapshot.data != null &&
+                              snapshot.data == true &&
+                              valorTransferenciaControll.text.isNotEmpty &&
+                              double.parse(valorTransferenciaControll.text) <
+                                  saldo.real &&
+                              double.parse(valorTransferenciaControll.text) > 0) {
+                            changePage(currentPage + 1);
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back_outlined,
+                          size: 18,
+                        ),
+                        label: const Text('Próximo'),
                       ),
-                      onPressed: () {
-                        if (snapshot.data != null &&
-                            snapshot.data == true &&
-                            valorTransferenciaControll.text.isNotEmpty &&
-                            double.parse(valorTransferenciaControll.text) <
-                                saldo.real &&
-                            double.parse(valorTransferenciaControll.text) > 0) {
-                          changePage(currentPage + 1);
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back_outlined,
-                        size: 18,
-                      ),
-                      label: const Text('Próximo'),
                     ),
                   );
                 }),

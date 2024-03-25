@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_view_model.dart';
 
@@ -66,16 +67,18 @@ class _EditConfigFormState extends State<EditConfigForm> {
               builder: (context, snapshot) {
                 isPercentualTaxa =
                     snapshot.data?.parseBool() ?? widget.entity.porcentagem!;
-                return Checkbox(
-                  value:
-                      snapshot.data?.parseBool() ?? widget.entity.porcentagem!,
-                  onChanged: (value) {
-                    widget.viewModel.formConfig.porcentagem
-                        .onValueChange(value!.toString());
-                    setState(() {
-                      isPercentualTaxa = value;
-                    });
-                  },
+                return OnHoverButton(
+                  child: Checkbox(
+                    value:
+                        snapshot.data?.parseBool() ?? widget.entity.porcentagem!,
+                    onChanged: (value) {
+                      widget.viewModel.formConfig.porcentagem
+                          .onValueChange(value!.toString());
+                      setState(() {
+                        isPercentualTaxa = value;
+                      });
+                    },
+                  ),
                 );
               },
             ),

@@ -19,6 +19,7 @@ import 'package:viggo_pay_admin/pix_to_send/locator.dart';
 import 'package:viggo_pay_admin/role/locator.dart';
 import 'package:viggo_pay_admin/route/locator.dart';
 import 'package:viggo_pay_admin/sync/locator.dart';
+import 'package:viggo_pay_admin/themes/locator.dart';
 import 'package:viggo_pay_admin/user/locator.dart';
 import 'package:viggo_pay_admin/usuarios_por_dominio/locator.dart';
 
@@ -54,5 +55,6 @@ Future<void> setupLocator() async {
   AppBuilderLocator().setup();
   PopMenuLocator().setup();
   HeaderSearchLocator().setup();
+  ThemeLocator().setup();
   CoreLocator().setCoreLocator(locator);
 }

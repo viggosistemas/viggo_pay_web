@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_dialog/matriz_transferencia_stepper/step_conferir_transferencia/detalhes_transferencia.dart';
@@ -165,18 +166,20 @@ class PageIndicator extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          IconButton(
-            splashRadius: 16.0,
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              if (currentPageIndex == 0) {
-                return;
-              }
-              onUpdateCurrentPageIndex(currentPageIndex - 1);
-            },
-            icon: const Icon(
-              Icons.arrow_left_rounded,
-              size: 32.0,
+          OnHoverButton(
+            child: IconButton(
+              splashRadius: 16.0,
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                if (currentPageIndex == 0) {
+                  return;
+                }
+                onUpdateCurrentPageIndex(currentPageIndex - 1);
+              },
+              icon: const Icon(
+                Icons.arrow_left_rounded,
+                size: 32.0,
+              ),
             ),
           ),
           TabPageSelector(
@@ -184,18 +187,20 @@ class PageIndicator extends StatelessWidget {
             color: colorScheme.background,
             selectedColor: colorScheme.primary,
           ),
-          IconButton(
-            splashRadius: 16.0,
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              if (currentPageIndex == 2) {
-                return;
-              }
-              onUpdateCurrentPageIndex(currentPageIndex + 1);
-            },
-            icon: const Icon(
-              Icons.arrow_right_rounded,
-              size: 32.0,
+          OnHoverButton(
+            child: IconButton(
+              splashRadius: 16.0,
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                if (currentPageIndex == 2) {
+                  return;
+                }
+                onUpdateCurrentPageIndex(currentPageIndex + 1);
+              },
+              icon: const Icon(
+                Icons.arrow_right_rounded,
+                size: 32.0,
+              ),
             ),
           ),
         ],

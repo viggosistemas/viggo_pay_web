@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/role/data/models/role_api_dto.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_domain_accounts_view_model.dart';
 import 'package:viggo_pay_admin/role/ui/edit_roles/edit_roles_view_model.dart';
 
@@ -55,15 +56,17 @@ class EditRolesForm extends StatelessWidget {
             StreamBuilder<String?>(
               stream: viewModel.form.multiDomain.field,
               builder: (context, snapshot) {
-                return Checkbox(
-                  value: snapshot.data != null && snapshot.data!.isNotEmpty
-                      ? snapshot.data!.parseBool()
-                      : entity != null
-                          ? entity!.dataView.name == 'MULTI_DOMAIN'
-                          : false,
-                  onChanged: (value) {
-                    viewModel.form.multiDomain.onValueChange(value!.toString());
-                  },
+                return OnHoverButton(
+                  child: Checkbox(
+                    value: snapshot.data != null && snapshot.data!.isNotEmpty
+                        ? snapshot.data!.parseBool()
+                        : entity != null
+                            ? entity!.dataView.name == 'MULTI_DOMAIN'
+                            : false,
+                    onChanged: (value) {
+                      viewModel.form.multiDomain.onValueChange(value!.toString());
+                    },
+                  ),
                 );
               },
             ),

@@ -1,0 +1,17 @@
+name: deploy-homolog
+
+on:
+  workflow_dispatch
+
+jobs:
+  deploy-homolog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy in homolog
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_LOCAL_SERVER }}
+          port: ${{ secrets.PORT }}
+          script: ${{ secrets.SCRIPT_DEPLOY_HOMO }} latest
