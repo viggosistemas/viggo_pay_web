@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
@@ -44,27 +45,29 @@ class EditInfoDocumentos extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     if ((snapshot.data ?? 0) < 2)
-                      Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: OutlinedButton.icon(
-                          onPressed: () async {
-                            FilePickerResult? result =
-                                await FilePicker.platform.pickFiles(
-                              allowMultiple: false,
-                              allowedExtensions: ['pdf'],
-                              type: FileType.custom,
-                            );
-                            if (result != null) {
-                              for (var element in result.files) {
-                                viewModel.onSelectedFile(
-                                  element,
-                                  showMsgError,
-                                );
+                      OnHoverButton(
+                        child: Directionality(
+                          textDirection: TextDirection.rtl,
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              FilePickerResult? result =
+                                  await FilePicker.platform.pickFiles(
+                                allowMultiple: false,
+                                allowedExtensions: ['pdf'],
+                                type: FileType.custom,
+                              );
+                              if (result != null) {
+                                for (var element in result.files) {
+                                  viewModel.onSelectedFile(
+                                    element,
+                                    showMsgError,
+                                  );
+                                }
                               }
-                            }
-                          },
-                          icon: const Icon(Icons.add),
-                          label: const Text('Adicionar documento'),
+                            },
+                            icon: const Icon(Icons.add),
+                            label: const Text('Adicionar documento'),
+                          ),
                         ),
                       ),
                   ],
@@ -123,15 +126,17 @@ class EditInfoDocumentos extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                trailing: IconButton(
-                                  onPressed: () {
-                                    viewModel
-                                        .onRemoveItem(snapshot.data![index]);
-                                  },
-                                  tooltip: 'Remover documento',
-                                  icon: const Icon(
-                                    Icons.delete_outline,
-                                    color: Colors.red,
+                                trailing: OnHoverButton(
+                                  child: IconButton(
+                                    onPressed: () {
+                                      viewModel
+                                          .onRemoveItem(snapshot.data![index]);
+                                    },
+                                    tooltip: 'Remover documento',
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red,
+                                    ),
                                   ),
                                 ),
                               );

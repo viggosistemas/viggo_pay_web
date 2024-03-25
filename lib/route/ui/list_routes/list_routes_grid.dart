@@ -3,6 +3,7 @@ import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/route/ui/edit_routes/edit_routes.dart';
 import 'package:viggo_pay_admin/route/ui/list_routes/list_route_web_view_model.dart';
@@ -115,17 +116,7 @@ class _ListRoutesGridState extends State<ListRoutesGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return const Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Carregando...'),
-              SizedBox(
-                height: 10,
-              ),
-              CircularProgressIndicator(),
-            ],
-          );
+          return const ProgressLoading();
         } else {
           List<RouteApiDto> items = (snapshot.data as List<RouteApiDto>);
           return SizedBox(

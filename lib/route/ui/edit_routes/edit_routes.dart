@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/route/ui/edit_routes/edit_routes_form/edit_routes_form.dart';
 import 'package:viggo_pay_admin/route/ui/edit_routes/edit_routes_view_model.dart';
@@ -93,41 +94,45 @@ class EditRoutes {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        size: 20,
-                      ),
-                      label: const Text('Cancelar'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
+                    OnHoverButton(
+                      child: TextButton.icon(
+                        icon: const Icon(
+                          Icons.cancel_outlined,
+                          size: 20,
+                        ),
+                        label: const Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
                       ),
                     ),
                     StreamBuilder<bool>(
                         stream: viewModel.form.isValid,
                         builder: (context, snapshot) {
-                          return Directionality(
-                            textDirection: TextDirection.rtl,
-                            child: TextButton.icon(
-                              icon: const Icon(
-                                Icons.save_alt_outlined,
-                                size: 20,
-                              ),
-                              label: const Text('Salvar'),
-                              onPressed: () {
-                                if (snapshot.data != null &&
-                                    snapshot.data == true) {
-                                  onSubmit();
-                                }
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor: snapshot.data != null &&
-                                        snapshot.data == true
-                                    ? Colors.green
-                                    : Colors.grey,
+                          return OnHoverButton(
+                            child: Directionality(
+                              textDirection: TextDirection.rtl,
+                              child: TextButton.icon(
+                                icon: const Icon(
+                                  Icons.save_alt_outlined,
+                                  size: 20,
+                                ),
+                                label: const Text('Salvar'),
+                                onPressed: () {
+                                  if (snapshot.data != null &&
+                                      snapshot.data == true) {
+                                    onSubmit();
+                                  }
+                                },
+                                style: TextButton.styleFrom(
+                                  foregroundColor: snapshot.data != null &&
+                                          snapshot.data == true
+                                      ? Colors.green
+                                      : Colors.grey,
+                                ),
                               ),
                             ),
                           );
@@ -223,41 +228,45 @@ class EditRoutes {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        size: 20,
-                      ),
-                      label: const Text('Cancelar'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
+                    OnHoverButton(
+                      child: TextButton.icon(
+                        icon: const Icon(
+                          Icons.cancel_outlined,
+                          size: 20,
+                        ),
+                        label: const Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
                       ),
                     ),
                     StreamBuilder<bool>(
                         stream: viewModel.form.isValid,
                         builder: (context, snapshot) {
-                          return Directionality(
-                            textDirection: TextDirection.rtl,
-                            child: TextButton.icon(
-                              icon: const Icon(
-                                Icons.save_alt_outlined,
-                                size: 20,
-                              ),
-                              label: const Text('Salvar'),
-                              onPressed: () {
-                                if (snapshot.data != null &&
-                                    snapshot.data == true) {
-                                  onSubmit();
-                                }
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor: snapshot.data != null &&
-                                        snapshot.data == true
-                                    ? Colors.green
-                                    : Colors.grey,
+                          return OnHoverButton(
+                            child: Directionality(
+                              textDirection: TextDirection.rtl,
+                              child: TextButton.icon(
+                                icon: const Icon(
+                                  Icons.save_alt_outlined,
+                                  size: 20,
+                                ),
+                                label: const Text('Salvar'),
+                                onPressed: () {
+                                  if (snapshot.data != null &&
+                                      snapshot.data == true) {
+                                    onSubmit();
+                                  }
+                                },
+                                style: TextButton.styleFrom(
+                                  foregroundColor: snapshot.data != null &&
+                                          snapshot.data == true
+                                      ? Colors.green
+                                      : Colors.grey,
+                                ),
                               ),
                             ),
                           );

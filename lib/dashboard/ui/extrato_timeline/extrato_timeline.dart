@@ -7,9 +7,11 @@ class ExtratoTimeline extends StatelessWidget {
   const ExtratoTimeline({
     super.key,
     required this.listExtrato,
+    required this.lengthExtrato,
   });
 
   final List<ExtratoApiDto> listExtrato;
+  final int lengthExtrato;
 
   @override
   Widget build(BuildContext context) {
@@ -19,47 +21,64 @@ class ExtratoTimeline extends StatelessWidget {
         vertical: 16,
         horizontal: 8,
       ),
-      width: MediaQuery.of(context).size.width * 0.5,
+      width: MediaQuery.of(context).size.width * 0.3,
       child: ListView.builder(
-        itemCount: 5,//listExtrato.length,
-        itemBuilder: (ctx, index) => ListTile(
-          horizontalTitleGap: 20,
-          leading: CircleAvatar(
-              backgroundColor: Theme.of(context).colorScheme.primary,
+        itemCount: lengthExtrato <= listExtrato.length
+            ? lengthExtrato
+            : listExtrato.length,
+        itemBuilder: (ctx, index) => Card(
+          elevation: 3,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Theme.of(context).colorScheme.secondary.withOpacity(0.8)
+              : Theme.of(context).colorScheme.primary,
+          child: ListTile(
+            horizontalTitleGap: 20,
+            leading: CircleAvatar(
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onPrimary,
               child: Icon(
                 Icons.pix_outlined,
-                color: Theme.of(context).colorScheme.onPrimary,
-              )),
-          contentPadding: const EdgeInsets.only(right: 16),
-          title: Text(
-            listExtrato[index].description,
-            style: GoogleFonts.lato(
-              color: Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.onPrimary
+                    : Theme.of(context).colorScheme.primary,
+              ),
             ),
-          ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '${listExtrato[index].type == 'D' ? '-' : '+'} R\$ ${listExtrato[index].amount}',
-                style: GoogleFonts.lato(
-                  color: listExtrato[index].type == 'D'
-                      ? Colors.red
-                      : Colors.green,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+            title: Text(
+              listExtrato[index].description,
+              style: GoogleFonts.lato(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onPrimary,
               ),
-              Text(
-                DateFormat('dd/MM/yyyy')
-                    .format(DateTime.parse(listExtrato[index].creditDate)),
-                style: GoogleFonts.lato(
-                  color: Colors.white.withOpacity(0.7),
+            ),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${listExtrato[index].type == 'D' ? '-' : '+'} R\$ ${listExtrato[index].amount}',
+                  style: GoogleFonts.lato(
+                    color: listExtrato[index].type == 'D'
+                        ? Colors.red
+                        : Colors.green,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
+                Text(
+                  DateFormat('dd/MM/yyyy')
+                      .format(DateTime.parse(listExtrato[index].creditDate)),
+                  style: GoogleFonts.lato(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.black.withOpacity(0.7)
+                        : Colors.white.withOpacity(0.7),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         // TimelineAppTile(

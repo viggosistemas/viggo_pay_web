@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
+import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-documentos/edit_info_documentos.dart';
@@ -113,17 +115,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
           builder: (context, snapshot) {
             if (snapshot.data == null) {
               viewModel.getEntities();
-              return const Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Carregando...'),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  CircularProgressIndicator(),
-                ],
-              );
+              return const ProgressLoading();
             } else {
               return Card(
                 elevation: 8,
@@ -202,20 +194,22 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                 return Row(
                                   children: details.stepIndex != 3
                                       ? <Widget>[
-                                          TextButton(
-                                            onPressed: details.onStepCancel,
-                                            style: ButtonStyle(
-                                              foregroundColor:
-                                                  MaterialStateColor
-                                                      .resolveWith((states) =>
-                                                          details.stepIndex == 0
-                                                              ? Colors.grey
-                                                              : Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .primary),
+                                          OnHoverButton(
+                                            child: TextButton(
+                                              onPressed: details.onStepCancel,
+                                              style: ButtonStyle(
+                                                foregroundColor:
+                                                    MaterialStateColor
+                                                        .resolveWith((states) =>
+                                                            details.stepIndex == 0
+                                                                ? Colors.grey
+                                                                : Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .primary),
+                                              ),
+                                              child: const Text('Anterior'),
                                             ),
-                                            child: const Text('Anterior'),
                                           ),
                                           const SizedBox(
                                             width: 20,
@@ -225,30 +219,32 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                                   stream:
                                                       viewModel.form.isValid,
                                                   builder: (context, snapshot) {
-                                                    return TextButton(
-                                                      onPressed: snapshot
-                                                                      .data ==
-                                                                  true &&
-                                                              snapshot.data !=
-                                                                  null
-                                                          ? details
-                                                              .onStepContinue
-                                                          : () {},
-                                                      style: ButtonStyle(
-                                                        foregroundColor: MaterialStateColor.resolveWith(
-                                                            (states) => snapshot
-                                                                            .data ==
-                                                                        true &&
-                                                                    snapshot.data !=
-                                                                        null
-                                                                ? Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .primary
-                                                                : Colors.grey),
+                                                    return OnHoverButton(
+                                                      child: TextButton(
+                                                        onPressed: snapshot
+                                                                        .data ==
+                                                                    true &&
+                                                                snapshot.data !=
+                                                                    null
+                                                            ? details
+                                                                .onStepContinue
+                                                            : () {},
+                                                        style: ButtonStyle(
+                                                          foregroundColor: MaterialStateColor.resolveWith(
+                                                              (states) => snapshot
+                                                                              .data ==
+                                                                          true &&
+                                                                      snapshot.data !=
+                                                                          null
+                                                                  ? Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .primary
+                                                                  : Colors.grey),
+                                                        ),
+                                                        child:
+                                                            const Text('Próximo'),
                                                       ),
-                                                      child:
-                                                          const Text('Próximo'),
                                                     );
                                                   })
                                               : details.stepIndex == 2
@@ -260,30 +256,32 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                                           viewModel.fileList,
                                                       builder:
                                                           (context, snapshot) {
-                                                        return TextButton(
-                                                          onPressed: snapshot
-                                                                          .data !=
-                                                                      null &&
-                                                                  snapshot.data!
-                                                                      .isNotEmpty
-                                                              ? details
-                                                                  .onStepContinue
-                                                              : () {},
-                                                          style: ButtonStyle(
-                                                            foregroundColor: MaterialStateColor.resolveWith((states) => snapshot
+                                                        return OnHoverButton(
+                                                          child: TextButton(
+                                                            onPressed: snapshot
                                                                             .data !=
                                                                         null &&
-                                                                    snapshot
-                                                                        .data!
+                                                                    snapshot.data!
                                                                         .isNotEmpty
-                                                                ? Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .primary
-                                                                : Colors.grey),
+                                                                ? details
+                                                                    .onStepContinue
+                                                                : () {},
+                                                            style: ButtonStyle(
+                                                              foregroundColor: MaterialStateColor.resolveWith((states) => snapshot
+                                                                              .data !=
+                                                                          null &&
+                                                                      snapshot
+                                                                          .data!
+                                                                          .isNotEmpty
+                                                                  ? Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .primary
+                                                                  : Colors.grey),
+                                                            ),
+                                                            child: const Text(
+                                                                'Próximo'),
                                                           ),
-                                                          child: const Text(
-                                                              'Próximo'),
                                                         );
                                                       })
                                                   : StreamBuilder<bool>(
@@ -291,43 +289,49 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                                           .formAddress.isValid,
                                                       builder:
                                                           (context, snapshot) {
-                                                        return TextButton(
-                                                          onPressed: snapshot
-                                                                          .data ==
-                                                                      true &&
-                                                                  snapshot.data !=
-                                                                      null
-                                                              ? details
-                                                                  .onStepContinue
-                                                              : () {},
-                                                          style: ButtonStyle(
-                                                            foregroundColor: MaterialStateColor.resolveWith((states) => snapshot
+                                                        return OnHoverButton(
+                                                          child: TextButton(
+                                                            onPressed: snapshot
                                                                             .data ==
                                                                         true &&
                                                                     snapshot.data !=
                                                                         null
-                                                                ? Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .primary
-                                                                : Colors.grey),
+                                                                ? details
+                                                                    .onStepContinue
+                                                                : () {},
+                                                            style: ButtonStyle(
+                                                              foregroundColor: MaterialStateColor.resolveWith((states) => snapshot
+                                                                              .data ==
+                                                                          true &&
+                                                                      snapshot.data !=
+                                                                          null
+                                                                  ? Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .primary
+                                                                  : Colors.grey),
+                                                            ),
+                                                            child: const Text(
+                                                                'Próximo'),
                                                           ),
-                                                          child: const Text(
-                                                              'Próximo'),
                                                         );
                                                       })
                                         ]
                                       : <Widget>[
-                                          TextButton(
-                                            onPressed: details.onStepCancel,
-                                            child: const Text('Anterior'),
+                                          OnHoverButton(
+                                            child: TextButton(
+                                              onPressed: details.onStepCancel,
+                                              child: const Text('Anterior'),
+                                            ),
                                           ),
                                           const SizedBox(
                                             width: 20,
                                           ),
-                                          TextButton(
-                                            onPressed: () => onSubmit(),
-                                            child: const Text('Salvar'),
+                                          OnHoverButton(
+                                            child: TextButton(
+                                              onPressed: () => onSubmit(),
+                                              child: const Text('Salvar'),
+                                            ),
                                           ),
                                         ],
                                 );

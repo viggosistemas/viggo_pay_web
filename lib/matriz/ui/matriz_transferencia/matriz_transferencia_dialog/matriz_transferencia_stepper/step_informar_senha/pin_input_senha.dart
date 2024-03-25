@@ -47,82 +47,79 @@ class _PinInputSenhaState extends State<PinInputSenha> {
     );
 
     /// Optionally you can use form to validate the Pinput
-    return Form(
-      key: formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          StreamBuilder<String>(
-              stream: widget.viewModel.formStepSenha.senha.field,
-              builder: (context, snapshot) {
-                pinController.value =
-                    pinController.value.copyWith(text: snapshot.data);
-                return Directionality(
-                  // Specify direction if desired
-                  textDirection: TextDirection.ltr,
-                  child: Pinput(
-                    length: 6,
-                    obscureText: true,
-                    controller: pinController,
-                    focusNode: focusNode,
-                    androidSmsAutofillMethod:
-                        AndroidSmsAutofillMethod.smsUserConsentApi,
-                    listenForMultipleSmsOnAndroid: true,
-                    defaultPinTheme: defaultPinTheme,
-                    separatorBuilder: (index) => const SizedBox(width: 8),
-                    validator: (value) {
-                      return snapshot.error?.toString();
-                    },
-                    // onClipboardFound: (value) {
-                    //   debugPrint('onClipboardFound: $value');
-                    //   pinController.setText(value);
-                    // },
-                    hapticFeedbackType: HapticFeedbackType.lightImpact,
-                    onCompleted: (pin) {
-                      widget.viewModel.formStepSenha.senha.onValueChange(pin);
-                    },
-                    onChanged: (value) {
-                      widget.viewModel.formStepSenha.senha.onValueChange(value);
-                    },
-                    cursor: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 9),
-                          width: 22,
-                          height: 1,
-                          color: focusedBorderColor,
-                        ),
-                      ],
-                    ),
-                    focusedPinTheme: defaultPinTheme.copyWith(
-                      decoration: defaultPinTheme.decoration!.copyWith(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: focusedBorderColor),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        StreamBuilder<String>(
+            stream: widget.viewModel.formStepSenha.senha.field,
+            builder: (context, snapshot) {
+              pinController.value =
+                  pinController.value.copyWith(text: snapshot.data);
+              return Directionality(
+                // Specify direction if desired
+                textDirection: TextDirection.ltr,
+                child: Pinput(
+                  length: 6,
+                  obscureText: true,
+                  controller: pinController,
+                  focusNode: focusNode,
+                  androidSmsAutofillMethod:
+                      AndroidSmsAutofillMethod.smsUserConsentApi,
+                  listenForMultipleSmsOnAndroid: true,
+                  defaultPinTheme: defaultPinTheme,
+                  separatorBuilder: (index) => const SizedBox(width: 8),
+                  validator: (value) {
+                    return snapshot.error?.toString();
+                  },
+                  // onClipboardFound: (value) {
+                  //   debugPrint('onClipboardFound: $value');
+                  //   pinController.setText(value);
+                  // },
+                  hapticFeedbackType: HapticFeedbackType.lightImpact,
+                  onCompleted: (pin) {
+                    widget.viewModel.formStepSenha.senha.onValueChange(pin);
+                  },
+                  onChanged: (value) {
+                    widget.viewModel.formStepSenha.senha.onValueChange(value);
+                  },
+                  cursor: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 9),
+                        width: 22,
+                        height: 1,
+                        color: focusedBorderColor,
                       ),
-                    ),
-                    submittedPinTheme: defaultPinTheme.copyWith(
-                      decoration: defaultPinTheme.decoration!.copyWith(
-                        color: fillColor,
-                        borderRadius: BorderRadius.circular(19),
-                        border: Border.all(color: focusedBorderColor),
-                      ),
-                    ),
-                    errorPinTheme: defaultPinTheme.copyBorderWith(
-                      border: Border.all(color: Colors.redAccent),
+                    ],
+                  ),
+                  focusedPinTheme: defaultPinTheme.copyWith(
+                    decoration: defaultPinTheme.decoration!.copyWith(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: focusedBorderColor),
                     ),
                   ),
-                );
-              }),
-          // TextButton(
-          //   onPressed: () {
-          //     focusNode.unfocus();
-          //     formKey.currentState!.validate();
-          //   },
-          //   child: const Text('Validate'),
-          // ),
-        ],
-      ),
+                  submittedPinTheme: defaultPinTheme.copyWith(
+                    decoration: defaultPinTheme.decoration!.copyWith(
+                      color: fillColor,
+                      borderRadius: BorderRadius.circular(19),
+                      border: Border.all(color: focusedBorderColor),
+                    ),
+                  ),
+                  errorPinTheme: defaultPinTheme.copyBorderWith(
+                    border: Border.all(color: Colors.redAccent),
+                  ),
+                ),
+              );
+            }),
+        // TextButton(
+        //   onPressed: () {
+        //     focusNode.unfocus();
+        //     formKey.currentState!.validate();
+        //   },
+        //   child: const Text('Validate'),
+        // ),
+      ],
     );
   }
 }

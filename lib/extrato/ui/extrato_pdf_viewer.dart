@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/extrato/ui/timeline_extrato_view_model.dart';
 
@@ -83,22 +84,26 @@ class _ExtratoPdfViewerState extends State<ExtratoPdfViewer> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Directionality(
-                            textDirection: TextDirection.rtl,
-                            child: ElevatedButton.icon(
-                              onPressed: () async => download(
-                                transfSnapshot.data!.right,
-                                downloadName: 'extrato_vPay.pdf',
+                          OnHoverButton(
+                            child: Directionality(
+                              textDirection: TextDirection.rtl,
+                              child: ElevatedButton.icon(
+                                onPressed: () async => download(
+                                  transfSnapshot.data!.right,
+                                  downloadName: 'extrato_vPay.pdf',
+                                ),
+                                label: const Text('Baixar'),
+                                icon: const Icon(Icons.download_for_offline),
                               ),
-                              label: const Text('Baixar'),
-                              icon: const Icon(Icons.download_for_offline),
                             ),
                           ),
-                          IconButton(
-                            onPressed: () => navigateBack(),
-                            icon: const Icon(
-                              Icons.cancel_outlined,
-                              color: Colors.red,
+                          OnHoverButton(
+                            child: IconButton(
+                              onPressed: () => navigateBack(),
+                              icon: const Icon(
+                                Icons.cancel_outlined,
+                                color: Colors.red,
+                              ),
                             ),
                           ),
                         ],

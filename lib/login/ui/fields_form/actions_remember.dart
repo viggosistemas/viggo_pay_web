@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
 
 // ignore: must_be_immutable
@@ -24,11 +25,13 @@ class ActionsRememberForget extends StatelessWidget {
             StreamBuilder<String>(
               stream: viewModel.form.remember.field,
               builder: (context, snapshot) {
-                return Checkbox(
-                  value: snapshot.data?.parseBool() ?? false,
-                  onChanged: (value) {
-                    viewModel.form.remember.onValueChange(value!.toString());
-                  },
+                return OnHoverButton(
+                  child: Checkbox(
+                    value: snapshot.data?.parseBool() ?? false,
+                    onChanged: (value) {
+                      viewModel.form.remember.onValueChange(value!.toString());
+                    },
+                  ),
                 );
               }
             ),
@@ -36,13 +39,15 @@ class ActionsRememberForget extends StatelessWidget {
             const Text('Lembrar-me'),
           ],
         ),
-        TextButton(
-          onPressed: onForgetPassword,
-          child: const Text(
-            'Esqueceu a senha?',
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 16, 39, 245)),
+        OnHoverButton(
+          child: TextButton(
+            onPressed: onForgetPassword,
+            child: const Text(
+              'Esqueceu a senha?',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 16, 39, 245)),
+            ),
           ),
         )
       ],

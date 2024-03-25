@@ -5,6 +5,8 @@ import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginat
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
 import 'package:viggo_pay_admin/application/ui/edit_applications/edit_applications.dart';
 import 'package:viggo_pay_admin/application/ui/list_applications/list_application_web_view_model.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
+import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
@@ -110,17 +112,7 @@ class _ListApplicationsGridState extends State<ListApplicationsGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return const Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Carregando...'),
-              SizedBox(
-                height: 10,
-              ),
-              CircularProgressIndicator(),
-            ],
-          );
+          return const ProgressLoading();
         } else {
           List<ApplicationApiDto> items =
               (snapshot.data as List<ApplicationApiDto>);
@@ -152,11 +144,13 @@ class _ListApplicationsGridState extends State<ListApplicationsGrid> {
                             stream: viewModel.applications,
                             builder: (context, snapshot) {
                               if (snapshot.data == null) {
-                                return IconButton.outlined(
-                                  onPressed: () => {},
-                                  tooltip: 'Editar capacidades',
-                                  icon: const Icon(
-                                    Icons.polyline_outlined,
+                                return OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () => {},
+                                    tooltip: 'Editar capacidades',
+                                    icon: const Icon(
+                                      Icons.polyline_outlined,
+                                    ),
                                   ),
                                 );
                               } else {
@@ -170,22 +164,24 @@ class _ListApplicationsGridState extends State<ListApplicationsGrid> {
                                       .where((element) => element.selected)
                                       .first;
                                 }
-                                return IconButton.outlined(
-                                  onPressed: () => lengthSelected == 1
-                                      ? WidgetsBinding.instance
-                                          .addPostFrameCallback(
-                                          (_) {
-                                            Navigator.of(context)
-                                                .pushReplacementNamed(
-                                              Routes.EDIT_CAPABILITY,
-                                              arguments: selected,
-                                            );
-                                          },
-                                        )
-                                      : {},
-                                  tooltip: 'Editar capacidades',
-                                  icon: const Icon(
-                                    Icons.polyline_outlined,
+                                return OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () => lengthSelected == 1
+                                        ? WidgetsBinding.instance
+                                            .addPostFrameCallback(
+                                            (_) {
+                                              Navigator.of(context)
+                                                  .pushReplacementNamed(
+                                                Routes.EDIT_CAPABILITY,
+                                                arguments: selected,
+                                              );
+                                            },
+                                          )
+                                        : {},
+                                    tooltip: 'Editar capacidades',
+                                    icon: const Icon(
+                                      Icons.polyline_outlined,
+                                    ),
                                   ),
                                 );
                               }
@@ -195,11 +191,13 @@ class _ListApplicationsGridState extends State<ListApplicationsGrid> {
                             stream: viewModel.applications,
                             builder: (context, snapshot) {
                               if (snapshot.data == null) {
-                                return IconButton.outlined(
-                                  onPressed: () => {},
-                                  tooltip: 'Editar políticas',
-                                  icon: const Icon(
-                                    Icons.policy_outlined,
+                                return OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () => {},
+                                    tooltip: 'Editar políticas',
+                                    icon: const Icon(
+                                      Icons.policy_outlined,
+                                    ),
                                   ),
                                 );
                               } else {
@@ -213,22 +211,24 @@ class _ListApplicationsGridState extends State<ListApplicationsGrid> {
                                       .where((element) => element.selected)
                                       .first;
                                 }
-                                return IconButton.outlined(
-                                  onPressed: () => lengthSelected == 1
-                                      ? WidgetsBinding.instance
-                                          .addPostFrameCallback(
-                                          (_) {
-                                            Navigator.of(context)
-                                                .pushReplacementNamed(
-                                              Routes.EDIT_POLICY,
-                                              arguments: selected,
-                                            );
-                                          },
-                                        )
-                                      : {},
-                                  tooltip: 'Editar políticas',
-                                  icon: const Icon(
-                                    Icons.policy_outlined,
+                                return OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () => lengthSelected == 1
+                                        ? WidgetsBinding.instance
+                                            .addPostFrameCallback(
+                                            (_) {
+                                              Navigator.of(context)
+                                                  .pushReplacementNamed(
+                                                Routes.EDIT_POLICY,
+                                                arguments: selected,
+                                              );
+                                            },
+                                          )
+                                        : {},
+                                    tooltip: 'Editar políticas',
+                                    icon: const Icon(
+                                      Icons.policy_outlined,
+                                    ),
                                   ),
                                 );
                               }

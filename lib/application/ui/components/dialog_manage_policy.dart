@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/capability/data/models/capability_api_dto.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/application/ui/edit_policy/edit_policy_view_model.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
@@ -171,30 +172,34 @@ class EditPolicyDialog {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        size: 20,
-                      ),
-                      label: const Text('Cancelar'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
-                      ),
-                    ),
-                    Directionality(
-                      textDirection: TextDirection.rtl,
+                    OnHoverButton(
                       child: TextButton.icon(
                         icon: const Icon(
-                          Icons.check_circle_outline,
+                          Icons.cancel_outlined,
                           size: 20,
                         ),
-                        label: const Text('Confirmar'),
-                        onPressed: () => onSubmit(),
-                        style:
-                            TextButton.styleFrom(foregroundColor: Colors.green),
+                        label: const Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
+                      ),
+                    ),
+                    OnHoverButton(
+                      child: Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: TextButton.icon(
+                          icon: const Icon(
+                            Icons.check_circle_outline,
+                            size: 20,
+                          ),
+                          label: const Text('Confirmar'),
+                          onPressed: () => onSubmit(),
+                          style:
+                              TextButton.styleFrom(foregroundColor: Colors.green),
+                        ),
                       ),
                     ),
                   ],

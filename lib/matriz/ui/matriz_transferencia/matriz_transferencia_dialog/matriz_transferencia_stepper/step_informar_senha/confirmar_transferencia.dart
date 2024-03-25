@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_dialog/matriz_transferencia_stepper/step_informar_senha/comprovante_pdv_viewer.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_dialog/matriz_transferencia_stepper/step_informar_senha/pin_input_senha.dart';
@@ -53,48 +54,52 @@ class StepInformarSenha extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ElevatedButton.icon(
-              onPressed: () => changePage(currentPage - 1),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+            OnHoverButton(
+              child: ElevatedButton.icon(
+                onPressed: () => changePage(currentPage - 1),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                icon: const Icon(
+                  Icons.arrow_back_outlined,
+                  size: 18,
+                ),
+                label: const Text('Voltar'),
               ),
-              icon: const Icon(
-                Icons.arrow_back_outlined,
-                size: 18,
-              ),
-              label: const Text('Voltar'),
             ),
             StreamBuilder<bool>(
                 stream: viewModel.formStepSenha.isValid,
                 builder: (context, snapshot) {
-                  return Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            snapshot.data != null && snapshot.data == true
-                                ? Colors.green
-                                : Colors.grey,
-                      ),
-                      onPressed: () async {
-                        var result = await showDialog(
-                          context: context,
-                          builder: (BuildContext ctx) => Dialog.fullscreen(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 14),
-                              child: ComprovantePdfViewer(),
+                  return OnHoverButton(
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              snapshot.data != null && snapshot.data == true
+                                  ? Colors.green
+                                  : Colors.grey,
+                        ),
+                        onPressed: () async {
+                          var result = await showDialog(
+                            context: context,
+                            builder: (BuildContext ctx) => Dialog.fullscreen(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 14),
+                                child: ComprovantePdfViewer(),
+                              ),
                             ),
-                          ),
-                        );
-                        if(result == true && context.mounted){
-                          Navigator.pop(context, true);
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.attach_money_outlined,
-                        size: 18,
+                          );
+                          if(result == true && context.mounted){
+                            Navigator.pop(context, true);
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.attach_money_outlined,
+                          size: 18,
+                        ),
+                        label: const Text('Transferir'),
                       ),
-                      label: const Text('Transferir'),
                     ),
                   );
                 }),

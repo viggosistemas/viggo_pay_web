@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder.dart';
 import 'package:viggo_pay_admin/application/ui/edit_policy/edit_policy_grid.dart';
-class EditPolicyPage extends StatelessWidget {
-  const EditPolicyPage({
-    Key? key,
-    required this.changeTheme,
-  }) : super(key: key);
 
-  final void Function(ThemeMode themeMode) changeTheme;
+class EditPolicyPage extends StatelessWidget {
+  const EditPolicyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AppBuilder(
-      changeTheme: changeTheme,
       child: Expanded(
         child: EditPolicyGrid(),
       ),

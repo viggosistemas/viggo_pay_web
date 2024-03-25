@@ -4,6 +4,7 @@ import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_core_frontend/role/data/models/role_api_dto.dart';
 import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users_view_model.dart';
 
 // ignore: must_be_immutable
@@ -98,13 +99,15 @@ class _EditUsersFormState extends State<EditUsersForm> {
                             ...snapshot.data!.map(
                               (role) => Row(
                                 children: [
-                                  Checkbox(
-                                    value: role.selected,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        role.selected = value!;
-                                      });
-                                    },
+                                  OnHoverButton(
+                                    child: Checkbox(
+                                      value: role.selected,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          role.selected = value!;
+                                        });
+                                      },
+                                    ),
                                   ),
                                   const SizedBox(
                                     width: 10,
@@ -225,21 +228,32 @@ class _EditUsersFormState extends State<EditUsersForm> {
                       itemBuilder: (BuildContext context, int index) {
                         final DomainApiDto option = options.elementAt(index);
                         return option.id == 'last'
-                            ? Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: ElevatedButton.icon(
-                                    onPressed: () {},
-                                    icon: const Icon(
-                                      Icons.add_circle_outline,
-                                      size: 18,
-                                    ),
-                                    label: const Text('Adicionar agora')),
+                            ? OnHoverButton(
+                                child: Directionality(
+                                  textDirection: TextDirection.rtl,
+                                  child: ElevatedButton.icon(
+                                      onPressed: () {},
+                                      icon: const Icon(
+                                        Icons.add_circle_outline,
+                                        size: 18,
+                                      ),
+                                      label: const Text('Adicionar agora')),
+                                ),
                               )
-                            : InkWell(
-                                onTap: () => onSelected(option),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Text(option.name),
+                            : Container(
+                                color: Colors.white,
+                                child: InkWell(
+                                  highlightColor: Colors.white,
+                                  splashColor: Colors.white,
+                                  hoverColor: Colors.grey.withOpacity(0.8),
+                                  focusColor: Colors.white,
+                                  overlayColor: MaterialStatePropertyAll(
+                                      Colors.grey.withOpacity(0.8)),
+                                  onTap: () => onSelected(option),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Text(option.name),
+                                  ),
                                 ),
                               );
                       },
@@ -261,15 +275,18 @@ class _EditUsersFormState extends State<EditUsersForm> {
                     border: const OutlineInputBorder(),
                     errorText: snapshot.error?.toString(),
                     suffix: snapshot.data != null && snapshot.data!.isNotEmpty
-                        ? IconButton(
-                            onPressed: () {
-                              widget.viewModel.form.domainId.onValueChange('');
-                              controller.setText('');
-                            },
-                            icon: const Icon(
-                              Icons.cancel_outlined,
-                              size: 18,
-                              color: Colors.red,
+                        ? OnHoverButton(
+                            child: IconButton(
+                              onPressed: () {
+                                widget.viewModel.form.domainId
+                                    .onValueChange('');
+                                controller.setText('');
+                              },
+                              icon: const Icon(
+                                Icons.cancel_outlined,
+                                size: 18,
+                                color: Colors.red,
+                              ),
                             ),
                           )
                         : const Text(''),

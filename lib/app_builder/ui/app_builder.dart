@@ -10,6 +10,7 @@ import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/ui/main_rail.
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
+import 'package:viggo_pay_admin/themes/theme_view_model.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 
 enum SampleItem { itemOne, itemTwo, itemThree }
@@ -18,10 +19,7 @@ class AppBuilder extends StatefulWidget {
   const AppBuilder({
     super.key,
     required this.child,
-    required this.changeTheme,
   });
-
-  final void Function(ThemeMode themeMode) changeTheme;
 
   final Widget child;
 
@@ -30,6 +28,7 @@ class AppBuilder extends StatefulWidget {
 }
 
 class _AppBuilderState extends State<AppBuilder> {
+  ThemeViewModel themeViewModel = locator.get<ThemeViewModel>();
   AppBuilderViewModel viewModel = locator.get<AppBuilderViewModel>();
   SharedPreferences sharedPrefs = locator.get<SharedPreferences>();
   SampleItem? selectedItem;
@@ -166,7 +165,7 @@ class _AppBuilderState extends State<AppBuilder> {
                   message: 'Ir para início',
                   child: OnHoverButton(
                     child: Image.asset(
-                      'assets/images/logo.png',
+                      themeViewModel.logoAsset,
                       width: 70,
                       height: 70,
                       fit: BoxFit.contain,
@@ -178,29 +177,31 @@ class _AppBuilderState extends State<AppBuilder> {
               shadowColor: const Color.fromRGBO(0, 0, 0, 1),
               elevation: 8,
               actions: [
-                // IconButton(
-                //   style: IconButton.styleFrom(
-                //     foregroundColor: Colors.white,
-                //   ),
-                //   onPressed: () {
-                //     setState(() {
-                //       isActioned = true;
-                //       if (isDarkMode) {
-                //         iconMode = Icons.dark_mode_outlined;
-                //         colorIconMode = Colors.white;
-                //         widget.changeTheme(ThemeMode.light);
-                //       } else {
-                //         iconMode = Icons.light_mode_outlined;
-                //         colorIconMode = Colors.yellow;
-                //         widget.changeTheme(ThemeMode.dark);
-                //       }
-                //     });
-                //   },
-                //   icon: Icon(
-                //     iconMode,
-                //     color: colorIconMode,
-                //   ),
-                // ),
+                OnHoverButton(
+                  child: IconButton(
+                    style: IconButton.styleFrom(
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isActioned = true;
+                        if (isDarkMode) {
+                          iconMode = Icons.dark_mode_outlined;
+                          colorIconMode = Colors.white;
+                          themeViewModel.changeTheme(ThemeMode.light.name);
+                        } else {
+                          iconMode = Icons.light_mode_outlined;
+                          colorIconMode = Colors.yellow;
+                          themeViewModel.changeTheme(ThemeMode.dark.name);
+                        }
+                      });
+                    },
+                    icon: Icon(
+                      iconMode,
+                      color: colorIconMode,
+                    ),
+                  ),
+                ),
                 const SizedBox(
                   width: 20,
                 ),
@@ -228,24 +229,26 @@ class _AppBuilderState extends State<AppBuilder> {
               top: false,
               child: Row(
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: StreamBuilder<List<RouteApiDto>?>(
-                        stream: viewModel.routesDto,
-                        builder: (context, snapshot) {
-                          if (snapshot.data != null) {
-                            viewModel.getRoutes();
-                            return const CircularProgressIndicator();
-                          } else {
-                            return MainRail(
-                              onSelectScreen: setScreen,
-                            );
-                          }
-                        }),
+                  StreamBuilder<List<RouteApiDto>?>(
+                    stream: viewModel.routesDto,
+                    builder: (context, snapshot) {
+                      if (snapshot.data == null) {
+                        viewModel.getRoutes();
+                        return const CircularProgressIndicator();
+                      } else {
+                        return MainRail(
+                          routes: snapshot.data!,
+                          onSelectScreen: setScreen,
+                        );
+                      }
+                    },
                   ),
                   const VerticalDivider(thickness: 1, width: 1),
                   Expanded(
-                    child: widget.child,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: widget.child,
+                    ),
                   ),
                 ],
               ),

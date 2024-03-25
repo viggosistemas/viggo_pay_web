@@ -7,19 +7,16 @@ import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferen
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/transacoes_api_dto.dart';
 
+// ignore: must_be_immutable
 class MatrizTransferenciaPage extends StatelessWidget {
-  MatrizTransferenciaPage({
-    Key? key,
-    required this.changeTheme,
-  }) : super(key: key);
+  MatrizTransferenciaPage({super.key});
 
-  final void Function(ThemeMode themeMode) changeTheme;
   final MatrizTransferenciaViewModel viewModel =
       locator.get<MatrizTransferenciaViewModel>();
+
   @override
   Widget build(BuildContext context) {
     return AppBuilder(
-      changeTheme: changeTheme,
       child: StreamBuilder<DomainAccountApiDto?>(
           stream: viewModel.matriz,
           builder: (context, snapshot) {

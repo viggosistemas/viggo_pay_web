@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
+import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
@@ -114,17 +116,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return const Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Carregando...'),
-              SizedBox(
-                height: 10,
-              ),
-              CircularProgressIndicator(),
-            ],
-          );
+          return const ProgressLoading();
         } else {
           List<DomainAccountApiDto> items =
               (snapshot.data as List<DomainAccountApiDto>);
@@ -215,33 +207,35 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                                 viewModel.getConfigInfo(selecteds[0].id);
                               }
 
-                              return IconButton.outlined(
-                                onPressed: () async {
-                                  if (selecteds.length == 1) {
-                                    if (snapshot.data == null) {
-                                      var result = await ConfigDomainAccounts(
-                                              context: context)
-                                          .configDialog(
-                                              viewModel.getEmptyConfigInfo(
-                                                  selecteds[0].id));
-                                      if (result != null && result == true) {
-                                        viewModel.clearSelectionConfig();
-                                        viewModel.clearSelectedItems.invoke();
-                                      }
-                                    } else {
-                                      var result = await ConfigDomainAccounts(
-                                              context: context)
-                                          .configDialog(snapshot.data!);
-                                      if (result != null && result == true) {
-                                        viewModel.clearSelectionConfig();
-                                        viewModel.clearSelectedItems.invoke();
+                              return OnHoverButton(
+                                child: IconButton.outlined(
+                                  onPressed: () async {
+                                    if (selecteds.length == 1) {
+                                      if (snapshot.data == null) {
+                                        var result = await ConfigDomainAccounts(
+                                                context: context)
+                                            .configDialog(
+                                                viewModel.getEmptyConfigInfo(
+                                                    selecteds[0].id));
+                                        if (result != null && result == true) {
+                                          viewModel.clearSelectionConfig();
+                                          viewModel.clearSelectedItems.invoke();
+                                        }
+                                      } else {
+                                        var result = await ConfigDomainAccounts(
+                                                context: context)
+                                            .configDialog(snapshot.data!);
+                                        if (result != null && result == true) {
+                                          viewModel.clearSelectionConfig();
+                                          viewModel.clearSelectedItems.invoke();
+                                        }
                                       }
                                     }
-                                  }
-                                },
-                                tooltip: 'Configurações',
-                                icon: const Icon(
-                                  Icons.settings,
+                                  },
+                                  tooltip: 'Configurações',
+                                  icon: const Icon(
+                                    Icons.settings,
+                                  ),
                                 ),
                               );
                             }),
