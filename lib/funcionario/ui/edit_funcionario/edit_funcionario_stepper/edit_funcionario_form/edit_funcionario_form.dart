@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:pinput/pinput.dart';
 import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/funcionario/data/models/funcionario_api_dto.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/funcionario_view_model.dart';
 
@@ -250,18 +251,20 @@ class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
                     border: const OutlineInputBorder(),
                     errorText: snapshot.error?.toString(),
                     suffix: snapshot.data != null && snapshot.data!.isNotEmpty
-                        ? IconButton(
-                            onPressed: () {
-                              widget.viewModel.formDados.userId
-                                  .onValueChange('');
-                              controller.setText('');
-                            },
-                            icon: const Icon(
-                              Icons.cancel_outlined,
-                              size: 18,
-                              color: Colors.red,
+                        ? OnHoverButton(
+                          child: IconButton(
+                              onPressed: () {
+                                widget.viewModel.formDados.userId
+                                    .onValueChange('');
+                                controller.setText('');
+                              },
+                              icon: const Icon(
+                                Icons.cancel_outlined,
+                                size: 18,
+                                color: Colors.red,
+                              ),
                             ),
-                          )
+                        )
                         : const Text(''),
                   ),
                   controller: controller,

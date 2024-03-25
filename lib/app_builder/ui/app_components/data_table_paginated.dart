@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_core_frontend/util/constants.dart';
 import 'package:viggo_pay_admin/components/dialogs.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 
 class DataSource extends DataTableSource {
@@ -236,23 +237,29 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
           v['backendUrl']!.contains(rota['url']) &&
           v['method']!.contains(rota['method']));
       if (itemIndex >= 0 && actions[itemIndex]['method'] == 'POST') {
-        actionsBtn.add(IconButton.outlined(
-          onPressed: () => onAddEntity(),
-          tooltip: 'Adicionar',
-          icon: const Icon(
-            Icons.add,
+        actionsBtn.add(
+          OnHoverButton(
+            child: IconButton.outlined(
+              onPressed: () => onAddEntity(),
+              tooltip: 'Adicionar',
+              icon: const Icon(
+                Icons.add,
+              ),
+            ),
           ),
-        ));
+        );
         actionsBtn.add(const SizedBox(
           width: 10,
         ));
       } else if (itemIndex >= 0 && actions[itemIndex]['method'] == 'PUT') {
         actionsBtn.add(
-          IconButton.outlined(
-            onPressed: () => onEditEntity(),
-            tooltip: 'Editar',
-            icon: const Icon(
-              Icons.edit,
+          OnHoverButton(
+            child: IconButton.outlined(
+              onPressed: () => onEditEntity(),
+              tooltip: 'Editar',
+              icon: const Icon(
+                Icons.edit,
+              ),
             ),
           ),
         );
@@ -260,24 +267,32 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
           width: 10,
         ));
       } else if (itemIndex >= 0 && actions[itemIndex]['method'] == 'DELETE') {
-        actionsBtn.add(IconButton.outlined(
-          onPressed: () => onChangeActive(),
-          tooltip: 'Alterar status',
-          icon: const Icon(
-            Icons.change_circle,
+        actionsBtn.add(
+          OnHoverButton(
+            child: IconButton.outlined(
+              onPressed: () => onChangeActive(),
+              tooltip: 'Alterar status',
+              icon: const Icon(
+                Icons.change_circle,
+              ),
+            ),
           ),
-        ));
+        );
         actionsBtn.add(const SizedBox(
           width: 10,
         ));
       } else if (itemIndex >= 0 && actions[itemIndex]['method'] == 'GET') {
-        actionsBtn.add(IconButton.outlined(
-          onPressed: () => onSeeInfoData(),
-          tooltip: 'Visualizar informações',
-          icon: const Icon(
-            Icons.remove_red_eye_outlined,
+        actionsBtn.add(
+          OnHoverButton(
+            child: IconButton.outlined(
+              onPressed: () => onSeeInfoData(),
+              tooltip: 'Visualizar informações',
+              icon: const Icon(
+                Icons.remove_red_eye_outlined,
+              ),
+            ),
           ),
-        ));
+        );
         actionsBtn.add(const SizedBox(
           width: 10,
         ));
@@ -303,13 +318,17 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
       );
       actionsDefault.addAll(widget.actions);
       if (widget.addReloadButton) {
-        actionsDefault.add(IconButton.outlined(
-          onPressed: () => onReloadData(),
-          tooltip: 'Recarregar',
-          icon: const Icon(
-            Icons.replay,
+        actionsDefault.add(
+          OnHoverButton(
+            child: IconButton.outlined(
+              onPressed: () => onReloadData(),
+              tooltip: 'Recarregar',
+              icon: const Icon(
+                Icons.replay,
+              ),
+            ),
           ),
-        ));
+        );
       }
       widget.actions = actionsDefault;
     }

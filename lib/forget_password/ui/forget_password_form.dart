@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:viggo_pay_admin/components/dialogs.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/forget_password/ui/fields_form/fields_form.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
@@ -17,12 +18,11 @@ class ForgetPassForm extends StatefulWidget {
 }
 
 class _ForgetPassFormState extends State<ForgetPassForm> {
-  final _formKey = GlobalKey<FormState>();
+  ForgetPasswordViewModel viewModel = locator.get<ForgetPasswordViewModel>();
 
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    final viewModel = Provider.of<ForgetPasswordViewModel>(context);
     final dialogs = Dialogs(context: context);
 
     viewModel.isError.listen(
@@ -59,20 +59,19 @@ class _ForgetPassFormState extends State<ForgetPassForm> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 width: deviceSize.width * 0.2,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      FieldsForm(
-                        viewModel: viewModel,
-                      ),
-                      if (viewModel.isLoading)
-                        const CircularProgressIndicator()
-                      else
-                        StreamBuilder<bool>(
-                          stream: viewModel.form.isValid,
-                          builder: (context, snapshot) {
-                            return Directionality(
+                child: Column(
+                  children: [
+                    FieldsForm(
+                      viewModel: viewModel,
+                    ),
+                    if (viewModel.isLoading)
+                      const CircularProgressIndicator()
+                    else
+                      StreamBuilder<bool>(
+                        stream: viewModel.form.isValid,
+                        builder: (context, snapshot) {
+                          return OnHoverButton(
+                            child: Directionality(
                               textDirection: TextDirection.rtl,
                               child: ElevatedButton.icon(
                                 icon: const Icon(
@@ -110,13 +109,15 @@ class _ForgetPassFormState extends State<ForgetPassForm> {
                                   ),
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                      const SizedBox(
-                        height: 10,
+                            ),
+                          );
+                        },
                       ),
-                      Directionality(
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    OnHoverButton(
+                      child: Directionality(
                         textDirection: TextDirection.rtl,
                         child: ElevatedButton.icon(
                           icon: const Icon(
@@ -144,9 +145,9 @@ class _ForgetPassFormState extends State<ForgetPassForm> {
                             ),
                           ),
                         ),
-                      )
-                    ],
-                  ),
+                      ),
+                    )
+                  ],
                 ),
               ),
             ),

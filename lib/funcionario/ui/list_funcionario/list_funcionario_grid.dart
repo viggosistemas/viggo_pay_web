@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/funcionario/data/models/funcionario_api_dto.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario.dart';
@@ -114,17 +115,7 @@ class _ListFuncionarioGridState extends State<ListFuncionarioGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return const Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Carregando...'),
-              SizedBox(
-                height: 10,
-              ),
-              CircularProgressIndicator(),
-            ],
-          );
+          return const ProgressLoading();
         } else {
           List<FuncionarioApiDto> items =
               (snapshot.data as List<FuncionarioApiDto>);

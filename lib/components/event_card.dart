@@ -20,8 +20,12 @@ class EventCardTimeline extends StatelessWidget {
           begin: Alignment.topLeft,
           end: const Alignment(0.8, 1),
           colors: <Color>[
-            Theme.of(context).colorScheme.primary,
-            Theme.of(context).colorScheme.primary,
+            Theme.of(context).brightness == Brightness.dark
+                ? Theme.of(context).colorScheme.secondary.withOpacity(0.8)
+                : Theme.of(context).colorScheme.primary,
+            Theme.of(context).brightness == Brightness.dark
+                ? Theme.of(context).colorScheme.secondary.withOpacity(0.8)
+                : Theme.of(context).colorScheme.primary,
             // Color(0xff1f005c),
             // Color(0xff5b0060),
             // Color(0xff870160),
@@ -33,10 +37,8 @@ class EventCardTimeline extends StatelessWidget {
           ], // Gradient from https://learnui.design/tools/gradient-generator.html
           tileMode: TileMode.mirror,
         ),
-        borderRadius: BorderRadius.circular(8),
-        color: isPast
-            ? const Color(0xff1f005c)
-            : Colors.deepPurple.shade100,
+        borderRadius: BorderRadius.circular(10),
+        color: isPast ? const Color(0xff1f005c) : Colors.deepPurple.shade100,
       ),
       child: child,
     );

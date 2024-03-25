@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_view_model.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 
 // ignore: must_be_immutable
 class HeaderSearch extends StatefulWidget {
@@ -11,8 +12,8 @@ class HeaderSearch extends StatefulWidget {
     required this.onSearch,
     required this.onReload,
     notShowAdvancedFilters,
-  }){
-    if(notShowAdvancedFilters != null){
+  }) {
+    if (notShowAdvancedFilters != null) {
       this.notShowAdvancedFilters = notShowAdvancedFilters;
     }
   }
@@ -147,7 +148,7 @@ class _HeaderSearchState extends State<HeaderSearch> {
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if(!widget.notShowAdvancedFilters)
+                          if (!widget.notShowAdvancedFilters)
                             PopupMenuButton<ListOptions>(
                               initialValue: selectedStatus,
                               onSelected: (ListOptions status) {
@@ -165,47 +166,71 @@ class _HeaderSearchState extends State<HeaderSearch> {
                                   borderRadius: BorderRadius.circular(30),
                                   border: Border.all(
                                     width: 1,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
                                 ),
                                 child: const Icon(Icons.filter_alt_outlined),
                               ),
                               itemBuilder: (BuildContext context) =>
                                   <PopupMenuEntry<ListOptions>>[
-                                const PopupMenuItem<ListOptions>(
+                                PopupMenuItem<ListOptions>(
                                   value: ListOptions.ACTIVE_ONLY,
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text("Apenas ativos"),
-                                      Icon(Icons.person_add_outlined, size: 18),
+                                      const Text("Apenas ativos"),
+                                      Icon(
+                                        Icons.person_add_outlined,
+                                        size: 18,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
                                     ],
                                   ),
                                 ),
-                                const PopupMenuItem<ListOptions>(
+                                PopupMenuItem<ListOptions>(
                                   value: ListOptions.INACTIVE_ONLY,
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text("Apenas inativos"),
-                                      Icon(Icons.person_add_disabled_outlined,
-                                          size: 18),
+                                      const Text("Apenas inativos"),
+                                      Icon(
+                                        Icons.person_add_disabled_outlined,
+                                        size: 18,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
                                     ],
                                   ),
                                 ),
-                                const PopupMenuItem<ListOptions>(
+                                PopupMenuItem<ListOptions>(
                                   value: ListOptions.ACTIVE_AND_INACTIVE,
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text("Ativos e Inativos"),
-                                      Icon(Icons.people_outline, size: 18),
+                                      const Text("Ativos e Inativos"),
+                                      Icon(
+                                        Icons.people_outline,
+                                        size: 18,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -214,34 +239,60 @@ class _HeaderSearchState extends State<HeaderSearch> {
                           const SizedBox(
                             width: 20,
                           ),
-                          DropdownButton(
-                            value: _selectedFilter,
-                            hint: const Text('Selecionar filtro'),
-                            items: widget.searchFields.map((vl) {
-                              return DropdownMenuItem(
-                                alignment: Alignment.center,
-                                value: vl,
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      vl['icon'],
-                                      color: Colors.black,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      vl['label'],
-                                    ),
-                                  ],
+                          OnHoverButton(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                canvasColor:
+                                    Theme.of(context).colorScheme.onPrimary,
+                              ),
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.15,
+                                child: DropdownButtonFormField(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  dropdownColor: Colors.white,
+                                  value: _selectedFilter,
+                                  hint: const Text('Selecionar filtro'),
+                                  items: widget.searchFields
+                                      .map<DropdownMenuItem>((vl) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.center,
+                                      value: vl,
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        constraints: const BoxConstraints(
+                                          minHeight: 48.0,
+                                        ),
+                                        color: Colors.white.withOpacity(0),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              vl['icon'],
+                                              color: Colors.black,
+                                            ),
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text(
+                                              vl['label'],
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedFilter = value!;
+                                    });
+                                  },
                                 ),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedFilter = value!;
-                              });
-                            },
+                              ),
+                            ),
                           ),
                           const SizedBox(
                             width: 20,
@@ -259,22 +310,26 @@ class _HeaderSearchState extends State<HeaderSearch> {
                                     labelText: 'Filtro',
                                     border: const OutlineInputBorder(),
                                     errorText: snapshot.error?.toString(),
-                                    suffixIcon: searchFieldController
-                                            .value.text.isEmpty
-                                        ? const Text('')
-                                        : IconButton(
-                                            icon: const Icon(
-                                              Icons.clear_outlined,
-                                              color: Colors.red,
-                                            ),
-                                            onPressed: () =>
-                                                viewModel.form.searchField.onValueChange(''),
-                                          ),
+                                    suffixIcon:
+                                        searchFieldController.value.text.isEmpty
+                                            ? const Text('')
+                                            : OnHoverButton(
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    Icons.clear_outlined,
+                                                    color: Colors.red,
+                                                  ),
+                                                  onPressed: () => viewModel
+                                                      .form.searchField
+                                                      .onValueChange(''),
+                                                ),
+                                              ),
                                   ),
                                   enabled: _selectedFilter != null,
                                   controller: searchFieldController,
                                   onChanged: (value) {
-                                    viewModel.form.searchField.onValueChange(value);
+                                    viewModel.form.searchField
+                                        .onValueChange(value);
                                   },
                                   onFieldSubmitted: (value) => applyFilter(),
                                 );
@@ -287,28 +342,36 @@ class _HeaderSearchState extends State<HeaderSearch> {
                           StreamBuilder<Object>(
                               stream: viewModel.form.searchField.field,
                               builder: (context, snapshot) {
-                                return IconButton.outlined(
-                                  onPressed: () {
-                                    if (snapshot.data != null &&
-                                        snapshot.data.toString().isNotEmpty &&
-                                        _selectedFilter != null) {
-                                      applyFilter();
-                                    }
-                                  },
-                                  style: IconButton.styleFrom(
-                                    backgroundColor: snapshot.data != null &&
-                                            snapshot.data.toString().isNotEmpty &&
-                                            _selectedFilter != null
-                                        ? Colors.white
-                                        : Colors.grey.withOpacity(0.7),
-                                  ),
-                                  icon: Icon(
-                                    Icons.search,
-                                    color: snapshot.data != null &&
-                                            snapshot.data.toString().isNotEmpty &&
-                                            _selectedFilter != null
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Colors.black38,
+                                return OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () {
+                                      if (snapshot.data != null &&
+                                          snapshot.data.toString().isNotEmpty &&
+                                          _selectedFilter != null) {
+                                        applyFilter();
+                                      }
+                                    },
+                                    style: IconButton.styleFrom(
+                                      backgroundColor: snapshot.data != null &&
+                                              snapshot.data
+                                                  .toString()
+                                                  .isNotEmpty &&
+                                              _selectedFilter != null
+                                          ? Colors.white.withOpacity(0)
+                                          : Colors.grey.withOpacity(0.7),
+                                    ),
+                                    icon: Icon(
+                                      Icons.search,
+                                      color: snapshot.data != null &&
+                                              snapshot.data
+                                                  .toString()
+                                                  .isNotEmpty &&
+                                              _selectedFilter != null
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                          : Colors.black38,
+                                    ),
                                   ),
                                 );
                               }),
@@ -322,13 +385,16 @@ class _HeaderSearchState extends State<HeaderSearch> {
                                             snapshot.data != null) ||
                                         (listFilters.isNotEmpty &&
                                             listFilters.length != 1)
-                                    ? IconButton.outlined(
-                                        onPressed: () => clearAllFilters(),
-                                        color:
-                                            Theme.of(context).colorScheme.primary,
-                                        icon: const Icon(
-                                          Icons.clear_outlined,
-                                          color: Colors.red,
+                                    ? OnHoverButton(
+                                        child: IconButton.outlined(
+                                          onPressed: () => clearAllFilters(),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          icon: const Icon(
+                                            Icons.clear_outlined,
+                                            color: Colors.red,
+                                          ),
                                         ),
                                       )
                                     : const Text('');
@@ -336,12 +402,14 @@ class _HeaderSearchState extends State<HeaderSearch> {
                           const SizedBox(
                             width: 10,
                           ),
-                          IconButton.outlined(
-                            onPressed: () => widget.onReload,
-                            color: Theme.of(context).colorScheme.primary,
-                            icon: Icon(
-                              Icons.replay_outlined,
+                          OnHoverButton(
+                            child: IconButton.outlined(
+                              onPressed: () => widget.onReload,
                               color: Theme.of(context).colorScheme.primary,
+                              icon: Icon(
+                                Icons.replay_outlined,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
                           )
                         ],
@@ -349,87 +417,154 @@ class _HeaderSearchState extends State<HeaderSearch> {
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          PopupMenuButton<ListOptions>(
-                            initialValue: selectedStatus,
-                            onSelected: (ListOptions item) {
-                              setState(() {
-                                selectedStatus = item;
-                                applyFilter();
-                              });
-                            },
-                            tooltip: 'Filtros avançados',
-                            child: const Icon(Icons.filter_alt_outlined),
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry<ListOptions>>[
-                              const PopupMenuItem<ListOptions>(
-                                value: ListOptions.ACTIVE_ONLY,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Apenas ativos"),
-                                    Icon(Icons.person_add_outlined, size: 18),
-                                  ],
+                          if (!widget.notShowAdvancedFilters)
+                            PopupMenuButton<ListOptions>(
+                              initialValue: selectedStatus,
+                              onSelected: (ListOptions status) {
+                                changeStatus(status);
+                              },
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(15.0),
                                 ),
                               ),
-                              const PopupMenuItem<ListOptions>(
-                                value: ListOptions.INACTIVE_ONLY,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Apenas inativos"),
-                                    Icon(Icons.person_remove_outlined, size: 18),
-                                  ],
+                              tooltip: 'Filtros avançados',
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  border: Border.all(
+                                    width: 1,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
                                 ),
+                                child: const Icon(Icons.filter_alt_outlined),
                               ),
-                              const PopupMenuItem<ListOptions>(
-                                value: ListOptions.ACTIVE_AND_INACTIVE,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Ativos e Inativos"),
-                                    Icon(Icons.people_outline, size: 18),
-                                  ],
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry<ListOptions>>[
+                                PopupMenuItem<ListOptions>(
+                                  value: ListOptions.ACTIVE_ONLY,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text("Apenas ativos"),
+                                      Icon(
+                                        Icons.person_add_outlined,
+                                        size: 18,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                                PopupMenuItem<ListOptions>(
+                                  value: ListOptions.INACTIVE_ONLY,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text("Apenas inativos"),
+                                      Icon(
+                                        Icons.person_add_disabled_outlined,
+                                        size: 18,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem<ListOptions>(
+                                  value: ListOptions.ACTIVE_AND_INACTIVE,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text("Ativos e Inativos"),
+                                      Icon(
+                                        Icons.people_outline,
+                                        size: 18,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          const SizedBox(
+                            height: 20,
                           ),
-                          DropdownButton(
-                            value: _selectedFilter,
-                            hint: const Text('Selecionar filtro'),
-                            items: widget.searchFields.map((vl) {
-                              return DropdownMenuItem(
-                                alignment: Alignment.center,
-                                value: vl,
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      vl['icon'],
-                                      color: Colors.black,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      vl['label'],
-                                    ),
-                                  ],
+                          OnHoverButton(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                canvasColor:
+                                    Theme.of(context).colorScheme.onPrimary,
+                              ),
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.5,
+                                child: DropdownButtonFormField(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  dropdownColor: Colors.white,
+                                  value: _selectedFilter,
+                                  hint: const Text('Selecionar filtro'),
+                                  items: widget.searchFields
+                                      .map<DropdownMenuItem>((vl) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.center,
+                                      value: vl,
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        constraints: const BoxConstraints(
+                                          minHeight: 48.0,
+                                        ),
+                                        color: Colors.white.withOpacity(0),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              vl['icon'],
+                                              color: Colors.black,
+                                            ),
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text(
+                                              vl['label'],
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedFilter = value!;
+                                    });
+                                  },
                                 ),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedFilter = value!;
-                              });
-                            },
+                              ),
+                            ),
                           ),
                           const SizedBox(
-                            width: 20,
+                            height: 20,
                           ),
                           SizedBox(
                             width: 500,
@@ -444,22 +579,26 @@ class _HeaderSearchState extends State<HeaderSearch> {
                                     labelText: 'Filtro',
                                     border: const OutlineInputBorder(),
                                     errorText: snapshot.error?.toString(),
-                                    suffixIcon: searchFieldController
-                                            .value.text.isEmpty
-                                        ? const Text('')
-                                        : IconButton(
-                                            icon: const Icon(
-                                              Icons.clear_outlined,
-                                              color: Colors.red,
-                                            ),
-                                            onPressed: () =>
-                                                viewModel.form.searchField.onValueChange(''),
-                                          ),
+                                    suffixIcon:
+                                        searchFieldController.value.text.isEmpty
+                                            ? const Text('')
+                                            : OnHoverButton(
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    Icons.clear_outlined,
+                                                    color: Colors.red,
+                                                  ),
+                                                  onPressed: () => viewModel
+                                                      .form.searchField
+                                                      .onValueChange(''),
+                                                ),
+                                              ),
                                   ),
                                   enabled: _selectedFilter != null,
                                   controller: searchFieldController,
                                   onChanged: (value) {
-                                    viewModel.form.searchField.onValueChange(value);
+                                    viewModel.form.searchField
+                                        .onValueChange(value);
                                   },
                                   onFieldSubmitted: (value) => applyFilter(),
                                 );
@@ -467,68 +606,95 @@ class _HeaderSearchState extends State<HeaderSearch> {
                             ),
                           ),
                           const SizedBox(
-                            width: 20,
+                            height: 20,
                           ),
-                          StreamBuilder<Object>(
-                              stream: viewModel.form.searchField.field,
-                              builder: (context, snapshot) {
-                                return IconButton.outlined(
-                                  onPressed: () {
-                                    if (snapshot.data != null &&
-                                        snapshot.data.toString().isNotEmpty &&
-                                        _selectedFilter != null) {
-                                      applyFilter();
-                                    }
-                                  },
-                                  style: IconButton.styleFrom(
-                                    backgroundColor: snapshot.data != null &&
-                                            snapshot.data.toString().isNotEmpty &&
-                                            _selectedFilter != null
-                                        ? Colors.white
-                                        : Colors.grey,
-                                  ),
-                                  icon: Icon(
-                                    Icons.search,
-                                    color: snapshot.data != null &&
-                                            snapshot.data.toString().isNotEmpty &&
-                                            _selectedFilter != null
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Colors.black38,
-                                  ),
-                                );
-                              }),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          StreamBuilder<Object>(
-                              stream: viewModel.form.searchField.field,
-                              builder: (context, snapshot) {
-                                return (snapshot.data.toString().isNotEmpty &&
-                                            snapshot.data != null) ||
-                                        (listFilters.isNotEmpty &&
-                                            listFilters.length != 1)
-                                    ? IconButton.outlined(
-                                        onPressed: () => clearAllFilters(),
-                                        color:
-                                            Theme.of(context).colorScheme.primary,
-                                        icon: const Icon(
-                                          Icons.clear_outlined,
-                                          color: Colors.red,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              StreamBuilder<Object>(
+                                  stream: viewModel.form.searchField.field,
+                                  builder: (context, snapshot) {
+                                    return OnHoverButton(
+                                      child: IconButton.outlined(
+                                        onPressed: () {
+                                          if (snapshot.data != null &&
+                                              snapshot.data
+                                                  .toString()
+                                                  .isNotEmpty &&
+                                              _selectedFilter != null) {
+                                            applyFilter();
+                                          }
+                                        },
+                                        style: IconButton.styleFrom(
+                                          backgroundColor: snapshot.data !=
+                                                      null &&
+                                                  snapshot.data
+                                                      .toString()
+                                                      .isNotEmpty &&
+                                                  _selectedFilter != null
+                                              ? Colors.white.withOpacity(0)
+                                              : Colors.grey.withOpacity(0.7),
                                         ),
-                                      )
-                                    : const Text('');
-                              }),
-                          const SizedBox(
-                            width: 10,
+                                        icon: Icon(
+                                          Icons.search,
+                                          color: snapshot.data != null &&
+                                                  snapshot.data
+                                                      .toString()
+                                                      .isNotEmpty &&
+                                                  _selectedFilter != null
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                              : Colors.black38,
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              StreamBuilder<Object>(
+                                  stream: viewModel.form.searchField.field,
+                                  builder: (context, snapshot) {
+                                    return (snapshot.data
+                                                    .toString()
+                                                    .isNotEmpty &&
+                                                snapshot.data != null) ||
+                                            (listFilters.isNotEmpty &&
+                                                listFilters.length != 1)
+                                        ? OnHoverButton(
+                                            child: IconButton.outlined(
+                                              onPressed: () =>
+                                                  clearAllFilters(),
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              icon: const Icon(
+                                                Icons.clear_outlined,
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          )
+                                        : const Text('');
+                                  }),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              OnHoverButton(
+                                child: IconButton.outlined(
+                                  onPressed: () => widget.onReload,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  icon: Icon(
+                                    Icons.replay_outlined,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
-                          IconButton.outlined(
-                            onPressed: () => widget.onReload,
-                            color: Theme.of(context).colorScheme.primary,
-                            icon: Icon(
-                              Icons.replay_outlined,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                          )
                         ],
                       ),
                 const SizedBox(

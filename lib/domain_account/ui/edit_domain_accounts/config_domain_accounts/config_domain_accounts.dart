@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/config_domain_accounts/config_domain_accounts_form.dart';
@@ -98,30 +99,34 @@ class ConfigDomainAccounts {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        size: 20,
-                      ),
-                      label: const Text('Cancelar'),
-                      onPressed: () {
-                        Navigator.of(context).pop(false);
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
-                      ),
-                    ),
-                    Directionality(
-                      textDirection: TextDirection.rtl,
+                    OnHoverButton(
                       child: TextButton.icon(
                         icon: const Icon(
-                          Icons.save_alt_outlined,
+                          Icons.cancel_outlined,
                           size: 20,
                         ),
-                        label: const Text('Salvar'),
-                        onPressed: () => onSubmit(),
+                        label: const Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop(false);
+                        },
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.green,
+                          foregroundColor: Colors.red,
+                        ),
+                      ),
+                    ),
+                    OnHoverButton(
+                      child: Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: TextButton.icon(
+                          icon: const Icon(
+                            Icons.save_alt_outlined,
+                            size: 20,
+                          ),
+                          label: const Text('Salvar'),
+                          onPressed: () => onSubmit(),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.green,
+                          ),
                         ),
                       ),
                     ),

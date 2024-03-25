@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:select_form_field/select_form_field.dart';
 import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/route/ui/edit_routes/edit_routes_view_model.dart';
 
 // ignore: must_be_immutable
@@ -134,16 +135,18 @@ class EditRoutesForm extends StatelessWidget {
             StreamBuilder<String?>(
               stream: viewModel.form.bypass.field,
               builder: (context, snapshot) {
-                return Checkbox(
-                  value: snapshot.data != null
-                      ? snapshot.data!.toString().parseBool()
-                      : entity != null
-                          ? entity!.bypass.toString().parseBool()
-                          : false,
-                  onChanged: (value) {
-                    viewModel.form.bypass.onValueChange(
-                        value!.toString().parseBool().toString());
-                  },
+                return OnHoverButton(
+                  child: Checkbox(
+                    value: snapshot.data != null
+                        ? snapshot.data!.toString().parseBool()
+                        : entity != null
+                            ? entity!.bypass.toString().parseBool()
+                            : false,
+                    onChanged: (value) {
+                      viewModel.form.bypass.onValueChange(
+                          value!.toString().parseBool().toString());
+                    },
+                  ),
                 );
               },
             ),
@@ -161,16 +164,18 @@ class EditRoutesForm extends StatelessWidget {
             StreamBuilder<String?>(
               stream: viewModel.form.sysadmin.field,
               builder: (context, snapshot) {
-                return Checkbox(
-                  value: snapshot.data != null
-                      ? snapshot.data!.toString().parseBool()
-                      : entity != null
-                          ? entity!.sysadmin.toString().parseBool()
-                          : false,
-                  onChanged: (value) {
-                    viewModel.form.sysadmin.onValueChange(
-                        value!.toString().parseBool().toString());
-                  },
+                return OnHoverButton(
+                  child: Checkbox(
+                    value: snapshot.data != null
+                        ? snapshot.data!.toString().parseBool()
+                        : entity != null
+                            ? entity!.sysadmin.toString().parseBool()
+                            : false,
+                    onChanged: (value) {
+                      viewModel.form.sysadmin.onValueChange(
+                          value!.toString().parseBool().toString());
+                    },
+                  ),
                 );
               },
             ),

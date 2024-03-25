@@ -14,7 +14,6 @@ class FormFieldsAlterarSenha extends StatefulWidget {
 }
 
 class _FormFieldsAlterarSenhaState extends State<FormFieldsAlterarSenha> {
-  final formKey = GlobalKey<FormState>();
   final senhaAntigaFieldController = TextEditingController();
   final novaSenhaFieldController = TextEditingController();
   final confirmarSenhaFieldController = TextEditingController();
@@ -24,153 +23,146 @@ class _FormFieldsAlterarSenhaState extends State<FormFieldsAlterarSenha> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      child: Column(
-        children: [
-          StreamBuilder<String>(
-            stream: widget.viewModel.formSenha.senhaAntiga.field,
-            builder: (context, snapshot) {
-              senhaAntigaFieldController.value = senhaAntigaFieldController
-                  .value
-                  .copyWith(text: snapshot.data);
-              return TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Senha antiga *',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      senhaAntigaVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        senhaAntigaVisible = !senhaAntigaVisible;
-                      });
-                    },
+    return Column(
+      children: [
+        StreamBuilder<String>(
+          stream: widget.viewModel.formSenha.senhaAntiga.field,
+          builder: (context, snapshot) {
+            senhaAntigaFieldController.value =
+                senhaAntigaFieldController.value.copyWith(text: snapshot.data);
+            return TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Senha antiga *',
+                border: const OutlineInputBorder(),
+                errorText: snapshot.error?.toString(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    senhaAntigaVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                    color: Colors.black,
                   ),
+                  onPressed: () {
+                    setState(() {
+                      senhaAntigaVisible = !senhaAntigaVisible;
+                    });
+                  },
                 ),
-                controller: senhaAntigaFieldController,
-                onChanged: (value) {
-                  widget.viewModel.formSenha.senhaAntiga.onValueChange(value);
-                },
-                // onFieldSubmitted: (value) {
-                //   if (_validateForm()) {
-                //     viewModel.onSearch(
-                //         _domainController.text,
-                //         _userController.text,
-                //         _passwordController.text,
-                //         showInfoMessage,
-                //         context);
-                //   }
-                // },
-                obscureText: !senhaAntigaVisible,
-                autocorrect: false,
-                enableSuggestions: false,
-              );
-            },
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          StreamBuilder<String>(
-            stream: widget.viewModel.formSenha.novaSenha.field,
-            builder: (context, snapshot) {
-              novaSenhaFieldController.value =
-                  novaSenhaFieldController.value.copyWith(text: snapshot.data);
-              return TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Nova senha *',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      novaSenhaVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        novaSenhaVisible = !novaSenhaVisible;
-                      });
-                    },
+              ),
+              controller: senhaAntigaFieldController,
+              onChanged: (value) {
+                widget.viewModel.formSenha.senhaAntiga.onValueChange(value);
+              },
+              // onFieldSubmitted: (value) {
+              //   if (_validateForm()) {
+              //     viewModel.onSearch(
+              //         _domainController.text,
+              //         _userController.text,
+              //         _passwordController.text,
+              //         showInfoMessage,
+              //         context);
+              //   }
+              // },
+              obscureText: !senhaAntigaVisible,
+              autocorrect: false,
+              enableSuggestions: false,
+            );
+          },
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        StreamBuilder<String>(
+          stream: widget.viewModel.formSenha.novaSenha.field,
+          builder: (context, snapshot) {
+            novaSenhaFieldController.value =
+                novaSenhaFieldController.value.copyWith(text: snapshot.data);
+            return TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Nova senha *',
+                border: const OutlineInputBorder(),
+                errorText: snapshot.error?.toString(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    novaSenhaVisible ? Icons.visibility : Icons.visibility_off,
+                    color: Colors.black,
                   ),
+                  onPressed: () {
+                    setState(() {
+                      novaSenhaVisible = !novaSenhaVisible;
+                    });
+                  },
                 ),
-                controller: novaSenhaFieldController,
-                onChanged: (value) {
-                  widget.viewModel.formSenha.novaSenha.onValueChange(value);
-                },
-                // onFieldSubmitted: (value) {
-                //   if (_validateForm()) {
-                //     viewModel.onSearch(
-                //         _domainController.text,
-                //         _userController.text,
-                //         _passwordController.text,
-                //         showInfoMessage,
-                //         context);
-                //   }
-                // },
-                obscureText: !novaSenhaVisible,
-                autocorrect: false,
-                enableSuggestions: false,
-              );
-            },
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          StreamBuilder<String>(
-            stream: widget.viewModel.formSenha.confirmarSenha.field,
-            builder: (context, snapshot) {
-              confirmarSenhaFieldController.value =
-                  confirmarSenhaFieldController.value
-                      .copyWith(text: snapshot.data);
-              return TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Confirmar senha *',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      confirmarSenhaVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        confirmarSenhaVisible = !confirmarSenhaVisible;
-                      });
-                    },
+              ),
+              controller: novaSenhaFieldController,
+              onChanged: (value) {
+                widget.viewModel.formSenha.novaSenha.onValueChange(value);
+              },
+              // onFieldSubmitted: (value) {
+              //   if (_validateForm()) {
+              //     viewModel.onSearch(
+              //         _domainController.text,
+              //         _userController.text,
+              //         _passwordController.text,
+              //         showInfoMessage,
+              //         context);
+              //   }
+              // },
+              obscureText: !novaSenhaVisible,
+              autocorrect: false,
+              enableSuggestions: false,
+            );
+          },
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        StreamBuilder<String>(
+          stream: widget.viewModel.formSenha.confirmarSenha.field,
+          builder: (context, snapshot) {
+            confirmarSenhaFieldController.value = confirmarSenhaFieldController
+                .value
+                .copyWith(text: snapshot.data);
+            return TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Confirmar senha *',
+                border: const OutlineInputBorder(),
+                errorText: snapshot.error?.toString(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    confirmarSenhaVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                    color: Colors.black,
                   ),
+                  onPressed: () {
+                    setState(() {
+                      confirmarSenhaVisible = !confirmarSenhaVisible;
+                    });
+                  },
                 ),
-                controller: confirmarSenhaFieldController,
-                onChanged: (value) {
-                  widget.viewModel.formSenha.confirmarSenha
-                      .onValueChange(value);
-                },
-                // onFieldSubmitted: (value) {
-                //   if (_validateForm()) {
-                //     viewModel.onSearch(
-                //         _domainController.text,
-                //         _userController.text,
-                //         _passwordController.text,
-                //         showInfoMessage,
-                //         context);
-                //   }
-                // },
-                obscureText: !confirmarSenhaVisible,
-                autocorrect: false,
-                enableSuggestions: false,
-              );
-            },
-          ),
-        ],
-      ),
+              ),
+              controller: confirmarSenhaFieldController,
+              onChanged: (value) {
+                widget.viewModel.formSenha.confirmarSenha.onValueChange(value);
+              },
+              // onFieldSubmitted: (value) {
+              //   if (_validateForm()) {
+              //     viewModel.onSearch(
+              //         _domainController.text,
+              //         _userController.text,
+              //         _passwordController.text,
+              //         showInfoMessage,
+              //         context);
+              //   }
+              // },
+              obscureText: !confirmarSenhaVisible,
+              autocorrect: false,
+              enableSuggestions: false,
+            );
+          },
+        ),
+      ],
     );
   }
 }

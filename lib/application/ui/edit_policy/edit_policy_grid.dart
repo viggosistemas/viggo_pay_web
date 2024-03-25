@@ -11,6 +11,8 @@ import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/h
 import 'package:viggo_pay_admin/application/ui/components/dialog_manage_policy.dart';
 import 'package:viggo_pay_admin/application/ui/edit_policy/edit_policy_view_model.dart';
 import 'package:viggo_pay_admin/components/dialogs.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
+import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
@@ -188,17 +190,7 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
             jaPreencheu = true;
             checkApplication(args);
           }
-          return const Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Carregando...'),
-              SizedBox(
-                height: 10,
-              ),
-              CircularProgressIndicator(),
-            ],
-          );
+          return const ProgressLoading();
         } else {
           selectedPolicies = (snapshot.data as List<PolicyApiDto>);
           return SizedBox(
@@ -348,54 +340,60 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
                             labelInclude: routesListLabelInclude,
                             validActionsList: const [],
                             actions: [
-                              IconButton.outlined(
-                                onPressed: () async {
-                                  var result = await EditPolicyDialog(
-                                    context: context,
-                                    disponiveis:
-                                        widget.viewModel.avaliableCapabilities,
-                                    roleId: roleSelected!.id,
-                                  ).addDialog();
-                                  if (result != null && result == true) {
-                                    onReload();
-                                  }
-                                },
-                                tooltip: 'Adicionar políticas de acesso',
-                                icon: Icon(
-                                  Icons.add_outlined,
-                                  color: Theme.of(context).colorScheme.primary,
+                              OnHoverButton(
+                                child: IconButton.outlined(
+                                  onPressed: () async {
+                                    var result = await EditPolicyDialog(
+                                      context: context,
+                                      disponiveis: widget
+                                          .viewModel.avaliableCapabilities,
+                                      roleId: roleSelected!.id,
+                                    ).addDialog();
+                                    if (result != null && result == true) {
+                                      onReload();
+                                    }
+                                  },
+                                  tooltip: 'Adicionar políticas de acesso',
+                                  icon: Icon(
+                                    Icons.add_outlined,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 10),
-                              IconButton.outlined(
-                                onPressed: () async {
-                                  var selecteds = selectedPolicies
-                                      .where((element) => element.selected)
-                                      .toList();
-                                  if (selecteds.isNotEmpty) {
-                                    var result = await Dialogs(context: context)
-                                        .showConfirmDialog({
-                                      'title_text':
-                                          'Removendo políticas de acesso',
-                                      'title_icon': Icons.delete_outline,
-                                      'message':
-                                          'Você tem certeza que deseja executar essa ação?\n${selecteds.length.toString() + ' itens'.toUpperCase()} serão removidos.'
-                                    });
-                                    if (result != null &&
-                                        result == true &&
-                                        context.mounted) {
-                                      widget.viewModel.onRemovePolicies(
-                                        showInfoMessage,
-                                        context,
-                                        selecteds,
-                                      );
+                              OnHoverButton(
+                                child: IconButton.outlined(
+                                  onPressed: () async {
+                                    var selecteds = selectedPolicies
+                                        .where((element) => element.selected)
+                                        .toList();
+                                    if (selecteds.isNotEmpty) {
+                                      var result =
+                                          await Dialogs(context: context)
+                                              .showConfirmDialog({
+                                        'title_text':
+                                            'Removendo políticas de acesso',
+                                        'title_icon': Icons.delete_outline,
+                                        'message':
+                                            'Você tem certeza que deseja executar essa ação?\n${selecteds.length.toString() + ' itens'.toUpperCase()} serão removidos.'
+                                      });
+                                      if (result != null &&
+                                          result == true &&
+                                          context.mounted) {
+                                        widget.viewModel.onRemovePolicies(
+                                          showInfoMessage,
+                                          context,
+                                          selecteds,
+                                        );
+                                      }
                                     }
-                                  }
-                                },
-                                tooltip: 'Remover políticas de acesso',
-                                icon: const Icon(
-                                  Icons.delete_outline,
-                                  color: Colors.red,
+                                  },
+                                  tooltip: 'Remover políticas de acesso',
+                                  icon: const Icon(
+                                    Icons.delete_outline,
+                                    color: Colors.red,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 10),

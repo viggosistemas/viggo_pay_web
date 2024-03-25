@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:viggo_pay_admin/components/chips_input.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/funcionario_view_model.dart';
 import 'package:viggo_pay_admin/parceiro/data/models/parceiro_api_dto.dart';
 
@@ -162,22 +163,24 @@ class _EditContatoFormState extends State<EditContatoForm> {
                               ),
                             ],
                           ),
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                contatos.remove(option);
-                                contatosSave.removeWhere(
-                                  (element) =>
-                                      element.contato == option['contato'],
-                                );
-                                widget.viewModel.formContato.contatos
-                                    .onValueChange(jsonEncode(contatosSave));
-                              });
-                            },
-                            tooltip: 'Remover',
-                            icon: const Icon(
-                              Icons.delete_outline,
-                              color: Colors.red,
+                          OnHoverButton(
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  contatos.remove(option);
+                                  contatosSave.removeWhere(
+                                    (element) =>
+                                        element.contato == option['contato'],
+                                  );
+                                  widget.viewModel.formContato.contatos
+                                      .onValueChange(jsonEncode(contatosSave));
+                                });
+                              },
+                              tooltip: 'Remover',
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                color: Colors.red,
+                              ),
                             ),
                           ),
                         ],

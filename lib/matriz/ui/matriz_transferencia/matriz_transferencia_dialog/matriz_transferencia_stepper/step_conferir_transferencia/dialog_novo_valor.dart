@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/saldo_api_dto.dart';
@@ -86,34 +87,38 @@ class DialogNovoValor {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        size: 20,
-                      ),
-                      label: const Text('Cancelar'),
-                      onPressed: () => Navigator.pop(context, false),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
+                    OnHoverButton(
+                      child: TextButton.icon(
+                        icon: const Icon(
+                          Icons.cancel_outlined,
+                          size: 20,
+                        ),
+                        label: const Text('Cancelar'),
+                        onPressed: () => Navigator.pop(context, false),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
                       ),
                     ),
                     StreamBuilder<bool>(
                         stream: viewModel.formStepValor.isValid,
                         builder: (context, snapshot) {
-                          return Directionality(
-                            textDirection: TextDirection.rtl,
-                            child: TextButton.icon(
-                              icon: const Icon(
-                                Icons.check_circle_outline_rounded,
-                                size: 20,
-                              ),
-                              label: const Text('Confirmar'),
-                              onPressed: () => Navigator.pop(context, true),
-                              style: TextButton.styleFrom(
-                                foregroundColor: snapshot.data != null &&
-                                        snapshot.data == true
-                                    ? Colors.green
-                                    : Colors.grey,
+                          return OnHoverButton(
+                            child: Directionality(
+                              textDirection: TextDirection.rtl,
+                              child: TextButton.icon(
+                                icon: const Icon(
+                                  Icons.check_circle_outline_rounded,
+                                  size: 20,
+                                ),
+                                label: const Text('Confirmar'),
+                                onPressed: () => Navigator.pop(context, true),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: snapshot.data != null &&
+                                          snapshot.data == true
+                                      ? Colors.green
+                                      : Colors.grey,
+                                ),
                               ),
                             ),
                           );

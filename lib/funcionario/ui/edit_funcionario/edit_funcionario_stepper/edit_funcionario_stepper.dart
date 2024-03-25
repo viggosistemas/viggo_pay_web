@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/funcionario/data/models/funcionario_api_dto.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario_stepper/edit_contato_form/edit_contato_form.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario_stepper/edit_endereco_form/edit_endereco_form.dart';
@@ -72,29 +73,33 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
 
   backStep(int index, Function()? onCancel) {
     if (index == 0) {
-      return TextButton.icon(
-        icon: const Icon(
-          Icons.cancel_outlined,
-          size: 20,
-        ),
-        label: const Text('Cancelar'),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-        style: TextButton.styleFrom(
-          foregroundColor: Colors.red,
+      return OnHoverButton(
+        child: TextButton.icon(
+          icon: const Icon(
+            Icons.cancel_outlined,
+            size: 20,
+          ),
+          label: const Text('Cancelar'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.red,
+          ),
         ),
       );
     } else {
-      return TextButton.icon(
-        icon: const Icon(
-          Icons.arrow_back_outlined,
-          size: 20,
-        ),
-        label: const Text('Anterior'),
-        onPressed: onCancel,
-        style: TextButton.styleFrom(
-          foregroundColor: Colors.red,
+      return OnHoverButton(
+        child: TextButton.icon(
+          icon: const Icon(
+            Icons.arrow_back_outlined,
+            size: 20,
+          ),
+          label: const Text('Anterior'),
+          onPressed: onCancel,
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.red,
+          ),
         ),
       );
     }
@@ -102,17 +107,19 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
 
   nextStep(int index, Function()? onContinue) {
     if (index == 2) {
-      return Directionality(
-        textDirection: TextDirection.rtl,
-        child: TextButton.icon(
-          icon: const Icon(
-            Icons.save_alt_outlined,
-            size: 20,
-          ),
-          label: const Text('Salvar'),
-          onPressed: () => widget.onSubmit(),
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.green,
+      return OnHoverButton(
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: TextButton.icon(
+            icon: const Icon(
+              Icons.save_alt_outlined,
+              size: 20,
+            ),
+            label: const Text('Salvar'),
+            onPressed: () => widget.onSubmit(),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.green,
+            ),
           ),
         ),
       );
@@ -121,23 +128,25 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
         return StreamBuilder<bool>(
             stream: widget.viewModel.formDados.isValid,
             builder: (context, snapshot) {
-              return Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextButton.icon(
-                  onPressed: snapshot.data == true && snapshot.data != null
-                      ? onContinue
-                      : () {},
-                  style: ButtonStyle(
-                    foregroundColor: MaterialStateColor.resolveWith((states) =>
-                        snapshot.data == true && snapshot.data != null
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey),
+              return OnHoverButton(
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: TextButton.icon(
+                    onPressed: snapshot.data == true && snapshot.data != null
+                        ? onContinue
+                        : () {},
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateColor.resolveWith((states) =>
+                          snapshot.data == true && snapshot.data != null
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.grey),
+                    ),
+                    icon: const Icon(
+                      Icons.arrow_back_outlined,
+                      size: 20,
+                    ),
+                    label: const Text('Próximo'),
                   ),
-                  icon: const Icon(
-                    Icons.arrow_back_outlined,
-                    size: 20,
-                  ),
-                  label: const Text('Próximo'),
                 ),
               );
             });
@@ -145,23 +154,25 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
         return StreamBuilder<bool>(
             stream: widget.viewModel.formEndereco.isValid,
             builder: (context, snapshot) {
-              return Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextButton.icon(
-                  onPressed: snapshot.data == true && snapshot.data != null
-                      ? onContinue
-                      : () {},
-                  style: ButtonStyle(
-                    foregroundColor: MaterialStateColor.resolveWith((states) =>
-                        snapshot.data == true && snapshot.data != null
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey),
+              return OnHoverButton(
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: TextButton.icon(
+                    onPressed: snapshot.data == true && snapshot.data != null
+                        ? onContinue
+                        : () {},
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateColor.resolveWith((states) =>
+                          snapshot.data == true && snapshot.data != null
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.grey),
+                    ),
+                    icon: const Icon(
+                      Icons.arrow_back_outlined,
+                      size: 20,
+                    ),
+                    label: const Text('Próximo'),
                   ),
-                  icon: const Icon(
-                    Icons.arrow_back_outlined,
-                    size: 20,
-                  ),
-                  label: const Text('Próximo'),
                 ),
               );
             });

@@ -11,6 +11,8 @@ import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/h
 import 'package:viggo_pay_admin/application/ui/components/dialog_manage_capability.dart';
 import 'package:viggo_pay_admin/application/ui/edit_capability/edit_capability_view_model.dart';
 import 'package:viggo_pay_admin/components/dialogs.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
+import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
@@ -167,17 +169,7 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           checkApplication(args);
-          return const Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Carregando...'),
-              SizedBox(
-                height: 10,
-              ),
-              CircularProgressIndicator(),
-            ],
-          );
+          return const ProgressLoading();
         } else {
           selectedCapabilitites = (snapshot.data as List<CapabilityApiDto>);
           return SizedBox(
@@ -262,41 +254,45 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
                             builder: (context, rotas) {
                               if (rotas.data == null) {
                                 widget.viewModel.listRoutes();
-                                return IconButton.outlined(
-                                  onPressed: () {},
-                                  tooltip: 'Adicionar capacidades',
-                                  icon: Icon(
-                                    Icons.add_outlined,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                return OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () {},
+                                    tooltip: 'Adicionar capacidades',
+                                    icon: Icon(
+                                      Icons.add_outlined,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
                                   ),
                                 );
                               } else {
-                                return IconButton.outlined(
-                                  onPressed: () async {
-                                    if (!jaPreencheu) {
-                                      jaPreencheu = true;
-                                      for (var c in selectedCapabilitites) {
-                                        var rotaSelecionada = rotas.data!
-                                            .firstWhere(
-                                                (rota) => c.routeId == rota.id);
-                                        rotas.data!.remove(rotaSelecionada);
+                                return OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () async {
+                                      if (!jaPreencheu) {
+                                        jaPreencheu = true;
+                                        for (var c in selectedCapabilitites) {
+                                          var rotaSelecionada = rotas.data!
+                                              .firstWhere((rota) =>
+                                                  c.routeId == rota.id);
+                                          rotas.data!.remove(rotaSelecionada);
+                                        }
                                       }
-                                    }
-                                    var result = await EditCapabilityDialog(
-                                      context: context,
-                                      disponiveis: rotas.data!,
-                                      applicationId: application.id,
-                                    ).addDialog();
-                                    if (result != null && result == true) {
-                                      onReload();
-                                    }
-                                  },
-                                  tooltip: 'Adicionar capacidades',
-                                  icon: Icon(
-                                    Icons.add_outlined,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                      var result = await EditCapabilityDialog(
+                                        context: context,
+                                        disponiveis: rotas.data!,
+                                        applicationId: application.id,
+                                      ).addDialog();
+                                      if (result != null && result == true) {
+                                        onReload();
+                                      }
+                                    },
+                                    tooltip: 'Adicionar capacidades',
+                                    icon: Icon(
+                                      Icons.add_outlined,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
                                   ),
                                 );
                               }

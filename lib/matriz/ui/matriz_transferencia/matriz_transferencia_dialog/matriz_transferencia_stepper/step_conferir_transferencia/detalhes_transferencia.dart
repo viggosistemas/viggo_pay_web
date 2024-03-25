@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
+import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_dialog/matriz_transferencia_stepper/step_conferir_transferencia/dialog_novo_valor.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
@@ -49,17 +51,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
               pixSelected.holderTaxIdentifierCountry,
               pixSelected.alias,
             );
-            return const Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Carregando...'),
-                SizedBox(
-                  height: 10,
-                ),
-                CircularProgressIndicator(),
-              ],
-            );
+            return const ProgressLoading();
           } else {
             return Column(
               mainAxisSize: MainAxisSize.max,
@@ -99,20 +91,22 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                                     ),
                               );
                             }),
-                        IconButton(
-                          onPressed: () async {
-                            var result = await DialogNovoValor(
-                              context: context,
-                              saldo: saldo,
-                            ).openDialog();
-                            if (result != true) {
-                              viewModel.formStepValor.valor
-                                  .onValueChange(valorTransferido);
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.edit_outlined,
-                            size: 18,
+                        OnHoverButton(
+                          child: IconButton(
+                            onPressed: () async {
+                              var result = await DialogNovoValor(
+                                context: context,
+                                saldo: saldo,
+                              ).openDialog();
+                              if (result != true) {
+                                viewModel.formStepValor.valor
+                                    .onValueChange(valorTransferido);
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.edit_outlined,
+                              size: 18,
+                            ),
                           ),
                         )
                       ],
@@ -296,26 +290,30 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ElevatedButton.icon(
-                      onPressed: () => changePage(currentPage - 1),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
-                      icon: const Icon(
-                        Icons.arrow_back_outlined,
-                        size: 18,
-                      ),
-                      label: const Text('Voltar'),
-                    ),
-                    Directionality(
-                      textDirection: TextDirection.rtl,
+                    OnHoverButton(
                       child: ElevatedButton.icon(
-                        onPressed: () => changePage(currentPage + 1),
+                        onPressed: () => changePage(currentPage - 1),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
                         icon: const Icon(
                           Icons.arrow_back_outlined,
                           size: 18,
                         ),
-                        label: const Text('Próximo'),
+                        label: const Text('Voltar'),
+                      ),
+                    ),
+                    OnHoverButton(
+                      child: Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: ElevatedButton.icon(
+                          onPressed: () => changePage(currentPage + 1),
+                          icon: const Icon(
+                            Icons.arrow_back_outlined,
+                            size: 18,
+                          ),
+                          label: const Text('Próximo'),
+                        ),
                       ),
                     ),
                   ],

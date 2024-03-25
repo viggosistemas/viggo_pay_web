@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:viggo_core_frontend/base/base_view_model.dart';
 import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
 import 'package:viggo_core_frontend/domain/domain/usecases/search_domain_by_name_use_case.dart';
@@ -27,7 +28,7 @@ import 'package:viggo_pay_admin/login/ui/login_form_fields.dart';
 import 'package:viggo_pay_admin/sync/domain/usecases/get_app_state_use_case.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 
-class LoginViewModel extends ChangeNotifier {
+class LoginViewModel extends BaseViewModel {
   SharedPreferences sharedPrefs;
   final GetAppStateUseCase getAppState;
 
@@ -50,8 +51,6 @@ class LoginViewModel extends ChangeNotifier {
   final SetRememberCredentialUseCase setRememberCredential;
 
   final ParseImageUrlUseCase parseImage;
-
-  bool isLoading = false;
 
   final LoginFormFields form = LoginFormFields();
 
@@ -180,16 +179,13 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
-  void notifyLoading() {
-    isLoading = !isLoading;
-    // notifyListeners();
-  }
-
   void onSubmit(
     Function showMsg,
     BuildContext context,
   ) async {
-    notifyLoading();
+    if(isLoading) return;
+    setLoading();
+    
     var formFields = form.getValues();
 
     LoginCommand loginCommand = LoginCommand();
@@ -202,7 +198,7 @@ class LoginViewModel extends ChangeNotifier {
     if (result.isLeft) {
       if (!_streamControllerError.isClosed) {
         _streamControllerError.sink.add(result.left.message);
-        notifyLoading();
+        setLoading();
       }
     } else {
       var rememberCredentials = form.getRememberFields();
@@ -213,7 +209,7 @@ class LoginViewModel extends ChangeNotifier {
       await funGetUserById(result.right.userId);
       await funGetRoutesFromUser();
       await funGetDomainByName(loginCommand.domainName);
-      notifyLoading();
+      setLoading();
     }
   }
 }

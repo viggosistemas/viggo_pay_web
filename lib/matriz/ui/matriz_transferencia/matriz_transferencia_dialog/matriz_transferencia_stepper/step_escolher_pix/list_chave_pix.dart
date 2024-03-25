@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
@@ -82,22 +83,24 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
                       viewModel.formStepSelectPix.contato.onValueChange(value);
                     },
                   ),
-                  trailing: IconButton(
-                    onPressed: () async {
-                      var result = await dialogs
-                          .addDialog(contatoTransferenciaControll.text);
-                      if (result != null) {
-                        setState(() {
-                          widget.pixToSendList.add(result);
-                          viewModel.formStepSelectPix.pixSelect
-                              .onValueChange(jsonEncode(result));
-                        });
-                      }
-                    },
-                    tooltip: 'Adicionar nova chave Pix',
-                    icon: Icon(
-                      Icons.add_outlined,
-                      color: Theme.of(context).colorScheme.primary,
+                  trailing: OnHoverButton(
+                    child: IconButton(
+                      onPressed: () async {
+                        var result = await dialogs
+                            .addDialog(contatoTransferenciaControll.text);
+                        if (result != null) {
+                          setState(() {
+                            widget.pixToSendList.add(result);
+                            viewModel.formStepSelectPix.pixSelect
+                                .onValueChange(jsonEncode(result));
+                          });
+                        }
+                      },
+                      tooltip: 'Adicionar nova chave Pix',
+                      icon: Icon(
+                        Icons.add_outlined,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                   ),
                 );
@@ -191,37 +194,41 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ElevatedButton.icon(
-                onPressed: () => widget.changePage(widget.currentPage - 1),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+              OnHoverButton(
+                child: ElevatedButton.icon(
+                  onPressed: () => widget.changePage(widget.currentPage - 1),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                  icon: const Icon(
+                    Icons.arrow_back_outlined,
+                    size: 18,
+                  ),
+                  label: const Text('Voltar'),
                 ),
-                icon: const Icon(
-                  Icons.arrow_back_outlined,
-                  size: 18,
-                ),
-                label: const Text('Voltar'),
               ),
               StreamBuilder<bool>(
                   stream: viewModel.formStepSelectPix.isValid,
                   builder: (context, validForm) {
-                    return Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: ElevatedButton.icon(
-                        onPressed: () =>
-                            validForm.data != null && validForm.data == true
-                                ? widget.changePage(widget.currentPage + 1)
-                                : {},
-                        icon: const Icon(
-                          Icons.arrow_back_outlined,
-                          size: 18,
+                    return OnHoverButton(
+                      child: Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: ElevatedButton.icon(
+                          onPressed: () =>
+                              validForm.data != null && validForm.data == true
+                                  ? widget.changePage(widget.currentPage + 1)
+                                  : {},
+                          icon: const Icon(
+                            Icons.arrow_back_outlined,
+                            size: 18,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  validForm.data != null && validForm.data == true
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Colors.grey),
+                          label: const Text('Próximo'),
                         ),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                validForm.data != null && validForm.data == true
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Colors.grey),
-                        label: const Text('Próximo'),
                       ),
                     );
                   }),

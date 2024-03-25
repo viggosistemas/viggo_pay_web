@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users_form/edit_users_form.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users_view_model.dart';
@@ -87,30 +88,34 @@ class EditUsers {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        size: 20,
-                      ),
-                      label: const Text('Cancelar'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
-                      ),
-                    ),
-                    Directionality(
-                      textDirection: TextDirection.rtl,
+                    OnHoverButton(
                       child: TextButton.icon(
                         icon: const Icon(
-                          Icons.save_alt_outlined,
+                          Icons.cancel_outlined,
                           size: 20,
                         ),
-                        label: const Text('Salvar'),
-                        onPressed: () => onSubmit(),
+                        label: const Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.green,
+                          foregroundColor: Colors.red,
+                        ),
+                      ),
+                    ),
+                    OnHoverButton(
+                      child: Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: TextButton.icon(
+                          icon: const Icon(
+                            Icons.save_alt_outlined,
+                            size: 20,
+                          ),
+                          label: const Text('Salvar'),
+                          onPressed: () => onSubmit(),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.green,
+                          ),
                         ),
                       ),
                     ),
@@ -205,30 +210,34 @@ class EditUsers {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        size: 20,
-                      ),
-                      label: const Text('Cancelar'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
-                      ),
-                    ),
-                    Directionality(
-                      textDirection: TextDirection.rtl,
+                    OnHoverButton(
                       child: TextButton.icon(
                         icon: const Icon(
-                          Icons.save_alt_outlined,
+                          Icons.cancel_outlined,
                           size: 20,
                         ),
-                        label: const Text('Salvar'),
-                        onPressed: () => onSubmit(),
+                        label: const Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.green,
+                          foregroundColor: Colors.red,
+                        ),
+                      ),
+                    ),
+                    OnHoverButton(
+                      child: Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: TextButton.icon(
+                          icon: const Icon(
+                            Icons.save_alt_outlined,
+                            size: 20,
+                          ),
+                          label: const Text('Salvar'),
+                          onPressed: () => onSubmit(),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.green,
+                          ),
                         ),
                       ),
                     ),
