@@ -149,92 +149,133 @@ class _HeaderSearchState extends State<HeaderSearch> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           if (!widget.notShowAdvancedFilters)
-                            PopupMenuButton<ListOptions>(
-                              initialValue: selectedStatus,
-                              onSelected: (ListOptions status) {
-                                changeStatus(status);
-                              },
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(15.0),
+                            Theme(
+                              data: ThemeData().copyWith(
+                                hoverColor: Colors.grey.withOpacity(0.3),
+                                brightness: Brightness.dark,
+                                popupMenuTheme:
+                                    const PopupMenuThemeData().copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  iconColor:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                  surfaceTintColor:
+                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
-                              tooltip: 'Filtros avançados',
-                              child: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  border: Border.all(
-                                    width: 1,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                              child: PopupMenuButton<ListOptions>(
+                                initialValue: selectedStatus,
+                                onSelected: (ListOptions status) {
+                                  changeStatus(status);
+                                },
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15.0),
                                   ),
                                 ),
-                                child: const Icon(Icons.filter_alt_outlined),
+                                tooltip: 'Filtros avançados',
+                                child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                    border: Border.all(
+                                      width: 1,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                  child: const Icon(Icons.filter_alt_outlined),
+                                ),
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<ListOptions>>[
+                                  PopupMenuItem<ListOptions>(
+                                    value: ListOptions.ACTIVE_ONLY,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Apenas ativos",
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.person_add_outlined,
+                                          size: 18,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem<ListOptions>(
+                                    value: ListOptions.INACTIVE_ONLY,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Apenas inativos",
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.person_add_disabled_outlined,
+                                          size: 18,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem<ListOptions>(
+                                    value: ListOptions.ACTIVE_AND_INACTIVE,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Ativos e Inativos",
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.people_outline,
+                                          size: 18,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              itemBuilder: (BuildContext context) =>
-                                  <PopupMenuEntry<ListOptions>>[
-                                PopupMenuItem<ListOptions>(
-                                  value: ListOptions.ACTIVE_ONLY,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text("Apenas ativos"),
-                                      Icon(
-                                        Icons.person_add_outlined,
-                                        size: 18,
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem<ListOptions>(
-                                  value: ListOptions.INACTIVE_ONLY,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text("Apenas inativos"),
-                                      Icon(
-                                        Icons.person_add_disabled_outlined,
-                                        size: 18,
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem<ListOptions>(
-                                  value: ListOptions.ACTIVE_AND_INACTIVE,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text("Ativos e Inativos"),
-                                      Icon(
-                                        Icons.people_outline,
-                                        size: 18,
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
                             ),
                           const SizedBox(
                             width: 20,
@@ -242,8 +283,12 @@ class _HeaderSearchState extends State<HeaderSearch> {
                           OnHoverButton(
                             child: Theme(
                               data: Theme.of(context).copyWith(
-                                canvasColor:
-                                    Theme.of(context).colorScheme.onPrimary,
+                                canvasColor: Colors.white,
+                                hoverColor: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.5),
+                                focusColor: Colors.transparent,
                               ),
                               child: SizedBox(
                                 width: MediaQuery.of(context).size.width * 0.15,
@@ -253,7 +298,12 @@ class _HeaderSearchState extends State<HeaderSearch> {
                                   ),
                                   dropdownColor: Colors.white,
                                   value: _selectedFilter,
-                                  hint: const Text('Selecionar filtro'),
+                                  hint: const Text(
+                                    'Selecionar filtro',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                  ),
                                   items: widget.searchFields
                                       .map<DropdownMenuItem>((vl) {
                                     return DropdownMenuItem(
@@ -264,7 +314,7 @@ class _HeaderSearchState extends State<HeaderSearch> {
                                         constraints: const BoxConstraints(
                                           minHeight: 48.0,
                                         ),
-                                        color: Colors.white.withOpacity(0),
+                                        color: Colors.transparent,
                                         child: Row(
                                           children: [
                                             Icon(
@@ -418,92 +468,133 @@ class _HeaderSearchState extends State<HeaderSearch> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           if (!widget.notShowAdvancedFilters)
-                            PopupMenuButton<ListOptions>(
-                              initialValue: selectedStatus,
-                              onSelected: (ListOptions status) {
-                                changeStatus(status);
-                              },
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(15.0),
+                            Theme(
+                              data: ThemeData().copyWith(
+                                hoverColor: Colors.grey.withOpacity(0.3),
+                                brightness: Brightness.dark,
+                                popupMenuTheme:
+                                    const PopupMenuThemeData().copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  iconColor:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                  surfaceTintColor:
+                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
-                              tooltip: 'Filtros avançados',
-                              child: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  border: Border.all(
-                                    width: 1,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                              child: PopupMenuButton<ListOptions>(
+                                initialValue: selectedStatus,
+                                onSelected: (ListOptions status) {
+                                  changeStatus(status);
+                                },
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15.0),
                                   ),
                                 ),
-                                child: const Icon(Icons.filter_alt_outlined),
+                                tooltip: 'Filtros avançados',
+                                child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                    border: Border.all(
+                                      width: 1,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                  child: const Icon(Icons.filter_alt_outlined),
+                                ),
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<ListOptions>>[
+                                  PopupMenuItem<ListOptions>(
+                                    value: ListOptions.ACTIVE_ONLY,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Apenas ativos",
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.person_add_outlined,
+                                          size: 18,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem<ListOptions>(
+                                    value: ListOptions.INACTIVE_ONLY,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Apenas inativos",
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.person_add_disabled_outlined,
+                                          size: 18,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem<ListOptions>(
+                                    value: ListOptions.ACTIVE_AND_INACTIVE,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Ativos e Inativos",
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.people_outline,
+                                          size: 18,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              itemBuilder: (BuildContext context) =>
-                                  <PopupMenuEntry<ListOptions>>[
-                                PopupMenuItem<ListOptions>(
-                                  value: ListOptions.ACTIVE_ONLY,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text("Apenas ativos"),
-                                      Icon(
-                                        Icons.person_add_outlined,
-                                        size: 18,
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem<ListOptions>(
-                                  value: ListOptions.INACTIVE_ONLY,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text("Apenas inativos"),
-                                      Icon(
-                                        Icons.person_add_disabled_outlined,
-                                        size: 18,
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem<ListOptions>(
-                                  value: ListOptions.ACTIVE_AND_INACTIVE,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text("Ativos e Inativos"),
-                                      Icon(
-                                        Icons.people_outline,
-                                        size: 18,
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
                             ),
                           const SizedBox(
                             height: 20,
@@ -511,8 +602,12 @@ class _HeaderSearchState extends State<HeaderSearch> {
                           OnHoverButton(
                             child: Theme(
                               data: Theme.of(context).copyWith(
-                                canvasColor:
-                                    Theme.of(context).colorScheme.onPrimary,
+                                canvasColor: Colors.white,
+                                hoverColor: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.5),
+                                focusColor: Colors.transparent,
                               ),
                               child: SizedBox(
                                 width: MediaQuery.of(context).size.width * 0.5,
@@ -522,7 +617,12 @@ class _HeaderSearchState extends State<HeaderSearch> {
                                   ),
                                   dropdownColor: Colors.white,
                                   value: _selectedFilter,
-                                  hint: const Text('Selecionar filtro'),
+                                  hint: const Text(
+                                    'Selecionar filtro',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                  ),
                                   items: widget.searchFields
                                       .map<DropdownMenuItem>((vl) {
                                     return DropdownMenuItem(
@@ -533,7 +633,7 @@ class _HeaderSearchState extends State<HeaderSearch> {
                                         constraints: const BoxConstraints(
                                           minHeight: 48.0,
                                         ),
-                                        color: Colors.white.withOpacity(0),
+                                        color: Colors.transparent,
                                         child: Row(
                                           children: [
                                             Icon(

@@ -44,7 +44,7 @@ class ExtratoTimeline extends StatelessWidget {
                     : Theme.of(context).colorScheme.primary,
               ),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+            contentPadding: const EdgeInsets.all(16),
             title: Text(
               listExtrato[index].description,
               style: GoogleFonts.lato(
@@ -72,6 +72,7 @@ class ExtratoTimeline extends StatelessWidget {
                   DateFormat('dd/MM/yyyy')
                       .format(DateTime.parse(listExtrato[index].creditDate)),
                   style: GoogleFonts.lato(
+                    fontSize: 14,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.black.withOpacity(0.7)
                         : Colors.white.withOpacity(0.7),

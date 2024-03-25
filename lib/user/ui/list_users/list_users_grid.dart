@@ -132,7 +132,9 @@ class _ListUsersGridState extends State<ListUsersGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return const ProgressLoading();
+          return ProgressLoading(color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,);
         } else {
           List<UserApiDto> items = (snapshot.data as List<UserApiDto>);
           return SizedBox(

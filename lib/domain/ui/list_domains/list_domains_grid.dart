@@ -112,7 +112,11 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return const ProgressLoading();
+          return ProgressLoading(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+          );
         } else {
           List<DomainApiDto> items = (snapshot.data as List<DomainApiDto>);
           return SizedBox(

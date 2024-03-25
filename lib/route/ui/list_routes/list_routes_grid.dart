@@ -116,7 +116,9 @@ class _ListRoutesGridState extends State<ListRoutesGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return const ProgressLoading();
+          return ProgressLoading(color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,);
         } else {
           List<RouteApiDto> items = (snapshot.data as List<RouteApiDto>);
           return SizedBox(

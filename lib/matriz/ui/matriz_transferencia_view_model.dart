@@ -30,6 +30,7 @@ import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_ultima_transacao_do
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/list_chave_pix_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_params_use_case.dart';
+import 'package:viggo_pay_admin/pix_to_send/domain/usecases/update_pix_to_send_use_case.dart';
 
 class MatrizTransferenciaViewModel extends BaseViewModel {
   String materaId = '';
@@ -48,6 +49,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
   final GetPixToSendsByParamsUseCase listChavePixToSends;
   final ConsultarAliasDestinatarioUseCase consultarDestinatario;
   final UpdatePasswordPixUseCase updateSenhaPix;
+  final UpdatePixToSendUseCase updatePixToSendSelect;
   final CashoutViaPixDomainAccountUseCase cashout;
 
   //FORMS_FIELDS
@@ -100,8 +102,10 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
   Stream<List<PixToSendApiDto>> get chavePixToSends =>
       _streamChavePixToSendsController.stream;
 
-  final _streamComprovanteController = BehaviorSubject<Either<bool, Uint8List>?>();
-  Stream<Either<bool, Uint8List>?> get extratoPdf => _streamComprovanteController.stream;
+  final _streamComprovanteController =
+      BehaviorSubject<Either<bool, Uint8List>?>();
+  Stream<Either<bool, Uint8List>?> get extratoPdf =>
+      _streamComprovanteController.stream;
 
   MatrizTransferenciaViewModel({
     required this.getConfigDomainAccount,
@@ -115,6 +119,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     required this.consultarDestinatario,
     required this.getTransacoes,
     required this.getUltimaTransacao,
+    required this.updatePixToSendSelect,
   });
 
   void catchEntity() async {
@@ -249,21 +254,35 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
   }
 
   void loadInfoDestinatario(
+    String? accountMateraId,
     String aliasCountry,
     String aliasValue,
   ) async {
     Map<String, String> body = {
-      'account_id': materaId,
+      'account_id': accountMateraId ?? materaId,
       'country': aliasCountry,
       'alias_destinatario': aliasValue,
     };
     var result = await consultarDestinatario.invoke(body: body);
 
-    if (result.isRight) {
-      endToEndId = result.right.endToEndId;
-      _streamDestinatarioController.sink.add(result.right);
-    } else if (result.isLeft) {
+    if (result.isLeft) {
       postError(result.left.message);
+    } else {
+      endToEndId = result.right.endToEndId;
+      var pixSelect = PixToSendApiDto.fromJson(
+          jsonDecode(formStepSelectPix.pixSelect.value!));
+      if (pixSelect.destinationAccount != result.right.accountDestination &&
+          pixSelect.destinationBranch !=
+              result.right.accountBranchDestination) {
+        pixSelect.destinationAccount = result.right.accountDestination;
+        pixSelect.destinationBranch = result.right.accountBranchDestination;
+        var resultPix = await updatePixToSendSelect.invoke(id: pixSelect.id, body: body);
+        if(resultPix.isRight){
+          _streamDestinatarioController.sink.add(result.right);
+        }
+      } else {
+        _streamDestinatarioController.sink.add(result.right);
+      }
     }
   }
 
@@ -322,7 +341,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       _streamComprovanteController.sink.add(const Left(true));
       setLoading(value: false);
       return null;
-    } 
+    }
     setLoading(value: false);
     _streamComprovanteController.sink.add(Right(result.right));
     return result.right;

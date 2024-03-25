@@ -16,8 +16,10 @@ class StepTransferenciaDetalhe extends StatelessWidget {
     required this.changePage,
     required this.currentPage,
     required this.saldo,
+    required this.materaId,
   });
 
+  final String? materaId;
   final Function(int index) changePage;
   final int currentPage;
   final SaldoApiDto saldo;
@@ -48,10 +50,13 @@ class StepTransferenciaDetalhe extends StatelessWidget {
         builder: (context, destinatarioData) {
           if (destinatarioData.data == null) {
             viewModel.loadInfoDestinatario(
+              materaId,
               pixSelected.holderTaxIdentifierCountry,
               pixSelected.alias,
             );
-            return const ProgressLoading();
+            return ProgressLoading(
+              color: Theme.of(context).colorScheme.primary,
+            );
           } else {
             return Column(
               mainAxisSize: MainAxisSize.max,

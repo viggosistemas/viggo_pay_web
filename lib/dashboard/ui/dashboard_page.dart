@@ -380,6 +380,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                                                 var result =
                                                                     await dialogs
                                                                         .transferenciaDialog(
+                                                                  materaId: matriz
+                                                                      .data!
+                                                                      .materaId!,
                                                                   saldo:
                                                                       saldoData
                                                                           .data!,
@@ -403,6 +406,14 @@ class _DashboardPageState extends State<DashboardPage> {
                                                                     Colors
                                                                         .white,
                                                                   );
+                                                                  viewModel.loadSaldo(
+                                                                      matriz
+                                                                          .data!
+                                                                          .materaId!);
+                                                                  viewModel.loadExtrato(
+                                                                      matriz
+                                                                          .data!
+                                                                          .materaId!);
                                                                 }
                                                               }
                                                             },
@@ -438,17 +449,18 @@ class _DashboardPageState extends State<DashboardPage> {
                       children: [
                         Text(
                           'Últimas movimentações',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Theme.of(context).colorScheme.secondary.withOpacity(0.8)
-                                    : Theme.of(context).colorScheme.primary,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .secondary
+                                            .withOpacity(0.8)
+                                        : Theme.of(context).colorScheme.primary,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -468,7 +480,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                               Brightness.dark
                                           ? Theme.of(context)
                                               .colorScheme
-                                              .secondary.withOpacity(0.8)
+                                              .secondary
+                                              .withOpacity(0.8)
                                           : Theme.of(context)
                                               .colorScheme
                                               .primary,
@@ -485,7 +498,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                                 Brightness.dark
                                             ? Theme.of(context)
                                                 .colorScheme
-                                                .secondary.withOpacity(0.8)
+                                                .secondary
+                                                .withOpacity(0.8)
                                             : Theme.of(context)
                                                 .colorScheme
                                                 .primary,
