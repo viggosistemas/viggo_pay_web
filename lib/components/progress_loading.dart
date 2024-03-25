@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ProgressLoading extends StatelessWidget {
-  const ProgressLoading({super.key});
+  const ProgressLoading({
+    required this.color,
+    super.key,
+  });
+
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -11,16 +16,12 @@ class ProgressLoading extends StatelessWidget {
       children: [
         Text(
           'Carregando...',
-          style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
-          ),
+          style: TextStyle(color: color),
         ),
         const SizedBox(
           height: 10,
         ),
-        const CircularProgressIndicator(),
+        CircularProgressIndicator(color: color),
       ],
     );
   }

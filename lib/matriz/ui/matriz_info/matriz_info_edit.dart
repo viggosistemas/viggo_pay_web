@@ -115,7 +115,11 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
           builder: (context, snapshot) {
             if (snapshot.data == null) {
               viewModel.getEntities();
-              return const ProgressLoading();
+              return ProgressLoading(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
+              );
             } else {
               return Card(
                 elevation: 8,
@@ -162,6 +166,10 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                           Theme(
                             data: Theme.of(context).copyWith(
                               colorScheme: Theme.of(context).colorScheme,
+                              hoverColor: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.3),
                             ),
                             child: Stepper(
                               // type: StepperType.horizontal,
@@ -201,7 +209,8 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                                 foregroundColor:
                                                     MaterialStateColor
                                                         .resolveWith((states) =>
-                                                            details.stepIndex == 0
+                                                            details.stepIndex ==
+                                                                    0
                                                                 ? Colors.grey
                                                                 : Theme.of(
                                                                         context)
@@ -240,10 +249,11 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                                                           context)
                                                                       .colorScheme
                                                                       .primary
-                                                                  : Colors.grey),
+                                                                  : Colors
+                                                                      .grey),
                                                         ),
-                                                        child:
-                                                            const Text('Próximo'),
+                                                        child: const Text(
+                                                            'Próximo'),
                                                       ),
                                                     );
                                                   })
@@ -261,7 +271,8 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                                             onPressed: snapshot
                                                                             .data !=
                                                                         null &&
-                                                                    snapshot.data!
+                                                                    snapshot
+                                                                        .data!
                                                                         .isNotEmpty
                                                                 ? details
                                                                     .onStepContinue
@@ -277,7 +288,8 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                                                           context)
                                                                       .colorScheme
                                                                       .primary
-                                                                  : Colors.grey),
+                                                                  : Colors
+                                                                      .grey),
                                                             ),
                                                             child: const Text(
                                                                 'Próximo'),
@@ -309,7 +321,8 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                                                           context)
                                                                       .colorScheme
                                                                       .primary
-                                                                  : Colors.grey),
+                                                                  : Colors
+                                                                      .grey),
                                                             ),
                                                             child: const Text(
                                                                 'Próximo'),

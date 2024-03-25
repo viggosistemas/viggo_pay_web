@@ -18,6 +18,7 @@ import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_transacoes_domain_a
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_ultima_transacao_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/list_chave_pix_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_params_use_case.dart';
+import 'package:viggo_pay_admin/pix_to_send/domain/usecases/update_pix_to_send_use_case.dart';
 
 class MatrizAccountLocator {
   void setup() {
@@ -38,6 +39,7 @@ class MatrizAccountLocator {
 
     locator.registerLazySingleton(
       () => MatrizTransferenciaViewModel(
+        updatePixToSendSelect: locator.get<UpdatePixToSendUseCase>(),
         getTransacoes: locator.get<GetTransacoesDomainAccountUseCase>(),
         getConfigDomainAccount:
             locator.get<GetDomainAccountConfigByIdUseCase>(),
@@ -46,7 +48,8 @@ class MatrizAccountLocator {
         getDomainAccount: locator.get<GetDomainAccountByIdUseCase>(),
         getDomainFromSettings: locator.get<GetDomainFromSettingsUseCase>(),
         getSaldo: locator.get<GetSaldoDomainAccountUseCase>(),
-        getUltimaTransacao: locator.get<GetUltimaTransacaoDomainAccountUseCase>(),
+        getUltimaTransacao:
+            locator.get<GetUltimaTransacaoDomainAccountUseCase>(),
         listChavePix: locator.get<ListChavePixDomainAccountUseCase>(),
         listChavePixToSends: locator.get<GetPixToSendsByParamsUseCase>(),
         consultarDestinatario: locator.get<ConsultarAliasDestinatarioUseCase>(),

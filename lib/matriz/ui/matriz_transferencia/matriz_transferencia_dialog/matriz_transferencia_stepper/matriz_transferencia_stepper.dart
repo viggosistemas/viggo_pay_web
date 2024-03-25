@@ -14,10 +14,12 @@ import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart
 class MatrizTransferenciaStepper extends StatefulWidget {
   const MatrizTransferenciaStepper({
     super.key,
+    required this.materaId,
     required this.saldo,
     required this.pixToSendList,
   });
 
+  final String? materaId;
   final SaldoApiDto saldo;
   final List<PixToSendApiDto> pixToSendList;
 
@@ -122,6 +124,7 @@ class _MatrizTransferenciaStepperState extends State<MatrizTransferenciaStepper>
               changePage: updateCurrentPageIndex,
               currentPage: currentPageIndex,
               saldo: widget.saldo,
+              materaId: widget.materaId,
             ),
             StepInformarSenha(
               changePage: updateCurrentPageIndex,

@@ -120,6 +120,7 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
                   builder: (context, pixSelectData) {
                     return ListTile(
                       horizontalTitleGap: 20,
+                      hoverColor: Theme.of(context).colorScheme.primary.withOpacity(0.5),
                       leading: CircleAvatar(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         child: Text(
@@ -136,6 +137,7 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
                         widget.pixToSendList[index].holderName,
                         style: GoogleFonts.lato(
                           fontSize: 16,
+                          color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -148,6 +150,7 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
                             widget.pixToSendList[index].alias,
                             style: GoogleFonts.lato(
                               fontSize: 12,
+                              color: Colors.black.withOpacity(0.8),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -158,6 +161,7 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
                                 'Conta: ${widget.pixToSendList[index].destinationAccount}',
                             style: GoogleFonts.lato(
                               fontSize: 12,
+                              color: Colors.black.withOpacity(0.8),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -223,10 +227,10 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
                             size: 18,
                           ),
                           style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  validForm.data != null && validForm.data == true
-                                      ? Theme.of(context).colorScheme.primary
-                                      : Colors.grey),
+                              backgroundColor: validForm.data != null &&
+                                      validForm.data == true
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Colors.grey),
                           label: const Text('Próximo'),
                         ),
                       ),

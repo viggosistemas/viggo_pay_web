@@ -21,9 +21,10 @@ class DarkTheme {
       ),
       disabledColor: Colors.grey,
       hintColor: Colors.white,
-      highlightColor: Colors.black,
-      focusColor: Colors.black,
-      hoverColor: Colors.black,
+      highlightColor: Colors.white,
+      focusColor: Colors.grey.withOpacity(0.3),
+      canvasColor: Colors.white,
+      hoverColor: Colors.grey.withOpacity(0.3),
       inputDecorationTheme: const InputDecorationTheme().copyWith(
         focusColor: Colors.black,
         fillColor: Colors.black,
@@ -74,8 +75,9 @@ class DarkTheme {
         iconColor: kColorSchemeDark.onPrimary,
         surfaceTintColor: kColorSchemeDark.onPrimary,
       ),
-      progressIndicatorTheme: const ProgressIndicatorThemeData()
-          .copyWith(color: kColorSchemeDark.onPrimary),
+      progressIndicatorTheme: const ProgressIndicatorThemeData().copyWith(
+        color: kColorSchemeDark.primary,
+      ),
       dropdownMenuTheme: DropdownMenuThemeData(
         menuStyle: MenuStyle(
           backgroundColor: MaterialStatePropertyAll(
@@ -88,7 +90,7 @@ class DarkTheme {
             kColorSchemeDark.onPrimary,
           ),
         ),
-        textStyle: const TextStyle(color: Colors.white),
+        textStyle: const TextStyle(color: Colors.black),
         inputDecorationTheme: const InputDecorationTheme().copyWith(
           fillColor: kColorSchemeDark.onPrimary,
           focusColor: kColorSchemeDark.onPrimary,

@@ -55,7 +55,15 @@ class ViggoPayWeb extends StatelessWidget {
       builder: (context, themeData) {
         if (themeData.data == null) {
           themeViewModel.changeTheme(themeViewModel.themePrefs);
-          return const ProgressLoading();
+          return MediaQuery.fromView(
+            view: View.of(context),
+            child: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: ProgressLoading(
+                color: Colors.white,
+              ),
+            ),
+          );
         } else {
           return MaterialApp(
             title: Constants.APP_NAME,
