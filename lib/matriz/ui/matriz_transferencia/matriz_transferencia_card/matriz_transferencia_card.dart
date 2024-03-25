@@ -283,7 +283,8 @@ class _TransferenciaCardState extends State<TransferenciaCard> {
                                             ),
                                             onPressed: () {
                                               setState(() {
-                                                isObscureSaldo = !isObscureSaldo;
+                                                isObscureSaldo =
+                                                    !isObscureSaldo;
                                               });
                                             },
                                           ),
@@ -328,6 +329,7 @@ class _TransferenciaCardState extends State<TransferenciaCard> {
                                               if (saldoData.data!.real > 0) {
                                                 var result = await dialogs
                                                     .transferenciaDialog(
+                                                  materaId: null,
                                                   saldo: saldoData.data!,
                                                   pixToSendList:
                                                       pixToSendData.data!,

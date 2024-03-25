@@ -136,10 +136,11 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
                         ? onContinue
                         : () {},
                     style: ButtonStyle(
-                      foregroundColor: MaterialStateColor.resolveWith((states) =>
-                          snapshot.data == true && snapshot.data != null
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey),
+                      foregroundColor: MaterialStateColor.resolveWith(
+                          (states) =>
+                              snapshot.data == true && snapshot.data != null
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Colors.grey),
                     ),
                     icon: const Icon(
                       Icons.arrow_back_outlined,
@@ -162,10 +163,11 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
                         ? onContinue
                         : () {},
                     style: ButtonStyle(
-                      foregroundColor: MaterialStateColor.resolveWith((states) =>
-                          snapshot.data == true && snapshot.data != null
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey),
+                      foregroundColor: MaterialStateColor.resolveWith(
+                          (states) =>
+                              snapshot.data == true && snapshot.data != null
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Colors.grey),
                     ),
                     icon: const Icon(
                       Icons.arrow_back_outlined,
@@ -185,96 +187,103 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
     return SizedBox(
       width: 700,
       height: 600,
-      child: Stepper(
-        currentStep: _index,
-        type: StepperType.horizontal,
-        onStepCancel: () {
-          if (_index != 0) {
-            setState(() {
-              _index -= 1;
-            });
-          }
-        },
-        onStepContinue: () {
-          if (_index != 2) {
-            setState(() {
-              _index += 1;
-            });
-          }
-        },
-        connectorColor: MaterialStateColor.resolveWith(
-          (states) => Theme.of(context).colorScheme.primary,
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: Theme.of(context).colorScheme,
+          hoverColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+          canvasColor: Colors.white,
         ),
-        // onStepTapped: (int index) {
-        //   setState(() {
-        //     _index = index;
-        //   });
-        // },
-        stepIconBuilder: (stepIndex, stepState) {
-          if (stepIndex == 0) {
-            return Icon(
-              Icons.person_outline,
-              color: Theme.of(context).colorScheme.onPrimary,
-            );
-          }
-          if (stepIndex == 1) {
-            return Icon(
-              Icons.location_on_outlined,
-              color: Theme.of(context).colorScheme.onPrimary,
-            );
-          }
-          if (stepIndex == 2) {
-            return Icon(
-              Icons.phone_outlined,
-              color: Theme.of(context).colorScheme.onPrimary,
-            );
-          }
-          return const Icon(Icons.edit_outlined);
-        },
-        controlsBuilder: (context, details) {
-          return Padding(
-            padding: const EdgeInsets.only(
-              top: 20,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                backStep(details.stepIndex, details.onStepCancel),
-                nextStep(details.stepIndex, details.onStepContinue)
-              ],
-            ),
-          );
-        },
-        steps: [
-          Step(
-            isActive: _index == 0,
-            title: const Visibility(child: Text('')),
-            label: const Text('Dados'),
-            content: EditFuncionarioForm(
-              viewModel: widget.viewModel,
-              entity: widget.entity,
-            ),
+        child: Stepper(
+          currentStep: _index,
+          type: StepperType.horizontal,
+          onStepCancel: () {
+            if (_index != 0) {
+              setState(() {
+                _index -= 1;
+              });
+            }
+          },
+          onStepContinue: () {
+            if (_index != 2) {
+              setState(() {
+                _index += 1;
+              });
+            }
+          },
+          connectorColor: MaterialStateColor.resolveWith(
+            (states) => Theme.of(context).colorScheme.primary,
           ),
-          Step(
-            isActive: _index == 1,
-            label: const Text('Endereço'),
-            title: const Visibility(child: Text('')),
-            content: EditEnderecoForm(
-              viewModel: widget.viewModel,
-              entity: initFormEndereco(),
+          // onStepTapped: (int index) {
+          //   setState(() {
+          //     _index = index;
+          //   });
+          // },
+          stepIconBuilder: (stepIndex, stepState) {
+            if (stepIndex == 0) {
+              return Icon(
+                Icons.person_outline,
+                color: Theme.of(context).colorScheme.onPrimary,
+              );
+            }
+            if (stepIndex == 1) {
+              return Icon(
+                Icons.location_on_outlined,
+                color: Theme.of(context).colorScheme.onPrimary,
+              );
+            }
+            if (stepIndex == 2) {
+              return Icon(
+                Icons.phone_outlined,
+                color: Theme.of(context).colorScheme.onPrimary,
+              );
+            }
+            return const Icon(Icons.edit_outlined);
+          },
+          controlsBuilder: (context, details) {
+            return Padding(
+              padding: const EdgeInsets.only(
+                top: 20,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  backStep(details.stepIndex, details.onStepCancel),
+                  nextStep(details.stepIndex, details.onStepContinue)
+                ],
+              ),
+            );
+          },
+          steps: [
+            Step(
+              isActive: _index == 0,
+              title: const Visibility(child: Text('')),
+              label: const Text('Dados'),
+              content: EditFuncionarioForm(
+                viewModel: widget.viewModel,
+                entity: widget.entity,
+              ),
             ),
-          ),
-          Step(
-            isActive: _index == 2,
-            label: const Text('Contatos'),
-            title: const Visibility(child: Text('')),
-            content: EditContatoForm(
-              viewModel: widget.viewModel,
-              entity: initFormContato(),
+            Step(
+              isActive: _index == 1,
+              label: const Text('Endereço'),
+              title: const Visibility(child: Text('')),
+              content: EditEnderecoForm(
+                viewModel: widget.viewModel,
+                entity: initFormEndereco(),
+              ),
             ),
-          ),
-        ],
+            Step(
+              isActive: _index == 2,
+              label: const Text('Contatos'),
+              title: const Visibility(child: Text('')),
+              content: EditContatoForm(
+                viewModel: widget.viewModel,
+                entity: initFormContato(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

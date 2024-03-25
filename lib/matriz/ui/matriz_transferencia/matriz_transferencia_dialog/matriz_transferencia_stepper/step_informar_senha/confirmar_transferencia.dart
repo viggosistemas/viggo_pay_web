@@ -67,8 +67,8 @@ class StepInformarSenha extends StatelessWidget {
                 label: const Text('Voltar'),
               ),
             ),
-            StreamBuilder<bool>(
-                stream: viewModel.formStepSenha.isValid,
+            StreamBuilder<String>(
+                stream: viewModel.formStepSenha.senha.field,
                 builder: (context, snapshot) {
                   return OnHoverButton(
                     child: Directionality(
@@ -76,7 +76,7 @@ class StepInformarSenha extends StatelessWidget {
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              snapshot.data != null && snapshot.data == true
+                              snapshot.data != null && snapshot.data!.length == 6
                                   ? Colors.green
                                   : Colors.grey,
                         ),

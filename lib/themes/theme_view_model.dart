@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_core_frontend/base/base_view_model.dart';
 
@@ -15,7 +16,7 @@ class ThemeViewModel extends BaseViewModel {
   });
 
   String get themePrefs {
-    return sharedPrefs.getString('THEME_MODE') ?? 'dark';
+    return sharedPrefs.getString('THEME_MODE') ?? ThemeMode.system.name;
   }
 
   changeTheme(String themeMode) {

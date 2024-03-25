@@ -13,6 +13,7 @@ class MatrizTransferenciaDialog {
   final viewModel = locator.get<MatrizTransferenciaViewModel>();
 
   Future transferenciaDialog({
+    required String? materaId,
     required SaldoApiDto saldo,
     required List<PixToSendApiDto> pixToSendList,
   }) {
@@ -82,6 +83,7 @@ class MatrizTransferenciaDialog {
                                   height:
                                       MediaQuery.of(context).size.height * 0.6,
                                   child: MatrizTransferenciaStepper(
+                                    materaId: materaId,
                                     saldo: saldo,
                                     pixToSendList: pixToSendList,
                                   ),

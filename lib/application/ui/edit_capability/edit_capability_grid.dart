@@ -169,7 +169,11 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           checkApplication(args);
-          return const ProgressLoading();
+          return ProgressLoading(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+          );
         } else {
           selectedCapabilitites = (snapshot.data as List<CapabilityApiDto>);
           return SizedBox(

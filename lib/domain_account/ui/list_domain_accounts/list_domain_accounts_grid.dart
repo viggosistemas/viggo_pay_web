@@ -116,7 +116,11 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return const ProgressLoading();
+          return ProgressLoading(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+          );
         } else {
           List<DomainAccountApiDto> items =
               (snapshot.data as List<DomainAccountApiDto>);

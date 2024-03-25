@@ -190,7 +190,11 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
             jaPreencheu = true;
             checkApplication(args);
           }
-          return const ProgressLoading();
+          return ProgressLoading(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+          );
         } else {
           selectedPolicies = (snapshot.data as List<PolicyApiDto>);
           return SizedBox(
