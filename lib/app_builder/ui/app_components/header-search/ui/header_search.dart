@@ -58,6 +58,8 @@ class _HeaderSearchState extends State<HeaderSearch> {
   @override
   Widget build(context) {
     final viewModel = Provider.of<HeaderSearchViewModel>(context);
+    final brightnessMode = Theme.of(context).brightness;
+    final colorSchemeMode = Theme.of(context).colorScheme;
 
     void changeStatus(ListOptions status) {
       setState(() {
@@ -152,14 +154,23 @@ class _HeaderSearchState extends State<HeaderSearch> {
                             Theme(
                               data: ThemeData().copyWith(
                                 hoverColor: Colors.grey.withOpacity(0.3),
-                                brightness: Brightness.dark,
+                                brightness: brightnessMode,
+                                colorScheme: colorSchemeMode,
                                 popupMenuTheme:
                                     const PopupMenuThemeData().copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  iconColor:
-                                      Theme.of(context).colorScheme.onPrimary,
-                                  surfaceTintColor:
-                                      Theme.of(context).colorScheme.onPrimary,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context).colorScheme.onPrimary,
+                                  iconColor: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Theme.of(context).colorScheme.onPrimary
+                                      : Theme.of(context).colorScheme.primary,
+                                  surfaceTintColor: Theme.of(context)
+                                              .brightness ==
+                                          Brightness.dark
+                                      ? Theme.of(context).colorScheme.onPrimary
+                                      : Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                               child: PopupMenuButton<ListOptions>(
@@ -471,14 +482,23 @@ class _HeaderSearchState extends State<HeaderSearch> {
                             Theme(
                               data: ThemeData().copyWith(
                                 hoverColor: Colors.grey.withOpacity(0.3),
-                                brightness: Brightness.dark,
+                                brightness: brightnessMode,
+                                colorScheme: colorSchemeMode,
                                 popupMenuTheme:
                                     const PopupMenuThemeData().copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  iconColor:
-                                      Theme.of(context).colorScheme.onPrimary,
-                                  surfaceTintColor:
-                                      Theme.of(context).colorScheme.onPrimary,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context).colorScheme.onPrimary,
+                                  iconColor: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Theme.of(context).colorScheme.onPrimary
+                                      : Theme.of(context).colorScheme.primary,
+                                  surfaceTintColor: Theme.of(context)
+                                              .brightness ==
+                                          Brightness.dark
+                                      ? Theme.of(context).colorScheme.onPrimary
+                                      : Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                               child: PopupMenuButton<ListOptions>(
@@ -768,9 +788,7 @@ class _HeaderSearchState extends State<HeaderSearch> {
                                             child: IconButton.outlined(
                                               onPressed: () =>
                                                   clearAllFilters(),
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
+                                              color: Colors.black,
                                               icon: const Icon(
                                                 Icons.clear_outlined,
                                                 color: Colors.red,
