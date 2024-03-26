@@ -10,6 +10,7 @@ import 'package:viggo_pay_admin/pay_facs/data/models/chave_pix_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/saldo_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/transacoes_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
+import 'package:viggo_pay_admin/utils/format_mask.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 class TransferenciaCard extends StatefulWidget {
@@ -126,7 +127,7 @@ class _TransferenciaCardState extends State<TransferenciaCard> {
                                 width: 5,
                               ),
                               Text(
-                                'CNPJ: ${widget.matrizAccount.clientTaxIdentifierTaxId}',
+                                'CNPJ: ${FormatMask().formated(widget.matrizAccount.clientTaxIdentifierTaxId)}',
                                 style: GoogleFonts.lato(
                                   fontSize: 16,
                                   fontWeight: FontWeight.normal,

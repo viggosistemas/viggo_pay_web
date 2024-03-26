@@ -8,9 +8,7 @@ class ListRoutesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const AppBuilder(
-      child: Expanded(
-        child: ListRoutesGrid(),
-      ),
+      child: ListRoutesGrid(),
     );
   }
 }

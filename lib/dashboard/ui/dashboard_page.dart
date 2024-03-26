@@ -16,6 +16,7 @@ import 'package:viggo_pay_admin/pay_facs/data/models/extrato_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/saldo_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
+import 'package:viggo_pay_admin/utils/format_mask.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 // ignore: must_be_immutable
@@ -111,11 +112,13 @@ class _DashboardPageState extends State<DashboardPage> {
         builder: (context, domain) {
           viewModel.getDomain();
           if (domain.data == null) {
-            return const Center(
+            return Center(
               child: SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
             );
           } else {
@@ -133,11 +136,13 @@ class _DashboardPageState extends State<DashboardPage> {
                     builder: (context, matriz) {
                       if (matriz.data == null) {
                         viewModel.catchEntity();
-                        return const Center(
+                        return Center(
                           child: SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(),
+                            child: CircularProgressIndicator(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
                           ),
                         );
                       } else {
@@ -227,7 +232,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ),
                                   ),
                                   Text(
-                                    'CNPJ: ${matriz.data!.clientTaxIdentifierTaxId}',
+                                    'CNPJ: ${FormatMask().formated(matriz.data!.clientTaxIdentifierTaxId)}',
                                     style: GoogleFonts.lato(
                                       color: Theme.of(context).brightness ==
                                               Brightness.dark
@@ -246,7 +251,11 @@ class _DashboardPageState extends State<DashboardPage> {
                                       if (saldoData.data == null) {
                                         viewModel
                                             .loadSaldo(matriz.data!.materaId!);
-                                        return const CircularProgressIndicator();
+                                        return CircularProgressIndicator(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        );
                                       } else {
                                         return Card(
                                           elevation: 8,
@@ -339,7 +348,11 @@ class _DashboardPageState extends State<DashboardPage> {
                                                           .loadChavePixToSends(
                                                         matriz.data!.id,
                                                       );
-                                                      return const CircularProgressIndicator();
+                                                      return CircularProgressIndicator(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary,
+                                                      );
                                                     }
                                                     return Tooltip(
                                                       message: saldoData
@@ -520,7 +533,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     builder: (context, extrato) {
                       if (extrato.data == null) {
                         viewModel.loadExtrato(viewModel.materaId);
-                        return const CircularProgressIndicator();
+                        return CircularProgressIndicator(
+                          color: Theme.of(context).colorScheme.secondary,
+                        );
                       } else {
                         return Expanded(
                           child: ExtratoTimeline(

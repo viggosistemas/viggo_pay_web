@@ -99,14 +99,16 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
         }
       },
     );
-    return StreamBuilder<Object>(
+    return StreamBuilder<List<PixToSendApiDto>>(
       stream: viewModel.pixToSends,
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return ProgressLoading(color: Theme.of(context).brightness == Brightness.dark
+          return ProgressLoading(
+            color: Theme.of(context).brightness == Brightness.dark
                 ? Colors.white
-                : Colors.black,);
+                : Colors.black,
+          );
         } else {
           List<PixToSendApiDto> items =
               (snapshot.data as List<PixToSendApiDto>);

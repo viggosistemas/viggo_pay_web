@@ -65,7 +65,7 @@ class LightTheme {
         ),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData().copyWith(
-        color: kColorScheme.onPrimary
+        color: kColorScheme.primary
       )
     );
   }

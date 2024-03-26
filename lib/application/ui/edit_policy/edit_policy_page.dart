@@ -8,9 +8,7 @@ class EditPolicyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBuilder(
-      child: Expanded(
-        child: EditPolicyGrid(),
-      ),
+      child: EditPolicyGrid(),
     );
   }
 }

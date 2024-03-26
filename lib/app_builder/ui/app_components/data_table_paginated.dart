@@ -10,6 +10,7 @@ import 'package:viggo_core_frontend/util/constants.dart';
 import 'package:viggo_pay_admin/components/dialogs.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
+import 'package:viggo_pay_admin/utils/format_mask.dart';
 
 class DataSource extends DataTableSource {
   late dynamic viewModel;
@@ -56,6 +57,9 @@ class DataSource extends DataTableSource {
         } else {
           var dataString = jsonEncode(data);
           value = jsonDecode(dataString)[labelInclude[counter]].toString();
+          if(labelInclude[counter] == 'cpf_cnpj'){
+            value = FormatMask().formated(jsonDecode(dataString)[labelInclude[counter]].toString());
+          }
           counter++;
           if (labelInclude.length == counter) {
             counter = 0;

@@ -18,7 +18,6 @@ class EditInfoFormFields extends BaseForm {
     validators: [
       Validator().isEmptyValue,
       CPFCNPJValidator().validateCNPJ,
-      FieldLengthValidator().maiorQ14,
     ],
   );
   final clientTaxCountry = StringField(

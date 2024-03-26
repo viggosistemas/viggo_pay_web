@@ -8,9 +8,7 @@ class ListUsersDomainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBuilder(
-      child: Expanded(
-        child: ListUsersDomainGrid(),
-      ),
+      child: ListUsersDomainGrid(),
     );
   }
 }

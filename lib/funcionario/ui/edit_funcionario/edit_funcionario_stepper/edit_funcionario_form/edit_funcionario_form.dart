@@ -1,6 +1,6 @@
-import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:pinput/pinput.dart';
 import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
@@ -29,6 +29,16 @@ class EditFuncionarioForm extends StatefulWidget {
 }
 
 class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
+  static const defaultMask = '########################################';
+  final nomeRazaoSocialFieldControll = TextEditingController();
+  final cpfCnpjFieldControll = MaskedTextController(
+    mask: defaultMask,
+    translator: {'#': RegExp(r'[0-9a-zA-Z@\.\-_]')},
+  );
+  final apelidoNomeFantasiaControll = TextEditingController();
+  final rgInscEstControll = TextEditingController();
+  final userFieldControll = TextEditingController();
+
   bool jaPreencheu = false;
 
   getInitialValue() {
@@ -71,14 +81,18 @@ class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
     }
   }
 
+  void updateMask(String type) {
+    if (type.length < 14) {
+      cpfCnpjFieldControll.updateMask('###.###.###-###');
+    } else if (type.length >= 14) {
+      cpfCnpjFieldControll.updateMask('##.###.###/####-##');
+    } else {
+      cpfCnpjFieldControll.updateMask(defaultMask);
+    }
+  }
+
   @override
   Widget build(context) {
-    final nomeRazaoSocialFieldControll = TextEditingController();
-    final cpfCnpjFieldControll = TextEditingController();
-    final apelidoNomeFantasiaControll = TextEditingController();
-    final rgInscEstControll = TextEditingController();
-    final userFieldControll = TextEditingController();
-
     initFormValues();
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -90,23 +104,21 @@ class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
           builder: (context, snapshot) {
             cpfCnpjFieldControll.value =
                 cpfCnpjFieldControll.value.copyWith(text: snapshot.data);
+            updateMask(snapshot.data ?? '');
             return TextFormField(
                 // onChanged: (value) {
                 //   _txtAmountValue = value;
                 // },
                 controller: cpfCnpjFieldControll,
+                readOnly: widget.entity?.id != null,
                 decoration: InputDecoration(
                   labelText: 'CPF/CNPJ',
                   border: const OutlineInputBorder(),
                   errorText: snapshot.error?.toString(),
                 ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  CpfOuCnpjFormatter(),
-                  // MaskTextInputFormatter(mask: "###.###.###-##")
-                ],
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 onChanged: (value) {
-                  widget.viewModel.formDados.cpfCnpj.onValueChange(value);
+                  widget.viewModel.formDados.cpfCnpj.onValueChange(value.replaceAll('.', '').replaceAll('-', '').replaceAll('/', ''));
                 });
           },
         ),
@@ -252,7 +264,7 @@ class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
                     errorText: snapshot.error?.toString(),
                     suffix: snapshot.data != null && snapshot.data!.isNotEmpty
                         ? OnHoverButton(
-                          child: IconButton(
+                            child: IconButton(
                               onPressed: () {
                                 widget.viewModel.formDados.userId
                                     .onValueChange('');
@@ -264,7 +276,7 @@ class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
                                 color: Colors.red,
                               ),
                             ),
-                        )
+                          )
                         : const Text(''),
                   ),
                   controller: controller,

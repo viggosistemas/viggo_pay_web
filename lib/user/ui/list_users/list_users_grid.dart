@@ -127,7 +127,7 @@ class _ListUsersGridState extends State<ListUsersGrid> {
         }
       },
     );
-    return StreamBuilder<Object>(
+    return StreamBuilder<List<UserApiDto>>(
       stream: viewModel.users,
       builder: (context, snapshot) {
         if (snapshot.data == null) {

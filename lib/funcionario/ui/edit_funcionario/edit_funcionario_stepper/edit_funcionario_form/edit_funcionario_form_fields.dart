@@ -11,7 +11,6 @@ class EditFuncionarioFormFields extends BaseForm {
     validators: [
       Validator().isEmptyValue,
       CPFCNPJValidator().validateCPFOuCNPJ,
-      FieldLengthValidator().maiorQ14,
     ],
   );
   final nomeRazaoSocial = StringField(

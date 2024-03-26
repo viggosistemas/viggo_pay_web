@@ -8,9 +8,7 @@ class EditCapabilityPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBuilder(
-      child: Expanded(
-        child: EditCapabilityGrid(),
-      ),
+      child: EditCapabilityGrid(),
     );
   }
 }

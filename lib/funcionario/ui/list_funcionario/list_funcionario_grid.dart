@@ -110,7 +110,7 @@ class _ListFuncionarioGridState extends State<ListFuncionarioGrid> {
         }
       },
     );
-    return StreamBuilder<Object>(
+    return StreamBuilder<List<FuncionarioApiDto>>(
       stream: viewModel.funcionarios,
       builder: (context, snapshot) {
         if (snapshot.data == null) {

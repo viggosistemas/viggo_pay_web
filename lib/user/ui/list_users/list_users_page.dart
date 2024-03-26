@@ -8,10 +8,8 @@ class ListUsersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBuilder(
-      child: Expanded(
-        child: ListUsersGrid(
-          domainId: null,
-        ),
+      child: ListUsersGrid(
+        domainId: null,
       ),
     );
   }

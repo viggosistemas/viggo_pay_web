@@ -1,6 +1,7 @@
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_view_model.dart';
@@ -14,16 +15,30 @@ class EditInfoEmpresa extends StatelessWidget {
 
   final MatrizViewModel viewModel;
   FocusNode focusNode = FocusNode();
+  static const defaultMask = '########################################';
 
   @override
   Widget build(context) {
     final clientNameFieldControll = TextEditingController();
-    final clientTaxIdFieldController = TextEditingController();
+    final clientTaxIdFieldController = MaskedTextController(
+      mask: defaultMask,
+      translator: {'#': RegExp(r'[0-9a-zA-Z@\.\-_]')},
+    );
     // final clientTaxCountryFieldController = TextEditingController();
     final clientMobilePhoneFieldControll = TextEditingController();
     final clientMobilePhoneCountryFieldControll = TextEditingController(
         text: viewModel.matrizAccount.clientMobilePhoneCountry);
     final clientEmailFieldControll = TextEditingController();
+
+    void updateMask(String type) {
+      if (type.length < 14) {
+        clientTaxIdFieldController.updateMask('###.###.###-###');
+      } else if (type.length >= 14) {
+        clientTaxIdFieldController.updateMask('##.###.###/####-##');
+      } else {
+        clientTaxIdFieldController.updateMask(defaultMask);
+      }
+    }
 
     return Column(
       children: [
@@ -32,14 +47,14 @@ class EditInfoEmpresa extends StatelessWidget {
           builder: (context, snapshot) {
             clientTaxIdFieldController.value =
                 clientTaxIdFieldController.value.copyWith(text: snapshot.data);
+            updateMask(snapshot.data ?? '');
             return TextFormField(
-              readOnly: snapshot.data != null,
+              // readOnly: snapshot.data != null,
               decoration: InputDecoration(
                 labelText: 'CNPJ *',
                 border: const OutlineInputBorder(),
                 errorText: snapshot.error?.toString(),
               ),
-              maxLength: 14,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
                 signed: false,
@@ -49,7 +64,7 @@ class EditInfoEmpresa extends StatelessWidget {
               ],
               controller: clientTaxIdFieldController,
               onChanged: (value) {
-                viewModel.form.clientTaxId.onValueChange(value);
+                viewModel.form.clientTaxId.onValueChange(value.replaceAll('.', '').replaceAll('-', '').replaceAll('/', ''));
               },
             );
           },
