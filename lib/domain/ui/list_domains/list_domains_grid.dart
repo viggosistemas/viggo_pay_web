@@ -107,7 +107,7 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
         }
       },
     );
-    return StreamBuilder<Object>(
+    return StreamBuilder<List<DomainApiDto>>(
       stream: viewModel.domains,
       builder: (context, snapshot) {
         if (snapshot.data == null) {

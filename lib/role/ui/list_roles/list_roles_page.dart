@@ -8,9 +8,7 @@ class ListRolesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const AppBuilder(
-      child: Expanded(
-        child: ListRolesGrid(),
-      ),
+      child: ListRolesGrid(),
     );
   }
 }
