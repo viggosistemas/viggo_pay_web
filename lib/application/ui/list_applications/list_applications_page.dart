@@ -8,9 +8,7 @@ class ListApplicationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const AppBuilder(
-      child: Expanded(
-        child: ListApplicationsGrid(),
-      ),
+      child: ListApplicationsGrid(),
     );
   }
 }
