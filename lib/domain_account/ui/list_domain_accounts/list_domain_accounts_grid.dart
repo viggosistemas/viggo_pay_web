@@ -39,7 +39,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
     'client_name',
     'client_tax_identifier_tax_id',
     'tem_chave_pix',
-    'uso_liberado'
+    'status',
   ];
 
   List<Map<String, dynamic>> searchFields = [
@@ -48,6 +48,72 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
       'search_field': 'client_name',
       'type': 'text',
       'icon': Icons.person_outline,
+    },
+    {
+      'label': 'CNPJ',
+      'search_field': 'client_tax_identifier_tax_id',
+      'type': 'cnpj',
+      'icon': Icons.numbers_outlined,
+    },
+    {
+      'label': 'Possui chave pix',
+      'search_field': 'tem_chave_pix',
+      'type': 'bool',
+      'icon': Icons.pix_outlined,
+    },
+    {
+      'label': 'Status',
+      'search_field': 'status',
+      'type': 'enum',
+      'icon': Icons.check_outlined,
+    },
+  ];
+
+  final List<Map<String, dynamic>> itemSelect = [
+    {
+      'value': 'Sim',
+      'label': 'Sim',
+      'type': 'bool',
+    },
+    {
+      'value': 'Nao',
+      'label': 'Não',
+      'type': 'bool',
+    },
+    {
+      'value': DomainAccountStatus.UNKNOWN.name,
+      'label': DomainAccountStatus.UNKNOWN.name,
+      'type': 'enum',
+    },
+    {
+      'value': DomainAccountStatus.CRIADA.name,
+      'label': DomainAccountStatus.CRIADA.name,
+      'type': 'enum',
+    },
+    {
+      'value': DomainAccountStatus.REGULAR.name,
+      'label': DomainAccountStatus.REGULAR.name,
+      'type': 'enum',
+    },
+    {
+      'value': DomainAccountStatus.ERRO.name,
+      'label': DomainAccountStatus.ERRO.name,
+      'type': 'enum',
+    },
+    {
+      'value': DomainAccountStatus.REJEITADA.name,
+      'label': DomainAccountStatus.REJEITADA.name,
+      'type': 'enum',
+    },
+    {
+      'value': DomainAccountStatus.CRIANDO.name,
+      'label': DomainAccountStatus.CRIANDO.name,
+      'type': 'enum',
+    },
+    {
+      'value': DomainAccountStatus.LIBERADA.name,
+      'label': DomainAccountStatus.LIBERADA.name,
+      'type': 'enum',
     },
   ];
 
@@ -67,16 +133,29 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
         .toList();
 
     for (var element in newParams) {
-      var fieldValue = '';
+      if (element['value'].toString().isNotEmpty) {
+        var fieldValue = '';
 
-      if (element['type'] == 'text') {
-        fieldValue = '%${element['value']}%';
-      } else {
-        fieldValue = element['value'];
+        if (element['type'] == 'text') {
+          fieldValue = '%${element['value']}%';
+        } else if (element['type'] == 'cnpj') {
+          fieldValue = element['value']
+              .replaceAll('.', '')
+              .replaceAll('-', '')
+              .replaceAll('/', '');
+        } else {
+          fieldValue = element['value'];
+        }
+        if(element['type'] == 'bool') {
+          filters.addEntries(
+            <String, String>{element['search_field']: fieldValue == 'Sim' ? 'true' : 'false'}.entries,
+          );
+        }else{
+          filters.addEntries(
+            <String, String>{element['search_field']: fieldValue}.entries,
+          );
+        }
       }
-      filters.addEntries(
-        <String, String>{element['search_field']: fieldValue}.entries,
-      );
     }
 
     filters.addEntries(
@@ -118,8 +197,8 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
           onReload();
           return ProgressLoading(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.primary,
           );
         } else {
           List<DomainAccountApiDto> items =
@@ -136,6 +215,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                     onSearch: onSearch,
                     onReload: onReload,
                     searchFields: searchFields,
+                    itemsSelect: itemSelect
                   ),
                   const SizedBox(
                     height: 10,
@@ -182,7 +262,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                         DataColumn(
                             label: Center(
                                 child: Text(
-                          'Uso liberado',
+                          'Status',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),

@@ -12,12 +12,12 @@ class DomainAccountApiDto extends EntityDto {
   late String clientTaxIdentifierTaxId;
   late String? clientTaxIdentifierCountry;
   late String clientMobilePhone;
-  late String clientMobilePhoneCountry;
+  late String? clientMobilePhoneCountry;
   late String clientEmail;
   late String billingAddressLogradouro;
   late String billingAddressNumero;
-  late String billingAddressComplemento;
-  late String billingAddressBairro;
+  late String? billingAddressComplemento;
+  late String? billingAddressBairro;
   late String billingAddressCidade;
   late String billingAddressEstado;
   late String billingAddressCep;
@@ -30,6 +30,7 @@ class DomainAccountApiDto extends EntityDto {
   late String? password;
   late bool? temChavePix;
   late bool? usoLiberado;
+  late DomainAccountStatus status;
   bool selected = false;
 
   DomainAccountApiDto.fromJson(Map<String, dynamic> json) {
@@ -67,6 +68,7 @@ class DomainAccountApiDto extends EntityDto {
     password = json['password'];
     temChavePix = json['tem_chave_pix'];
     usoLiberado = json['uso_liberado'];
+    status = DomainAccountStatus.values.firstWhere((element) => element.name == json['status']);
   }
 
   @override
@@ -110,6 +112,7 @@ class DomainAccountApiDto extends EntityDto {
     if (password != null) result['password'] = password;
     result['tem_chave_pix'] = temChavePix;
     result['uso_liberado'] = usoLiberado;
+    result['status'] = status.name;
 
     return result;
   }

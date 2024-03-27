@@ -49,6 +49,12 @@ class _ListFuncionarioGridState extends State<ListFuncionarioGrid> {
       'type': 'text',
       'icon': Icons.person_outline,
     },
+    {
+      'label': 'CPF/CNPJ',
+      'search_field': 'parceiro.cpf_cnpj',
+      'type': 'cpf_cnpj',
+      'icon': Icons.numbers_outlined,
+    },
   ];
 
   Map<String, String> filters = {
@@ -67,16 +73,23 @@ class _ListFuncionarioGridState extends State<ListFuncionarioGrid> {
         .toList();
 
     for (var element in newParams) {
-      var fieldValue = '';
+      if (element['value'].toString().isNotEmpty) {
+        var fieldValue = '';
 
-      if (element['type'] == 'text') {
-        fieldValue = '%${element['value']}%';
-      } else {
-        fieldValue = element['value'];
+        if (element['type'] == 'text') {
+          fieldValue = '%${element['value']}%';
+        } else if (element['type'] == 'cpf_cnpj') {
+          fieldValue = element['value']
+              .replaceAll('.', '')
+              .replaceAll('-', '')
+              .replaceAll('/', '');
+        } else {
+          fieldValue = element['value'];
+        }
+        filters.addEntries(
+          <String, String>{element['search_field']: fieldValue}.entries,
+        );
       }
-      filters.addEntries(
-        <String, String>{element['search_field']: fieldValue}.entries,
-      );
     }
 
     filters.addEntries(
@@ -117,8 +130,8 @@ class _ListFuncionarioGridState extends State<ListFuncionarioGrid> {
           onReload();
           return ProgressLoading(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.primary,
           );
         } else {
           List<FuncionarioApiDto> items =

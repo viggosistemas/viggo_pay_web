@@ -38,6 +38,18 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
       'type': 'text',
       'icon': Icons.key_outlined,
     },
+    {
+      'label': 'Proprietário',
+      'search_field': 'holder_name',
+      'type': 'text',
+      'icon': Icons.person_outline,
+    },
+    {
+      'label': 'Instituição',
+      'search_field': 'psp_name',
+      'type': 'text',
+      'icon': Icons.domain_outlined,
+    },
   ];
 
   Map<String, String> filters = {
@@ -56,16 +68,18 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
         .toList();
 
     for (var element in newParams) {
-      var fieldValue = '';
+      if (element['value'].toString().isNotEmpty) {
+        var fieldValue = '';
 
-      if (element['type'] == 'text') {
-        fieldValue = '%${element['value']}%';
-      } else {
-        fieldValue = element['value'];
+        if (element['type'] == 'text') {
+          fieldValue = '%${element['value']}%';
+        } else {
+          fieldValue = element['value'];
+        }
+        filters.addEntries(
+          <String, String>{element['search_field']: fieldValue}.entries,
+        );
       }
-      filters.addEntries(
-        <String, String>{element['search_field']: fieldValue}.entries,
-      );
     }
 
     filters.addEntries(
@@ -106,8 +120,8 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
           onReload();
           return ProgressLoading(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.primary,
           );
         } else {
           List<PixToSendApiDto> items =
