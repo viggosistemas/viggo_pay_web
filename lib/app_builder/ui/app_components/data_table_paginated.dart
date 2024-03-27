@@ -37,7 +37,7 @@ class DataSource extends DataTableSource {
     notifyListeners();
   }
 
-  DataCell cellFor(dynamic data) {
+  DataCell cellFor(dynamic data, String? key) {
     String value;
     if (data is DateTime) {
       value =
@@ -52,13 +52,19 @@ class DataSource extends DataTableSource {
       } else {
         if (data is String) {
           value = data.toString();
+          if (key == 'client_tax_identifier_tax_id') {
+            value = FormatMask().formated(value);
+          }
         } else if (data is bool) {
           value = data == true ? 'Sim' : 'Não';
-        } else {
+        } else if(data is Enum) {
+          value = data.name.replaceAll('_', ' ');
+        }else {
           var dataString = jsonEncode(data);
           value = jsonDecode(dataString)[labelInclude[counter]].toString();
-          if(labelInclude[counter] == 'cpf_cnpj'){
-            value = FormatMask().formated(jsonDecode(dataString)[labelInclude[counter]].toString());
+          if (labelInclude[counter] == 'cpf_cnpj') {
+            value = FormatMask().formated(
+                jsonDecode(dataString)[labelInclude[counter]].toString());
           }
           counter++;
           if (labelInclude.length == counter) {
@@ -78,11 +84,10 @@ class DataSource extends DataTableSource {
     return DataRow(
       cells: <DataCell>[
         for (var key in fieldsData)
-          cellFor(
-            key.split('.').length == 1
-                ? row[key]
-                : row[key.split('.')[0]].toJson()[key.split('.')[1]],
-          )
+          key.split('.').length == 1
+              ? cellFor(row[key], key)
+              : cellFor(
+                  row[key.split('.')[0]].toJson()[key.split('.')[1]], null)
       ],
       selected: row['selected'],
       color: MaterialStateColor.resolveWith(
@@ -475,6 +480,7 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
       // sortColumnIndex: _columnIndex,
       // sortAscending: _columnAscending,
       availableRowsPerPage: const [5, 10, 25, 50],
+      showEmptyRows: false,
       onRowsPerPageChanged: (value) {
         setState(() {
           _pageSize = value!;
