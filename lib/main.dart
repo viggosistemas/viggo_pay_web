@@ -60,7 +60,7 @@ class ViggoPayWeb extends StatelessWidget {
             child: const Directionality(
               textDirection: TextDirection.rtl,
               child: ProgressLoading(
-                color: Colors.white,
+                color: null,
               ),
             ),
           );

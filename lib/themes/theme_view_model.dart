@@ -24,14 +24,14 @@ class ThemeViewModel extends BaseViewModel {
     _streamControllerThemeMode.sink.add(themeMode);
   }
 
-  get backgroundAsset {
-    return themePrefs == 'dark'
-        ? 'assets/images/login-bg.png'
+  backgroundAsset(Brightness mode) {
+    return mode.name == 'dark'
+        ? 'assets/images/login-bg-dark.png'
         : 'assets/images/login-bg.png';
   }
 
-  get logoAsset {
-    return themePrefs == 'dark'
+  logoAsset(Brightness mode) {
+    return mode.name == 'dark'
         ? 'assets/images/logo_dark.png'
         : 'assets/images/logo.png';
   }

@@ -165,7 +165,7 @@ class _AppBuilderState extends State<AppBuilder> {
                   message: 'Ir para início',
                   child: OnHoverButton(
                     child: Image.asset(
-                      themeViewModel.logoAsset,
+                      themeViewModel.logoAsset(Theme.of(context).brightness),
                       width: 70,
                       height: 70,
                       fit: BoxFit.contain,
@@ -245,9 +245,13 @@ class _AppBuilderState extends State<AppBuilder> {
                   ),
                   const VerticalDivider(thickness: 1, width: 1),
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: widget.child,
+                    child: FractionallySizedBox(
+                      widthFactor: 1,
+                      heightFactor: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: widget.child,
+                      ),
                     ),
                   ),
                 ],
