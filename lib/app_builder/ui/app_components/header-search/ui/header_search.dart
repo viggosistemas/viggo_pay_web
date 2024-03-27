@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:provider/provider.dart';
+import 'package:select_form_field/select_form_field.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_view_model.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
@@ -12,15 +15,20 @@ class HeaderSearch extends StatefulWidget {
     required this.onSearch,
     required this.onReload,
     notShowAdvancedFilters,
+    itemsSelect,
   }) {
     if (notShowAdvancedFilters != null) {
       this.notShowAdvancedFilters = notShowAdvancedFilters;
+    }
+    if (itemsSelect != null) {
+      this.itemsSelect = itemsSelect;
     }
   }
 
   final List<Map<String, dynamic>> searchFields;
   final Function(List<Map<String, dynamic>> params) onSearch;
   final Function onReload;
+  List<Map<String, dynamic>> itemsSelect = [];
   bool notShowAdvancedFilters = false;
 
   @override
@@ -28,7 +36,13 @@ class HeaderSearch extends StatefulWidget {
 }
 
 class _HeaderSearchState extends State<HeaderSearch> {
-  final searchFieldController = TextEditingController();
+  // final searchFieldController = TextEditingController();
+  static const defaultMask = '########################################';
+  final nomeRazaoSocialFieldControll = TextEditingController();
+  final searchFieldController = MaskedTextController(
+    mask: defaultMask,
+    translator: {'#': RegExp(r'[0-9a-zA-Z@\.\-_]')},
+  );
 
   // ignore: prefer_typing_uninitialized_variables
   var _selectedFilter;
@@ -135,6 +149,22 @@ class _HeaderSearchState extends State<HeaderSearch> {
         listFilters.removeAt(index);
         widget.onSearch(listFilters);
       });
+    }
+
+    void updateMask() {
+      var type = searchFieldController.value.text
+          .replaceAll('.', '')
+          .replaceAll('-', '')
+          .replaceAll('/', '');
+      if (_selectedFilter['type'] == 'cnpj') {
+        searchFieldController.updateMask('##.###.###/####-##');
+      } else if (type.length <= 11) {
+        searchFieldController.updateMask('###.###.###-###');
+      } else if (type.length > 11) {
+        searchFieldController.updateMask('##.###.###/####-##');
+      } else {
+        searchFieldController.updateMask(defaultMask);
+      }
     }
 
     return LayoutBuilder(
@@ -349,6 +379,8 @@ class _HeaderSearchState extends State<HeaderSearch> {
                                   onChanged: (value) {
                                     setState(() {
                                       _selectedFilter = value!;
+                                      viewModel.form.searchField
+                                          .onValueChange('');
                                     });
                                   },
                                 ),
@@ -366,34 +398,84 @@ class _HeaderSearchState extends State<HeaderSearch> {
                                 searchFieldController.value =
                                     searchFieldController.value
                                         .copyWith(text: snapshot.data);
-                                return TextFormField(
-                                  decoration: InputDecoration(
-                                    labelText: 'Filtro',
-                                    border: const OutlineInputBorder(),
-                                    errorText: snapshot.error?.toString(),
-                                    suffixIcon:
-                                        searchFieldController.value.text.isEmpty
-                                            ? const Text('')
-                                            : OnHoverButton(
-                                                child: IconButton(
-                                                  icon: const Icon(
-                                                    Icons.clear_outlined,
-                                                    color: Colors.red,
+                                if (_selectedFilter != null &&
+                                    (_selectedFilter['type'] == 'cpf_cnpj' ||
+                                        _selectedFilter['type'] == 'cnpj')) {
+                                  updateMask();
+                                } else {
+                                  searchFieldController.updateMask(defaultMask);
+                                }
+                                return _selectedFilter != null &&
+                                        (_selectedFilter['type'] == 'enum' || _selectedFilter['type'] == 'bool') &&
+                                        widget.itemsSelect.isNotEmpty
+                                    ? SelectFormField(
+                                        type: SelectFormFieldType.dropdown,
+                                        items: widget.itemsSelect.where((element) => element['type'] == _selectedFilter['type']).toList(),
+                                        decoration: InputDecoration(
+                                          labelText: 'Filtro',
+                                          border: const OutlineInputBorder(),
+                                          errorText: snapshot.error?.toString(),
+                                          suffixIcon: searchFieldController
+                                                  .value.text.isEmpty
+                                              ? const Text('')
+                                              : OnHoverButton(
+                                                  child: IconButton(
+                                                    icon: const Icon(
+                                                      Icons.clear_outlined,
+                                                      color: Colors.red,
+                                                    ),
+                                                    onPressed: () => viewModel
+                                                        .form.searchField
+                                                        .onValueChange(''),
                                                   ),
-                                                  onPressed: () => viewModel
-                                                      .form.searchField
-                                                      .onValueChange(''),
                                                 ),
-                                              ),
-                                  ),
-                                  enabled: _selectedFilter != null,
-                                  controller: searchFieldController,
-                                  onChanged: (value) {
-                                    viewModel.form.searchField
-                                        .onValueChange(value);
-                                  },
-                                  onFieldSubmitted: (value) => applyFilter(),
-                                );
+                                        ),
+                                        enabled: _selectedFilter != null,
+                                        controller: searchFieldController,
+                                        onChanged: (value) {
+                                          viewModel.form.searchField
+                                              .onValueChange(value);
+                                        },
+                                        onFieldSubmitted: (value) => applyFilter(),
+                                      )
+                                    : TextFormField(
+                                        decoration: InputDecoration(
+                                          labelText: 'Filtro',
+                                          border: const OutlineInputBorder(),
+                                          errorText: snapshot.error?.toString(),
+                                          suffixIcon: searchFieldController
+                                                  .value.text.isEmpty
+                                              ? const Text('')
+                                              : OnHoverButton(
+                                                  child: IconButton(
+                                                    icon: const Icon(
+                                                      Icons.clear_outlined,
+                                                      color: Colors.red,
+                                                    ),
+                                                    onPressed: () => viewModel
+                                                        .form.searchField
+                                                        .onValueChange(''),
+                                                  ),
+                                                ),
+                                        ),
+                                        enabled: _selectedFilter != null,
+                                        controller: searchFieldController,
+                                        inputFormatters: [
+                                          if (_selectedFilter != null &&
+                                              (_selectedFilter['type'] ==
+                                                      'cpf_cnpj' ||
+                                                  _selectedFilter['type'] ==
+                                                      'number'))
+                                            FilteringTextInputFormatter
+                                                .digitsOnly
+                                        ],
+                                        onChanged: (value) {
+                                          viewModel.form.searchField
+                                              .onValueChange(value);
+                                        },
+                                        onFieldSubmitted: (value) =>
+                                            applyFilter(),
+                                      );
                               },
                             ),
                           ),
@@ -694,34 +776,68 @@ class _HeaderSearchState extends State<HeaderSearch> {
                                 searchFieldController.value =
                                     searchFieldController.value
                                         .copyWith(text: snapshot.data);
-                                return TextFormField(
-                                  decoration: InputDecoration(
-                                    labelText: 'Filtro',
-                                    border: const OutlineInputBorder(),
-                                    errorText: snapshot.error?.toString(),
-                                    suffixIcon:
-                                        searchFieldController.value.text.isEmpty
-                                            ? const Text('')
-                                            : OnHoverButton(
-                                                child: IconButton(
-                                                  icon: const Icon(
-                                                    Icons.clear_outlined,
-                                                    color: Colors.red,
+                                return _selectedFilter != null &&
+                                        (_selectedFilter['type'] == 'enum' || _selectedFilter['type'] == 'bool') &&
+                                        widget.itemsSelect.isNotEmpty
+                                    ? SelectFormField(
+                                        type: SelectFormFieldType.dropdown,
+                                        items: widget.itemsSelect.where((element) => element['type'] == _selectedFilter['type']).toList(),
+                                        decoration: InputDecoration(
+                                          labelText: 'Filtro',
+                                          border: const OutlineInputBorder(),
+                                          errorText: snapshot.error?.toString(),
+                                          suffixIcon: searchFieldController
+                                                  .value.text.isEmpty
+                                              ? const Text('')
+                                              : OnHoverButton(
+                                                  child: IconButton(
+                                                    icon: const Icon(
+                                                      Icons.clear_outlined,
+                                                      color: Colors.red,
+                                                    ),
+                                                    onPressed: () => viewModel
+                                                        .form.searchField
+                                                        .onValueChange(''),
                                                   ),
-                                                  onPressed: () => viewModel
-                                                      .form.searchField
-                                                      .onValueChange(''),
                                                 ),
-                                              ),
-                                  ),
-                                  enabled: _selectedFilter != null,
-                                  controller: searchFieldController,
-                                  onChanged: (value) {
-                                    viewModel.form.searchField
-                                        .onValueChange(value);
-                                  },
-                                  onFieldSubmitted: (value) => applyFilter(),
-                                );
+                                        ),
+                                        enabled: _selectedFilter != null,
+                                        controller: searchFieldController,
+                                        onChanged: (value) {
+                                          viewModel.form.searchField
+                                              .onValueChange(value);
+                                        },
+                                        onFieldSubmitted: (value) => applyFilter(),
+                                      )
+                                    : TextFormField(
+                                        decoration: InputDecoration(
+                                          labelText: 'Filtro',
+                                          border: const OutlineInputBorder(),
+                                          errorText: snapshot.error?.toString(),
+                                          suffixIcon: searchFieldController
+                                                  .value.text.isEmpty
+                                              ? const Text('')
+                                              : OnHoverButton(
+                                                  child: IconButton(
+                                                    icon: const Icon(
+                                                      Icons.clear_outlined,
+                                                      color: Colors.red,
+                                                    ),
+                                                    onPressed: () => viewModel
+                                                        .form.searchField
+                                                        .onValueChange(''),
+                                                  ),
+                                                ),
+                                        ),
+                                        enabled: _selectedFilter != null,
+                                        controller: searchFieldController,
+                                        onChanged: (value) {
+                                          viewModel.form.searchField
+                                              .onValueChange(value);
+                                        },
+                                        onFieldSubmitted: (value) =>
+                                            applyFilter(),
+                                      );
                               },
                             ),
                           ),
