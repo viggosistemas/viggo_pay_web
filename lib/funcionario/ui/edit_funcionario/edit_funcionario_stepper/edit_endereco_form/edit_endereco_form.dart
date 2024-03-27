@@ -71,30 +71,38 @@ class EditEnderecoForm extends StatelessWidget {
                   builder: (context, snapshot) {
                     cepControll.value =
                         cepControll.value.copyWith(text: snapshot.data);
-                    return TextFormField(
-                        // onChanged: (value) {
-                        //   _txtAmountValue = value;
-                        // },
-                        controller: cepControll,
-                        decoration: InputDecoration(
-                          labelText: 'CEP',
-                          border: const OutlineInputBorder(),
-                          errorText: snapshot.error?.toString(),
-                        ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          CepInputFormatter()
-                        ],
-                        onChanged: (value) {
-                          viewModel.formEndereco.cep.onValueChange(value);
-                          if (value.isEmpty) {
-                            viewModel.formEndereco.municipio.onValueChange('');
-                            viewModel.formEndereco.municipioName
-                                .onValueChange('');
-                            municipioControll.value =
-                                municipioControll.value.copyWith(text: '');
-                          }
-                        });
+                    return Focus(
+                      onFocusChange: (hasFocus) {
+                        if (!hasFocus && cepControll.text.isNotEmpty) {
+                          viewModel.searchViaCep(cepControll.text);
+                        }
+                      },
+                      child: TextFormField(
+                          // onChanged: (value) {
+                          //   _txtAmountValue = value;
+                          // },
+                          controller: cepControll,
+                          decoration: InputDecoration(
+                            labelText: 'CEP',
+                            border: const OutlineInputBorder(),
+                            errorText: snapshot.error?.toString(),
+                          ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            CepInputFormatter()
+                          ],
+                          onChanged: (value) {
+                            viewModel.formEndereco.cep.onValueChange(value);
+                            if (value.isEmpty) {
+                              viewModel.formEndereco.municipio
+                                  .onValueChange('');
+                              viewModel.formEndereco.municipioName
+                                  .onValueChange('');
+                              municipioControll.value =
+                                  municipioControll.value.copyWith(text: '');
+                            }
+                          }),
+                    );
                   },
                 ),
               ),
@@ -108,23 +116,16 @@ class EditEnderecoForm extends StatelessWidget {
                   builder: (context, snapshot) {
                     municipioControll.value =
                         municipioControll.value.copyWith(text: snapshot.data);
-                    return Focus(
-                      onFocusChange: (hasFocus) {
-                        if (hasFocus && cepControll.text.isNotEmpty) {
-                          viewModel.searchViaCep(cepControll.text);
-                        }
-                      },
-                      child: TextFormField(
-                        // onChanged: (value) {
-                        //   _txtAmountValue = value;
-                        // },
-                        readOnly: true,
-                        controller: municipioControll,
-                        decoration: InputDecoration(
-                          labelText: 'Município',
-                          border: const OutlineInputBorder(),
-                          errorText: snapshot.error?.toString(),
-                        ),
+                    return TextFormField(
+                      // onChanged: (value) {
+                      //   _txtAmountValue = value;
+                      // },
+                      readOnly: true,
+                      controller: municipioControll,
+                      decoration: InputDecoration(
+                        labelText: 'Município',
+                        border: const OutlineInputBorder(),
+                        errorText: snapshot.error?.toString(),
                       ),
                     );
                   },

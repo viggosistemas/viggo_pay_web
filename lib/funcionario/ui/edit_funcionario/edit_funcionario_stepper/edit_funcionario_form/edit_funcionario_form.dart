@@ -63,6 +63,9 @@ class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
       if (widget.entity != null) {
         widget.viewModel.formDados.cpfCnpj
             .onValueChange(widget.entity!.parceiro!.cpfCnpj);
+        cpfCnpjFieldControll.value = cpfCnpjFieldControll.value
+            .copyWith(text: widget.entity!.parceiro!.cpfCnpj);
+        updateMask();
       }
       if (widget.entity != null) {
         widget.viewModel.formDados.apelidoNomeFantasia
@@ -81,10 +84,14 @@ class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
     }
   }
 
-  void updateMask(String type) {
-    if (type.length < 14) {
+  void updateMask() {
+    var type = cpfCnpjFieldControll.value.text
+        .replaceAll('.', '')
+        .replaceAll('-', '')
+        .replaceAll('/', '');
+    if (type.length <= 11) {
       cpfCnpjFieldControll.updateMask('###.###.###-###');
-    } else if (type.length >= 14) {
+    } else if (type.length > 11) {
       cpfCnpjFieldControll.updateMask('##.###.###/####-##');
     } else {
       cpfCnpjFieldControll.updateMask(defaultMask);
@@ -104,22 +111,40 @@ class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
           builder: (context, snapshot) {
             cpfCnpjFieldControll.value =
                 cpfCnpjFieldControll.value.copyWith(text: snapshot.data);
-            updateMask(snapshot.data ?? '');
-            return TextFormField(
-                // onChanged: (value) {
-                //   _txtAmountValue = value;
-                // },
-                controller: cpfCnpjFieldControll,
-                readOnly: widget.entity?.id != null,
-                decoration: InputDecoration(
-                  labelText: 'CPF/CNPJ',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                ),
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                onChanged: (value) {
-                  widget.viewModel.formDados.cpfCnpj.onValueChange(value.replaceAll('.', '').replaceAll('-', '').replaceAll('/', ''));
-                });
+            updateMask();
+            return Focus(
+              onFocusChange: (hasFocus) async {
+                if (!hasFocus && cpfCnpjFieldControll.text.isNotEmpty) {
+                  var result = await widget.viewModel.checkParceiro(
+                      cpfCnpjFieldControll.text
+                          .replaceAll('.', '')
+                          .replaceAll('-', '')
+                          .replaceAll('/', ''));
+                  if (result != null && result == true) {
+                    nomeRazaoSocialFieldControll.setText('');
+                    cpfCnpjFieldControll.setText('');
+                  }
+                }
+              },
+              child: TextFormField(
+                  // onChanged: (value) {
+                  //   _txtAmountValue = value;
+                  // },
+                  controller: cpfCnpjFieldControll,
+                  readOnly: widget.entity?.id != null,
+                  decoration: InputDecoration(
+                    labelText: 'CPF/CNPJ',
+                    border: const OutlineInputBorder(),
+                    errorText: snapshot.error?.toString(),
+                  ),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: (value) {
+                    widget.viewModel.formDados.cpfCnpj.onValueChange(value
+                        .replaceAll('.', '')
+                        .replaceAll('-', '')
+                        .replaceAll('/', ''));
+                  }),
+            );
           },
         ),
         const SizedBox(

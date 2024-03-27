@@ -35,7 +35,7 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
 
   initFormEndereco() {
     var formEnderecoValues = widget.viewModel.formEndereco.getValues();
-    if (formEnderecoValues == null) {
+    if (widget.entity == null && formEnderecoValues == null) {
       return ParceiroEndereco.fromJson({
         'logradouro': '',
         'numero': '',
@@ -51,7 +51,7 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
         return widget.entity!.parceiro!.enderecos[0];
       } else {
         return ParceiroEndereco.fromJson({
-          'logradouro': formEnderecoValues['logradouro'],
+          'logradouro': formEnderecoValues!['logradouro'],
           'numero': formEnderecoValues['numero'],
           'complemento': formEnderecoValues['complemento'],
           'bairro': formEnderecoValues['bairro'],
