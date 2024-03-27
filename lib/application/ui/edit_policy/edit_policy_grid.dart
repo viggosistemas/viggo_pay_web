@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_core_frontend/application/data/models/application_api_dto.dart';
 import 'package:viggo_core_frontend/policies/data/models/policy_api_dto.dart';
 import 'package:viggo_core_frontend/role/data/models/role_api_dto.dart';
+import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
@@ -116,6 +117,62 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
       'type': 'text',
       'icon': Icons.abc,
     },
+    {
+      'label': 'URL',
+      'search_field': 'route.url',
+      'type': 'text',
+      'icon': Icons.route_outlined,
+    },
+    {
+      'label': 'Método',
+      'search_field': 'route.method',
+      'type': 'enum',
+      'icon': Icons.http_outlined,
+    },
+    // {
+    //   'label': 'Tipo',
+    //   'search_field': 'route.bypass',
+    //   'type': 'bool',
+    //   'icon': Icons.shape_line_outlined,
+    // },
+  ];
+
+  final List<Map<String, dynamic>> itemSelect = [
+    // {
+    //   'value': 'bypass',
+    //   'label': 'BYPASS',
+    //   'type': 'bool',
+    // },
+    // {
+    //   'value': 'sysadmin',
+    //   'label': 'SYSADMIN',
+    //   'type': 'bool',
+    // },
+    {
+      'value': METHOD.PUT.name,
+      'label': METHOD.PUT.name,
+      'type': 'enum',
+    },
+    {
+      'value': METHOD.POST.name,
+      'label': METHOD.POST.name,
+      'type': 'enum',
+    },
+    {
+      'value': METHOD.DELETE.name,
+      'label': METHOD.DELETE.name,
+      'type': 'enum',
+    },
+    {
+      'value': METHOD.GET.name,
+      'label': METHOD.GET.name,
+      'type': 'enum',
+    },
+    {
+      'value': METHOD.LIST.name,
+      'label': METHOD.LIST.name,
+      'type': 'enum',
+    },
   ];
 
   void onSearch(List<Map<String, dynamic>> params) {
@@ -129,16 +186,18 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
         .toList();
 
     for (var element in newParams) {
-      var fieldValue = '';
+      if (element['value'].toString().isNotEmpty) {
+        var fieldValue = '';
 
-      if (element['type'] == 'text') {
-        fieldValue = '%${element['value']}%';
-      } else {
-        fieldValue = element['value'];
+        if (element['type'] == 'text') {
+          fieldValue = '%${element['value']}%';
+        } else {
+          fieldValue = element['value'];
+        }
+        filters.addEntries(
+          <String, String>{element['search_field']: fieldValue}.entries,
+        );
       }
-      filters.addEntries(
-        <String, String>{element['search_field']: fieldValue}.entries,
-      );
     }
 
     loadCapabilities(application, filters, roleSelected);
@@ -192,8 +251,8 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
           }
           return ProgressLoading(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.primary,
           );
         } else {
           selectedPolicies = (snapshot.data as List<PolicyApiDto>);
@@ -271,6 +330,7 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
                         onSearch: onSearch,
                         onReload: onReload,
                         notShowAdvancedFilters: true,
+                        itemsSelect: itemSelect,
                       ),
                     ],
                   ),

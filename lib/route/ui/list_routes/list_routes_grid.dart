@@ -42,12 +42,68 @@ class _ListRoutesGridState extends State<ListRoutesGrid> {
     'sysadmin'
   ];
 
+  final List<Map<String, dynamic>> itemSelect = [
+    {
+      'value': 'bypass',
+      'label': 'BYPASS',
+      'type': 'bool',
+    },
+    {
+      'value': 'sysadmin',
+      'label': 'SYSADMIN',
+      'type': 'bool',
+    },
+    {
+      'value': METHOD.PUT.name,
+      'label': METHOD.PUT.name,
+      'type': 'enum',
+    },
+    {
+      'value': METHOD.POST.name,
+      'label': METHOD.POST.name,
+      'type': 'enum',
+    },
+    {
+      'value': METHOD.DELETE.name,
+      'label': METHOD.DELETE.name,
+      'type': 'enum',
+    },
+    {
+      'value': METHOD.GET.name,
+      'label': METHOD.GET.name,
+      'type': 'enum',
+    },
+    {
+      'value': METHOD.LIST.name,
+      'label': METHOD.LIST.name,
+      'type': 'enum',
+    },
+  ];
+
   List<Map<String, dynamic>> searchFields = [
     {
       'label': 'Nome',
       'search_field': 'name',
       'type': 'text',
       'icon': Icons.abc,
+    },
+    {
+      'label': 'URL',
+      'search_field': 'url',
+      'type': 'text',
+      'icon': Icons.route_outlined,
+    },
+    {
+      'label': 'Método',
+      'search_field': 'method',
+      'type': 'enum',
+      'icon': Icons.http_outlined,
+    },
+    {
+      'label': 'Tipo',
+      'search_field': 'bypass',
+      'type': 'bool',
+      'icon': Icons.shape_line_outlined,
     },
   ];
 
@@ -67,16 +123,24 @@ class _ListRoutesGridState extends State<ListRoutesGrid> {
         .toList();
 
     for (var element in newParams) {
-      var fieldValue = '';
+      if (element['value'].toString().isNotEmpty) {
+        var fieldValue = '';
 
-      if (element['type'] == 'text') {
-        fieldValue = '%${element['value']}%';
-      } else {
-        fieldValue = element['value'];
+        if (element['type'] == 'text') {
+          fieldValue = '%${element['value']}%';
+        } else {
+          fieldValue = element['value'];
+        }
+        if(element['search_field'] == 'bypass') {
+          filters.addEntries(
+            <String, String>{element['value']: 'true'}.entries,
+          );
+        }else{
+          filters.addEntries(
+            <String, String>{element['search_field']: fieldValue}.entries,
+          );
+        }
       }
-      filters.addEntries(
-        <String, String>{element['search_field']: fieldValue}.entries,
-      );
     }
 
     filters.addEntries(
@@ -116,9 +180,11 @@ class _ListRoutesGridState extends State<ListRoutesGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return ProgressLoading(color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,);
+          return ProgressLoading(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.primary,
+          );
         } else {
           List<RouteApiDto> items = (snapshot.data as List<RouteApiDto>);
           return SizedBox(
@@ -133,6 +199,7 @@ class _ListRoutesGridState extends State<ListRoutesGrid> {
                     onReload: onReload,
                     onSearch: onSearch,
                     searchFields: searchFields,
+                    itemsSelect: itemSelect,
                   ),
                   const SizedBox(
                     height: 10,

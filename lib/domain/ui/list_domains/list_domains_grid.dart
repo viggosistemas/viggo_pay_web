@@ -34,7 +34,7 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
     },
   ];
 
-  static const domainsRowsValues = ['name', 'application'];
+  static const domainsRowsValues = ['name', 'display_name', 'application'];
 
   static const domainsListLabelIncludes = ['name'];
 
@@ -44,6 +44,18 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
       'search_field': 'name',
       'type': 'text',
       'icon': Icons.abc,
+    },
+    {
+      'label': 'Nome formal',
+      'search_field': 'display_name',
+      'type': 'text',
+      'icon': Icons.abc,
+    },
+    {
+      'label': 'Aplicação',
+      'search_field': 'application.name',
+      'type': 'text',
+      'icon': Icons.domain_outlined,
     },
   ];
 
@@ -63,16 +75,18 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
         .toList();
 
     for (var element in newParams) {
-      var fieldValue = '';
+      if (element['value'].toString().isNotEmpty) {
+        var fieldValue = '';
 
-      if (element['type'] == 'text') {
-        fieldValue = '%${element['value']}%';
-      } else {
-        fieldValue = element['value'];
+        if (element['type'] == 'text') {
+          fieldValue = '%${element['value']}%';
+        } else {
+          fieldValue = element['value'];
+        }
+        filters.addEntries(
+          <String, String>{element['search_field']: fieldValue}.entries,
+        );
       }
-      filters.addEntries(
-        <String, String>{element['search_field']: fieldValue}.entries,
-      );
     }
 
     filters.addEntries(
@@ -114,8 +128,8 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
           onReload();
           return ProgressLoading(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.primary,
           );
         } else {
           List<DomainApiDto> items = (snapshot.data as List<DomainApiDto>);
@@ -146,6 +160,15 @@ class _ListDomainsGridState extends State<ListDomainsGrid> {
                         DataColumn(
                           label: Text(
                             'Nome',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Nome formal',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,

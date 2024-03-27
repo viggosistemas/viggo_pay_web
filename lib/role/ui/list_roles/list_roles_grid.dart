@@ -19,6 +19,20 @@ class ListRolesGrid extends StatefulWidget {
 class _ListRolesGridState extends State<ListRolesGrid> {
   ListRoleWebViewModel viewModel = locator.get<ListRoleWebViewModel>();
 
+  final List<Map<String, dynamic>> itemSelect = [
+    {
+      'value': RoleDataView.DOMAIN.name,
+      'label': RoleDataView.DOMAIN.name,
+      'type': 'enum',
+    },
+    {
+      'value': RoleDataView.MULTI_DOMAIN.name,
+      'label': RoleDataView.MULTI_DOMAIN.name.replaceAll('_', ' '),
+      'type': 'enum',
+    },
+  ];
+
+
   static const rolesValidActions = [
     {
       'backendUrl': '/roles',
@@ -34,7 +48,7 @@ class _ListRolesGridState extends State<ListRolesGrid> {
     },
   ];
 
-  static const rolesRowValues = ['name'];
+  static const rolesRowValues = ['name', 'dataView'];
 
   List<Map<String, dynamic>> searchFields = [
     {
@@ -42,6 +56,12 @@ class _ListRolesGridState extends State<ListRolesGrid> {
       'search_field': 'name',
       'type': 'text',
       'icon': Icons.abc,
+    },
+    {
+      'label': 'Tipo',
+      'search_field': 'data_view',
+      'type': 'enum',
+      'icon': Icons.shape_line_outlined,
     },
   ];
 
@@ -61,16 +81,18 @@ class _ListRolesGridState extends State<ListRolesGrid> {
         .toList();
 
     for (var element in newParams) {
-      var fieldValue = '';
+      if (element['value'].toString().isNotEmpty) {
+        var fieldValue = '';
 
-      if (element['type'] == 'text') {
-        fieldValue = '%${element['value']}%';
-      } else {
-        fieldValue = element['value'];
+        if (element['type'] == 'text') {
+          fieldValue = '%${element['value']}%';
+        } else {
+          fieldValue = element['value'];
+        }
+        filters.addEntries(
+          <String, String>{element['search_field']: fieldValue}.entries,
+        );
       }
-      filters.addEntries(
-        <String, String>{element['search_field']: fieldValue}.entries,
-      );
     }
 
     filters.addEntries(
@@ -109,9 +131,11 @@ class _ListRolesGridState extends State<ListRolesGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return ProgressLoading(color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,);
+          return ProgressLoading(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.primary,
+          );
         } else {
           List<RoleApiDto> items = (snapshot.data as List<RoleApiDto>);
           return SizedBox(
@@ -126,6 +150,7 @@ class _ListRolesGridState extends State<ListRolesGrid> {
                     onReload: onReload,
                     onSearch: onSearch,
                     searchFields: searchFields,
+                    itemsSelect: itemSelect,
                   ),
                   const SizedBox(
                     height: 10,
@@ -141,6 +166,15 @@ class _ListRolesGridState extends State<ListRolesGrid> {
                         DataColumn(
                           label: Text(
                             'Nome',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Tipo',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,

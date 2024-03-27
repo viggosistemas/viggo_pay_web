@@ -54,13 +54,19 @@ class _ListUsersGridState extends State<ListUsersGrid> {
       'type': 'text',
       'icon': Icons.abc,
     },
+    {
+      'label': 'Domínio',
+      'search_field': 'domain.name',
+      'type': 'text',
+      'icon': Icons.cases_outlined,
+    },
   ];
 
   Map<String, String> filters = {
     'order_by': 'name',
     'list_options': ListOptions.ACTIVE_ONLY.name,
   };
-  
+
   void onSearch(List<Map<String, dynamic>> params) {
     filters = {};
     var newParams = params
@@ -72,16 +78,18 @@ class _ListUsersGridState extends State<ListUsersGrid> {
         .toList();
 
     for (var element in newParams) {
-      var fieldValue = '';
+      if (element['value'].toString().isNotEmpty) {
+        var fieldValue = '';
 
-      if (element['type'] == 'text') {
-        fieldValue = '%${element['value']}%';
-      } else {
-        fieldValue = element['value'];
+        if (element['type'] == 'text') {
+          fieldValue = '%${element['value']}%';
+        } else {
+          fieldValue = element['value'];
+        }
+        filters.addEntries(
+          <String, String>{element['search_field']: fieldValue}.entries,
+        );
       }
-      filters.addEntries(
-        <String, String>{element['search_field']: fieldValue}.entries,
-      );
     }
 
     filters.addEntries(
@@ -132,9 +140,11 @@ class _ListUsersGridState extends State<ListUsersGrid> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return ProgressLoading(color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,);
+          return ProgressLoading(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.primary,
+          );
         } else {
           List<UserApiDto> items = (snapshot.data as List<UserApiDto>);
           return SizedBox(
