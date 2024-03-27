@@ -48,7 +48,7 @@ class EditDomainAccountInfo extends StatelessWidget {
     }
     if (entity != null) {
       viewModel.form.countryPhone
-          .onValueChange(entity!.clientMobilePhoneCountry);
+          .onValueChange(entity?.clientMobilePhoneCountry ?? '');
     }
 
     return Column(

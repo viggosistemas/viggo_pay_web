@@ -29,70 +29,70 @@ class EditInfoEndereco extends StatelessWidget {
           width: double.infinity,
           child: Row(
             children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.1,
+              Flexible(
+                flex: 2,
                 child: StreamBuilder<String>(
                     stream: viewModel.formAddress.cep.field,
                     builder: (context, snapshot) {
                       cepController.value =
                           cepController.value.copyWith(text: snapshot.data);
-                      return TextFormField(
-                          // onChanged: (value) {
-                          //   _txtAmountValue = value;
-                          // },
-                          controller: cepController,
-                          decoration: InputDecoration(
-                            labelText: 'CEP',
-                            border: const OutlineInputBorder(),
-                            errorText: snapshot.error?.toString(),
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            CepInputFormatter()
-                          ],
-                          onChanged: (value) {
-                            viewModel.formAddress.cep.onValueChange(value);
-                            if (value.isEmpty) {
-                              viewModel.formAddress.cidade.onValueChange('');
-                              viewModel.formAddress.estado.onValueChange('');
-                              cidadeController.value =
-                                  cidadeController.value.copyWith(text: '');
-                            }
-                          });
+                      return Focus(
+                        onFocusChange: (hasFocus) {
+                          if (!hasFocus && cepController.text.isNotEmpty) {
+                            viewModel.searchViaCep(cepController.text);
+                          }
+                        },
+                        child: TextFormField(
+                            // onChanged: (value) {
+                            //   _txtAmountValue = value;
+                            // },
+                            controller: cepController,
+                            decoration: InputDecoration(
+                              labelText: 'CEP',
+                              border: const OutlineInputBorder(),
+                              errorText: snapshot.error?.toString(),
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              CepInputFormatter()
+                            ],
+                            onChanged: (value) {
+                              viewModel.formAddress.cep.onValueChange(value);
+                              if (value.isEmpty) {
+                                viewModel.formAddress.cidade.onValueChange('');
+                                viewModel.formAddress.estado.onValueChange('');
+                                cidadeController.value =
+                                    cidadeController.value.copyWith(text: '');
+                              }
+                            }),
+                      );
                     }),
               ),
               const SizedBox(
                 width: 10,
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.1,
+              Flexible(
+                flex: 2,
                 child: StreamBuilder<String>(
                     stream: viewModel.formAddress.cidade.field,
                     builder: (context, snapshot) {
                       estadoController.text = viewModel.estadoAddress;
                       cidadeController.value = cidadeController.value.copyWith(
                           text: '${snapshot.data}/${estadoController.text}');
-                      return Focus(
-                        onFocusChange: (hasFocus) {
-                          if (hasFocus && cepController.text.isNotEmpty) {
-                            viewModel.searchViaCep(cepController.text);
-                          }
-                        },
-                        child: TextFormField(
-                          // onChanged: (value) {
-                          //   _txtAmountValue = value;
-                          // },
-                          readOnly: true,
-                          controller: cidadeController,
-                          decoration: InputDecoration(
-                            labelText: 'Cidade',
-                            border: const OutlineInputBorder(),
-                            errorText: snapshot.error?.toString(),
-                          ),
-                          // onChanged: (value) {
-                          //   viewModel.formAddress.onCidadeChange(value);
-                          // },
+                      return TextFormField(
+                        // onChanged: (value) {
+                        //   _txtAmountValue = value;
+                        // },
+                        readOnly: true,
+                        controller: cidadeController,
+                        decoration: InputDecoration(
+                          labelText: 'Cidade',
+                          border: const OutlineInputBorder(),
+                          errorText: snapshot.error?.toString(),
                         ),
+                        // onChanged: (value) {
+                        //   viewModel.formAddress.onCidadeChange(value);
+                        // },
                       );
                     }),
                 // StreamBuilder<String>(
@@ -118,8 +118,8 @@ class EditInfoEndereco extends StatelessWidget {
               const SizedBox(
                 width: 10,
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.468,
+              Flexible(
+                flex: 6,
                 child: StreamBuilder<String>(
                     stream: viewModel.formAddress.logradouro.field,
                     builder: (context, snapshot) {
@@ -151,8 +151,8 @@ class EditInfoEndereco extends StatelessWidget {
           width: double.infinity,
           child: Row(
             children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.3,
+              Flexible(
+                flex: 3,
                 child: StreamBuilder<String>(
                     stream: viewModel.formAddress.bairro.field,
                     builder: (context, snapshot) {
@@ -176,8 +176,8 @@ class EditInfoEndereco extends StatelessWidget {
               const SizedBox(
                 width: 10,
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.3,
+              Flexible(
+                flex: 6,
                 child: StreamBuilder<String>(
                     stream: viewModel.formAddress.complemento.field,
                     builder: (context, snapshot) {
@@ -202,8 +202,8 @@ class EditInfoEndereco extends StatelessWidget {
               const SizedBox(
                 width: 10,
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.068,
+              Flexible(
+                flex: 1,
                 child: StreamBuilder<String>(
                     stream: viewModel.formAddress.numero.field,
                     builder: (context, snapshot) {

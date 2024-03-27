@@ -117,8 +117,8 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
               viewModel.getEntities();
               return ProgressLoading(
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black,
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(context).colorScheme.primary,
               );
             } else {
               return Card(
