@@ -60,8 +60,7 @@ class EditDomainAccountDocuments extends StatelessWidget {
                           textDirection: TextDirection.rtl,
                           child: OutlinedButton.icon(
                             onPressed: () async {
-                              FilePickerResult? result =
-                                  await FilePicker.platform.pickFiles(
+                              FilePickerResult? result = await FilePicker.platform.pickFiles(
                                 allowMultiple: false,
                                 allowedExtensions: ['pdf'],
                                 type: FileType.custom,
@@ -113,58 +112,64 @@ class EditDomainAccountDocuments extends StatelessWidget {
                         if (snapshot.data == null) {
                           viewModel.onLoadDomainAccount(showMsgError, entity);
                         }
-                        return SizedBox(
-                          height: 100,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: snapshot.data?.length ?? 0,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Row(
-                                  children: [
-                                    const Icon(Icons.file_copy_outlined),
-                                    const SizedBox(
-                                      width: 20,
-                                    ),
-                                    Flexible(
-                                      child: Container(
-                                        padding: const EdgeInsets.only(
-                                          right: 13,
-                                        ),
-                                        child: Tooltip(
-                                          message: snapshot.data?[index]['title'] ?? '',
-                                          child: Text(
-                                            snapshot.data?[index]['title'] ?? '',
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
+                        return snapshot.data!.isEmpty
+                            ? Center(
+                                child: Text(
+                                  'Nenhum arquivo selecionado!',
+                                  style: Theme.of(context).textTheme.titleMedium!,
+                                ),
+                              )
+                            : SizedBox(
+                                height: 100,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.data?.length ?? 0,
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                      title: Row(
+                                        children: [
+                                          const Icon(Icons.file_copy_outlined),
+                                          const SizedBox(
+                                            width: 20,
+                                          ),
+                                          Flexible(
+                                            child: Container(
+                                              padding: const EdgeInsets.only(
+                                                right: 13,
+                                              ),
+                                              child: Tooltip(
+                                                message: snapshot.data?[index]['title']+'-'+snapshot.data?[index]['tipo'] ?? '',
+                                                child: Text(
+                                                  snapshot.data?[index]['title']+'-'+snapshot.data?[index]['tipo'] ?? '',
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    ),
-                                  ],
+                                      trailing: !readOnly
+                                          ? OnHoverButton(
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  viewModel.onRemoveItem(snapshot.data![index]);
+                                                },
+                                                tooltip: 'Remover documento',
+                                                icon: const Icon(
+                                                  Icons.delete_outline,
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            )
+                                          : const Text(''),
+                                    );
+                                  },
                                 ),
-                                trailing: !readOnly
-                                    ? OnHoverButton(
-                                      child: IconButton(
-                                          onPressed: () {
-                                            viewModel.onRemoveItem(
-                                                snapshot.data![index]);
-                                          },
-                                          tooltip: 'Remover documento',
-                                          icon: const Icon(
-                                            Icons.delete_outline,
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                    )
-                                    : const Text(''),
                               );
-                            },
-                          ),
-                        );
                       },
                     ),
                   ],
