@@ -13,8 +13,7 @@ import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 class ComprovantePdfViewer extends StatefulWidget {
   ComprovantePdfViewer({super.key});
 
-  final MatrizTransferenciaViewModel viewModel =
-      locator.get<MatrizTransferenciaViewModel>();
+  final MatrizTransferenciaViewModel viewModel = locator.get<MatrizTransferenciaViewModel>();
 
   @override
   State<ComprovantePdfViewer> createState() => _ComprovantePdfViewerState();
@@ -23,13 +22,13 @@ class ComprovantePdfViewer extends StatefulWidget {
 class _ComprovantePdfViewerState extends State<ComprovantePdfViewer> {
   @override
   Widget build(BuildContext context) {
-    navigateBack() {
+    navigateBack(dynamic success) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         widget.viewModel.catchEntity();
         widget.viewModel.loadUltimatransacao(widget.viewModel.materaId);
         widget.viewModel.loadTransacoes(widget.viewModel.materaId);
         widget.viewModel.loadSaldo(widget.viewModel.materaId);
-        Navigator.of(context).pop(true);
+        Navigator.of(context).pop(success);
       });
     }
 
@@ -38,9 +37,7 @@ class _ComprovantePdfViewerState extends State<ComprovantePdfViewer> {
       required String downloadName,
     }) {
       final base64 = base64Encode(bytes);
-      final anchor =
-          AnchorElement(href: 'data:application/octet-stream;base64,$base64')
-            ..target = 'blank';
+      final anchor = AnchorElement(href: 'data:application/octet-stream;base64,$base64')..target = 'blank';
       // ignore: unnecessary_null_comparison
       if (downloadName != null) {
         anchor.download = downloadName;
@@ -55,7 +52,7 @@ class _ComprovantePdfViewerState extends State<ComprovantePdfViewer> {
       canPop: false,
       onPopInvoked: (bool didPop) {
         if (didPop) return;
-        navigateBack();
+        navigateBack(null);
       },
       child: SafeArea(
         child: Scaffold(
@@ -71,8 +68,7 @@ class _ComprovantePdfViewerState extends State<ComprovantePdfViewer> {
                   children: <Widget>[
                     PdfViewPinch(
                       controller: PdfControllerPinch(
-                        document:
-                            PdfDocument.openData(transfSnapshot.data!.right),
+                        document: PdfDocument.openData(transfSnapshot.data!.right),
                       ),
                       padding: 50,
                     ),
@@ -98,7 +94,7 @@ class _ComprovantePdfViewerState extends State<ComprovantePdfViewer> {
                           ),
                           OnHoverButton(
                             child: IconButton(
-                              onPressed: () => navigateBack(),
+                              onPressed: () => navigateBack(true),
                               icon: const Icon(
                                 Icons.cancel_outlined,
                                 color: Colors.red,
@@ -111,7 +107,7 @@ class _ComprovantePdfViewerState extends State<ComprovantePdfViewer> {
                   ],
                 );
               } else {
-                navigateBack();
+                navigateBack(false);
                 return const Center(child: CircularProgressIndicator());
               }
             },

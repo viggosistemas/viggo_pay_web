@@ -43,203 +43,201 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
     final valorTransferido =
         viewModel.formStepValor.getValues()!['valor'].toString();
 
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Quem irá receber a transferência no valor de R\$ $valorTransferido?',
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              Text(
-                'Encontre na listagem abaixo qual contato irá receber o valor ou crie um novo contato PIX.',
-                style: Theme.of(context).textTheme.titleSmall!,
-              ),
-            ],
-          ),
-          StreamBuilder<String>(
-              stream: viewModel.formStepSelectPix.contato.field,
-              builder: (context, contatoData) {
-                contatoTransferenciaControll.value =
-                    contatoTransferenciaControll.value
-                        .copyWith(text: contatoData.data);
-                return ListTile(
-                  title: TextFormField(
-                    controller: contatoTransferenciaControll,
-                    decoration: InputDecoration(
-                      labelText: 'Nome, CPF/CNPJ ou Chave PIX',
-                      border: const OutlineInputBorder(),
-                      errorText: contatoData.error?.toString(),
-                    ),
-                    onChanged: (value) {
-                      viewModel.formStepSelectPix.contato.onValueChange(value);
-                    },
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Quem irá receber a transferência no valor de R\$ $valorTransferido?',
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
-                  trailing: OnHoverButton(
-                    child: IconButton(
-                      onPressed: () async {
-                        var result = await dialogs
-                            .addDialog(contatoTransferenciaControll.text);
-                        if (result != null) {
-                          setState(() {
-                            widget.pixToSendList.add(result);
-                            viewModel.formStepSelectPix.pixSelect
-                                .onValueChange(jsonEncode(result));
-                          });
-                        }
-                      },
-                      tooltip: 'Adicionar nova chave Pix',
-                      icon: Icon(
-                        Icons.add_outlined,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                );
-              }),
-          Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.symmetric(
-              vertical: 16,
-              horizontal: 8,
             ),
-            width: double.infinity,
-            height: 300,
-            child: ListView.builder(
-              itemCount: widget.pixToSendList.length,
-              itemBuilder: (ctx, index) => StreamBuilder<String>(
-                  stream: viewModel.formStepSelectPix.pixSelect.field,
-                  builder: (context, pixSelectData) {
-                    return ListTile(
-                      horizontalTitleGap: 20,
-                      hoverColor: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                      leading: CircleAvatar(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        child: Text(
-                          widget.pixToSendList[index].holderName
-                              .substring(0, 2)
-                              .toUpperCase(),
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          ),
+            Text(
+              'Encontre na listagem abaixo qual contato irá receber o valor ou crie um novo contato PIX.',
+              style: Theme.of(context).textTheme.titleSmall!,
+            ),
+          ],
+        ),
+        StreamBuilder<String>(
+            stream: viewModel.formStepSelectPix.contato.field,
+            builder: (context, contatoData) {
+              contatoTransferenciaControll.value =
+                  contatoTransferenciaControll.value
+                      .copyWith(text: contatoData.data);
+              return ListTile(
+                title: TextFormField(
+                  controller: contatoTransferenciaControll,
+                  decoration: InputDecoration(
+                    labelText: 'Nome, CPF/CNPJ ou Chave PIX',
+                    border: const OutlineInputBorder(),
+                    errorText: contatoData.error?.toString(),
+                  ),
+                  onChanged: (value) {
+                    viewModel.formStepSelectPix.contato.onValueChange(value);
+                  },
+                ),
+                trailing: OnHoverButton(
+                  child: IconButton(
+                    onPressed: () async {
+                      var result = await dialogs
+                          .addDialog(contatoTransferenciaControll.text);
+                      if (result != null) {
+                        setState(() {
+                          widget.pixToSendList.add(result);
+                          viewModel.formStepSelectPix.pixSelect
+                              .onValueChange(jsonEncode(result));
+                        });
+                      }
+                    },
+                    tooltip: 'Adicionar nova chave Pix',
+                    icon: Icon(
+                      Icons.add_outlined,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+              );
+            }),
+        Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: 8,
+          ),
+          width: double.infinity,
+          height: 200,
+          child: ListView.builder(
+            itemCount: widget.pixToSendList.length,
+            itemBuilder: (ctx, index) => StreamBuilder<String>(
+                stream: viewModel.formStepSelectPix.pixSelect.field,
+                builder: (context, pixSelectData) {
+                  return ListTile(
+                    horizontalTitleGap: 20,
+                    hoverColor: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                    leading: CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      child: Text(
+                        widget.pixToSendList[index].holderName
+                            .substring(0, 2)
+                            .toUpperCase(),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
-                      contentPadding: const EdgeInsets.only(right: 16),
-                      title: Text(
-                        widget.pixToSendList[index].holderName,
-                        style: GoogleFonts.lato(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
+                    ),
+                    contentPadding: const EdgeInsets.only(right: 16),
+                    title: Text(
+                      widget.pixToSendList[index].holderName,
+                      style: GoogleFonts.lato(
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text(
+                          widget.pixToSendList[index].alias,
+                          style: GoogleFonts.lato(
+                            fontSize: 12,
+                            color: Colors.black.withOpacity(0.8),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Text(
-                            widget.pixToSendList[index].alias,
-                            style: GoogleFonts.lato(
-                              fontSize: 12,
-                              color: Colors.black.withOpacity(0.8),
-                              fontWeight: FontWeight.bold,
-                            ),
+                        Text(
+                          // ignore: prefer_interpolation_to_compose_strings, prefer_adjacent_string_concatenation
+                          '${widget.pixToSendList[index].pspName} - ' +
+                              'Ag: ${widget.pixToSendList[index].destinationBranch} - ' +
+                              'Conta: ${widget.pixToSendList[index].destinationAccount}',
+                          style: GoogleFonts.lato(
+                            fontSize: 12,
+                            color: Colors.black.withOpacity(0.8),
+                            fontWeight: FontWeight.bold,
                           ),
-                          Text(
-                            // ignore: prefer_interpolation_to_compose_strings, prefer_adjacent_string_concatenation
-                            '${widget.pixToSendList[index].pspName} - ' +
-                                'Ag: ${widget.pixToSendList[index].destinationBranch} - ' +
-                                'Conta: ${widget.pixToSendList[index].destinationAccount}',
-                            style: GoogleFonts.lato(
-                              fontSize: 12,
-                              color: Colors.black.withOpacity(0.8),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      onTap: () {
-                        if (pixSelectData.data != null) {
-                          var pix = PixToSendApiDto.fromJson(
-                              jsonDecode(pixSelectData.data!));
-                          if (widget.pixToSendList[index].id == pix.id) {
-                            viewModel.formStepSelectPix.pixSelect
-                                .onValueChange('');
-                          } else {
-                            viewModel.formStepSelectPix.pixSelect.onValueChange(
-                                jsonEncode(widget.pixToSendList[index]));
-                          }
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      if (pixSelectData.data != null) {
+                        var pix = PixToSendApiDto.fromJson(
+                            jsonDecode(pixSelectData.data!));
+                        if (widget.pixToSendList[index].id == pix.id) {
+                          viewModel.formStepSelectPix.pixSelect
+                              .onValueChange('');
                         } else {
                           viewModel.formStepSelectPix.pixSelect.onValueChange(
                               jsonEncode(widget.pixToSendList[index]));
                         }
-                      },
-                      trailing: Icon(
-                        Icons.check_circle_outline,
-                        color: getColorSelect(
-                          pixSelectData.data,
-                          widget.pixToSendList[index],
-                        ),
+                      } else {
+                        viewModel.formStepSelectPix.pixSelect.onValueChange(
+                            jsonEncode(widget.pixToSendList[index]));
+                      }
+                    },
+                    trailing: Icon(
+                      Icons.check_circle_outline,
+                      color: getColorSelect(
+                        pixSelectData.data,
+                        widget.pixToSendList[index],
                       ),
-                    );
-                  }),
-            ),
+                    ),
+                  );
+                }),
           ),
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              OnHoverButton(
-                child: ElevatedButton.icon(
-                  onPressed: () => widget.changePage(widget.currentPage - 1),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                  ),
-                  icon: const Icon(
-                    Icons.arrow_back_outlined,
-                    size: 18,
-                  ),
-                  label: const Text('Voltar'),
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            OnHoverButton(
+              child: ElevatedButton.icon(
+                onPressed: () => widget.changePage(widget.currentPage - 1),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
                 ),
+                icon: const Icon(
+                  Icons.arrow_back_outlined,
+                  size: 18,
+                ),
+                label: const Text('Voltar'),
               ),
-              StreamBuilder<bool>(
-                  stream: viewModel.formStepSelectPix.isValid,
-                  builder: (context, validForm) {
-                    return OnHoverButton(
-                      child: Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: ElevatedButton.icon(
-                          onPressed: () =>
-                              validForm.data != null && validForm.data == true
-                                  ? widget.changePage(widget.currentPage + 1)
-                                  : {},
-                          icon: const Icon(
-                            Icons.arrow_back_outlined,
-                            size: 18,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: validForm.data != null &&
-                                      validForm.data == true
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Colors.grey),
-                          label: const Text('Próximo'),
+            ),
+            StreamBuilder<bool>(
+                stream: viewModel.formStepSelectPix.isValid,
+                builder: (context, validForm) {
+                  return OnHoverButton(
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: ElevatedButton.icon(
+                        onPressed: () =>
+                            validForm.data != null && validForm.data == true
+                                ? widget.changePage(widget.currentPage + 1)
+                                : {},
+                        icon: const Icon(
+                          Icons.arrow_back_outlined,
+                          size: 18,
                         ),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: validForm.data != null &&
+                                    validForm.data == true
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.grey),
+                        label: const Text('Próximo'),
                       ),
-                    );
-                  }),
-            ],
-          ),
-        ],
-      ),
+                    ),
+                  );
+                }),
+          ],
+        ),
+      ],
     );
   }
 }

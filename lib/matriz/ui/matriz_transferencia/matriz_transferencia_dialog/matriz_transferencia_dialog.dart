@@ -5,6 +5,7 @@ import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferen
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/saldo_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
+import 'package:viggo_pay_admin/utils/container.dart';
 
 class MatrizTransferenciaDialog {
   MatrizTransferenciaDialog({required this.context});
@@ -16,6 +17,7 @@ class MatrizTransferenciaDialog {
     required String? materaId,
     required SaldoApiDto saldo,
     required List<PixToSendApiDto> pixToSendList,
+    required BoxConstraints constraints,
   }) {
     return showDialog(
       context: context,
@@ -45,10 +47,7 @@ class MatrizTransferenciaDialog {
                               children: [
                                 Text(
                                   'Transferindo saldo',
-                                  style: Theme.of(ctx)
-                                      .textTheme
-                                      .titleLarge!
-                                      .copyWith(
+                                  style: Theme.of(ctx).textTheme.titleLarge!.copyWith(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -72,16 +71,14 @@ class MatrizTransferenciaDialog {
                         ),
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.max,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.3,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.6,
+                                  width: ContainerClass().maxWidthContainer(constraints, context, true, percentWidth: 0.3),
+                                  height: 500,
                                   child: MatrizTransferenciaStepper(
                                     materaId: materaId,
                                     saldo: saldo,

@@ -54,58 +54,41 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
 
   //FORMS_FIELDS
   final EditValorStepFormFields formStepValor = EditValorStepFormFields();
-  final EditSelectPixStepFormFields formStepSelectPix =
-      EditSelectPixStepFormFields();
+  final EditSelectPixStepFormFields formStepSelectPix = EditSelectPixStepFormFields();
   final EditSenhaStepFormFields formStepSenha = EditSenhaStepFormFields();
 
   final AlterarSenhaPixFormFields formSenha = AlterarSenhaPixFormFields();
 
   //STREAMS
-  final StreamController<DomainAccountApiDto?> _streamMatrizController =
-      StreamController<DomainAccountApiDto?>.broadcast();
+  final StreamController<DomainAccountApiDto?> _streamMatrizController = StreamController<DomainAccountApiDto?>.broadcast();
   Stream<DomainAccountApiDto?> get matriz => _streamMatrizController.stream;
 
-  final StreamController<bool> _streamControllerSuccess =
-      StreamController<bool>.broadcast();
+  final StreamController<bool> _streamControllerSuccess = StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
-  final StreamController<List<TransacaoApiDto>> _streamTransacoesController =
-      StreamController<List<TransacaoApiDto>>.broadcast();
-  Stream<List<TransacaoApiDto>> get transacoes =>
-      _streamTransacoesController.stream;
+  final StreamController<List<TransacaoApiDto>> _streamTransacoesController = StreamController<List<TransacaoApiDto>>.broadcast();
+  Stream<List<TransacaoApiDto>> get transacoes => _streamTransacoesController.stream;
 
-  final StreamController<TransacaoApiDto> _streamUltimaTransacaoController =
-      StreamController<TransacaoApiDto>.broadcast();
-  Stream<TransacaoApiDto> get ultimaTransacao =>
-      _streamUltimaTransacaoController.stream;
+  final StreamController<TransacaoApiDto> _streamUltimaTransacaoController = StreamController<TransacaoApiDto>.broadcast();
+  Stream<TransacaoApiDto> get ultimaTransacao => _streamUltimaTransacaoController.stream;
 
-  final StreamController<SaldoApiDto> _streamSaldoController =
-      StreamController<SaldoApiDto>.broadcast();
+  final StreamController<SaldoApiDto> _streamSaldoController = StreamController<SaldoApiDto>.broadcast();
   Stream<SaldoApiDto> get saldo => _streamSaldoController.stream;
 
-  final StreamController<List<dynamic>> _streamExtratoController =
-      StreamController<List<dynamic>>.broadcast();
+  final StreamController<List<dynamic>> _streamExtratoController = StreamController<List<dynamic>>.broadcast();
   Stream<List<dynamic>> get extrato => _streamExtratoController.stream;
 
-  final StreamController<ChavePixApiDto> _streamChavePixController =
-      StreamController<ChavePixApiDto>.broadcast();
+  final StreamController<ChavePixApiDto> _streamChavePixController = StreamController<ChavePixApiDto>.broadcast();
   Stream<ChavePixApiDto> get chavePix => _streamChavePixController.stream;
 
-  final StreamController<DestinatarioApiDto> _streamDestinatarioController =
-      StreamController<DestinatarioApiDto>.broadcast();
-  Stream<DestinatarioApiDto> get destinatarioInfo =>
-      _streamDestinatarioController.stream;
+  final StreamController<DestinatarioApiDto> _streamDestinatarioController = StreamController<DestinatarioApiDto>.broadcast();
+  Stream<DestinatarioApiDto> get destinatarioInfo => _streamDestinatarioController.stream;
 
-  final StreamController<List<PixToSendApiDto>>
-      _streamChavePixToSendsController =
-      StreamController<List<PixToSendApiDto>>.broadcast();
-  Stream<List<PixToSendApiDto>> get chavePixToSends =>
-      _streamChavePixToSendsController.stream;
+  final StreamController<List<PixToSendApiDto>> _streamChavePixToSendsController = StreamController<List<PixToSendApiDto>>.broadcast();
+  Stream<List<PixToSendApiDto>> get chavePixToSends => _streamChavePixToSendsController.stream;
 
-  final _streamComprovanteController =
-      BehaviorSubject<Either<bool, Uint8List>?>();
-  Stream<Either<bool, Uint8List>?> get extratoPdf =>
-      _streamComprovanteController.stream;
+  final _streamComprovanteController = BehaviorSubject<Either<bool, Uint8List>?>();
+  Stream<Either<bool, Uint8List>?> get extratoPdf => _streamComprovanteController.stream;
 
   MatrizTransferenciaViewModel({
     required this.getConfigDomainAccount,
@@ -126,8 +109,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     if (isLoading) return;
     setLoading();
 
-    var result =
-        await getDomainAccount.invoke(id: getDomainFromSettings.invoke()!.id);
+    var result = await getDomainAccount.invoke(id: getDomainFromSettings.invoke()!.id);
 
     setLoading();
     if (result.isRight) {
@@ -214,8 +196,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       'id': materaId,
       'account_id': materaId,
       'parametros': {
-        'begin': DateFormat('yyyy-MM-dd')
-            .format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
+        'begin': DateFormat('yyyy-MM-dd').format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
         'end': DateFormat('yyyy-MM-dd').format(DateTime.now()),
         'status': 'APPROVED',
         'paymentTypes': 'WithdrawInstantPayment',
@@ -269,15 +250,12 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       postError(result.left.message);
     } else {
       endToEndId = result.right.endToEndId;
-      var pixSelect = PixToSendApiDto.fromJson(
-          jsonDecode(formStepSelectPix.pixSelect.value!));
-      if (pixSelect.destinationAccount != result.right.accountDestination &&
-          pixSelect.destinationBranch !=
-              result.right.accountBranchDestination) {
+      var pixSelect = PixToSendApiDto.fromJson(jsonDecode(formStepSelectPix.pixSelect.value!));
+      if (pixSelect.destinationAccount != result.right.accountDestination && pixSelect.destinationBranch != result.right.accountBranchDestination) {
         pixSelect.destinationAccount = result.right.accountDestination;
         pixSelect.destinationBranch = result.right.accountBranchDestination;
         var resultPix = await updatePixToSendSelect.invoke(id: pixSelect.id, body: body);
-        if(resultPix.isRight){
+        if (resultPix.isRight) {
           _streamDestinatarioController.sink.add(result.right);
         }
       } else {
@@ -293,7 +271,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     formStepSenha.senha.onValueChange('');
   }
 
-  Future<Uint8List?> onCashoutSubmit(
+  Future<dynamic> onCashoutSubmit(
     BuildContext context,
   ) async {
     if (isLoading) return null;
@@ -302,8 +280,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     var formFieldsSenha = formStepSenha.getValues()!;
     var formFieldsValor = formStepValor.getValues()!;
     var formFieldsPix = formStepSelectPix.getValues()!;
-    final pixSelected = PixToSendApiDto.fromJson(
-        jsonDecode(formFieldsPix['pixSelect'].toString()));
+    final pixSelected = PixToSendApiDto.fromJson(jsonDecode(formFieldsPix['pixSelect'].toString()));
 
     Map<String, dynamic> params = {
       'id': materaId,
@@ -340,7 +317,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       postError(result.left.message);
       _streamComprovanteController.sink.add(const Left(true));
       setLoading(value: false);
-      return null;
+      return result.left.message;
     }
     setLoading(value: false);
     _streamComprovanteController.sink.add(Right(result.right));
@@ -366,9 +343,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       'password': '',
     };
     var formFields = formSenha.getValues();
-    params['old_password'] = formFields?['senhaAntiga'] == 'senha1'
-        ? null
-        : formFields!['senhaAntiga'];
+    params['old_password'] = formFields?['senhaAntiga'] == 'senha1' ? null : formFields!['senhaAntiga'];
     params['password'] = formFields!['novaSenha'];
 
     var result = await updateSenhaPix.invoke(id: domainAccountId, body: params);
