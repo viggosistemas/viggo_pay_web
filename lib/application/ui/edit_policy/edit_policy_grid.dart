@@ -7,14 +7,15 @@ import 'package:viggo_core_frontend/policies/data/models/policy_api_dto.dart';
 import 'package:viggo_core_frontend/role/data/models/role_api_dto.dart';
 import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/table/data_table_paginated.dart';
 import 'package:viggo_pay_admin/application/ui/components/dialog_manage_policy.dart';
 import 'package:viggo_pay_admin/application/ui/edit_policy/edit_policy_view_model.dart';
 import 'package:viggo_pay_admin/components/dialogs.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
+import 'package:viggo_pay_admin/utils/container.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 // ignore: must_be_immutable
@@ -43,21 +44,9 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
     super.initState();
   }
 
-  static const routesRowValues = [
-    'capability.route',
-    'capability.route',
-    'capability.route',
-    'capability.route',
-    'capability.route'
-  ];
+  static const routesRowValues = ['capability.route', 'capability.route', 'capability.route', 'capability.route', 'capability.route'];
 
-  static const routesListLabelInclude = [
-    'name',
-    'url',
-    'method',
-    'bypass',
-    'sysadmin'
-  ];
+  static const routesListLabelInclude = ['name', 'url', 'method', 'bypass', 'sysadmin'];
 
   loadCapabilities(
     ApplicationApiDto selected,
@@ -90,17 +79,14 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
     String? key = widget.sharedPrefs.getString('APPLICATION_SELECTED');
     if (key != null) {
       if (selected != null) {
-        widget.sharedPrefs
-            .setString('APPLICATION_SELECTED', jsonEncode(selected));
+        widget.sharedPrefs.setString('APPLICATION_SELECTED', jsonEncode(selected));
         loadCapabilities(selected, {}, roleSelected);
       } else {
-        ApplicationApiDto application =
-            ApplicationApiDto.fromJson(jsonDecode(key));
+        ApplicationApiDto application = ApplicationApiDto.fromJson(jsonDecode(key));
         loadCapabilities(application, {}, roleSelected);
       }
     } else {
-      widget.sharedPrefs
-          .setString('APPLICATION_SELECTED', jsonEncode(selected));
+      widget.sharedPrefs.setString('APPLICATION_SELECTED', jsonEncode(selected));
       loadCapabilities(selected!, {}, roleSelected);
     }
   }
@@ -209,8 +195,7 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)?.settings.arguments as ApplicationApiDto?;
+    final args = ModalRoute.of(context)?.settings.arguments as ApplicationApiDto?;
 
     widget.viewModel.isSuccess.listen((value) {
       showInfoMessage(
@@ -250,231 +235,225 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
             checkApplication(args);
           }
           return ProgressLoading(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Theme.of(context).colorScheme.secondary
-                : Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary,
           );
         } else {
           selectedPolicies = (snapshot.data as List<PolicyApiDto>);
-          return SizedBox(
-            height: double.maxFinite,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      StreamBuilder<List<RoleApiDto>>(
-                        stream: widget.viewModel.papeisSistema,
-                        builder: (context, papeis) {
-                          if (papeis.data == null) {
-                            widget.viewModel.listRoles();
-                            return const CircularProgressIndicator();
-                          } else {
-                            return PopupMenuButton<RoleApiDto>(
-                                onSelected: (RoleApiDto selected) {
-                                  setState(() {
-                                    roleSelected = selected;
-                                    onReload();
-                                  });
-                                },
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(15.0),
-                                  ),
-                                ),
-                                tooltip: 'Selecione um papel',
-                                child: Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                    border: Border.all(
-                                      width: 1,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+          return LayoutBuilder(builder: (context, constraints) {
+            return SizedBox(
+              height: double.maxFinite,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        StreamBuilder<List<RoleApiDto>>(
+                          stream: widget.viewModel.papeisSistema,
+                          builder: (context, papeis) {
+                            if (papeis.data == null) {
+                              widget.viewModel.listRoles();
+                              return const CircularProgressIndicator();
+                            } else {
+                              return PopupMenuButton<RoleApiDto>(
+                                  onSelected: (RoleApiDto selected) {
+                                    setState(() {
+                                      roleSelected = selected;
+                                      onReload();
+                                    });
+                                  },
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(15.0),
                                     ),
                                   ),
-                                  child: const Icon(Icons.filter_alt_outlined),
-                                ),
-                                itemBuilder: (BuildContext context) {
-                                  return papeis.data!
-                                      .map(
-                                        (e) => PopupMenuItem<RoleApiDto>(
-                                          value: e,
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(e.name),
-                                              const Icon(
-                                                Icons.people_alt_outlined,
-                                                size: 18,
-                                              ),
-                                            ],
+                                  tooltip: 'Selecione um papel',
+                                  child: Container(
+                                    padding: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30),
+                                      border: Border.all(
+                                        width: 1,
+                                        color: Theme.of(context).colorScheme.primary,
+                                      ),
+                                    ),
+                                    child: const Icon(Icons.filter_alt_outlined),
+                                  ),
+                                  itemBuilder: (BuildContext context) {
+                                    return papeis.data!
+                                        .map(
+                                          (e) => PopupMenuItem<RoleApiDto>(
+                                            value: e,
+                                            child: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(e.name),
+                                                const Icon(
+                                                  Icons.people_alt_outlined,
+                                                  size: 18,
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      )
-                                      .toList();
-                                });
-                          }
-                        },
-                      ),
-                      const SizedBox(width: 10),
-                      HeaderSearchMain(
-                        searchFields: searchFields,
-                        onSearch: onSearch,
-                        onReload: onReload,
-                        notShowAdvancedFilters: true,
-                        itemsSelect: itemSelect,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  selectedPolicies.isEmpty
-                      ? Center(
-                          child: Text(
-                            roleSelected == null
-                                ? 'Selecione um papel'
-                                : 'Nenhum resultado encontrado pro papel - ${roleSelected!.name}',
-                            style: Theme.of(context).textTheme.titleLarge!,
-                          ),
-                        )
-                      : SizedBox(
-                          width: double.infinity,
-                          child: DataTablePaginated(
-                            titleTable:
-                                'Editando políticas de ${args?.name ?? application.name} ${roleSelected != null ? '- Papel: ${roleSelected?.name}' : ''}',
-                            viewModel: widget.viewModel,
-                            streamList: widget.viewModel.policies,
-                            dialogs: null,
-                            initialFilters: initialFilters,
-                            columnsDef: const [
-                              DataColumn(
-                                label: Text(
-                                  'Nome',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              DataColumn(
-                                label: Text(
-                                  'URL',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              DataColumn(
-                                label: Text(
-                                  'Método',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              DataColumn(
-                                label: Text(
-                                  'Bypass',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              DataColumn(
-                                label: Text(
-                                  'Sysadmin',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                            fieldsData: routesRowValues,
-                            labelInclude: routesListLabelInclude,
-                            validActionsList: const [],
-                            actions: [
-                              OnHoverButton(
-                                child: IconButton.outlined(
-                                  onPressed: () async {
-                                    var result = await EditPolicyDialog(
-                                      context: context,
-                                      disponiveis: widget
-                                          .viewModel.avaliableCapabilities,
-                                      roleId: roleSelected!.id,
-                                    ).addDialog();
-                                    if (result != null && result == true) {
-                                      onReload();
-                                    }
-                                  },
-                                  tooltip: 'Adicionar políticas de acesso',
-                                  icon: Icon(
-                                    Icons.add_outlined,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              OnHoverButton(
-                                child: IconButton.outlined(
-                                  onPressed: () async {
-                                    var selecteds = selectedPolicies
-                                        .where((element) => element.selected)
+                                        )
                                         .toList();
-                                    if (selecteds.isNotEmpty) {
-                                      var result =
-                                          await Dialogs(context: context)
-                                              .showConfirmDialog({
-                                        'title_text':
-                                            'Removendo políticas de acesso',
-                                        'title_icon': Icons.delete_outline,
-                                        'message':
-                                            'Você tem certeza que deseja executar essa ação?\n${selecteds.length.toString() + ' itens'.toUpperCase()} serão removidos.'
-                                      });
-                                      if (result != null &&
-                                          result == true &&
-                                          context.mounted) {
-                                        widget.viewModel.onRemovePolicies(
-                                          showInfoMessage,
-                                          context,
-                                          selecteds,
-                                        );
-                                      }
-                                    }
-                                  },
-                                  tooltip: 'Remover políticas de acesso',
-                                  icon: const Icon(
-                                    Icons.delete_outline,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                            ],
-                            items: selectedPolicies.map((e) {
-                              return e.toJson();
-                            }).toList(),
+                                  });
+                            }
+                          },
+                        ),
+                        const SizedBox(width: 10),
+                        SizedBox(
+                          width: ContainerClass().maxWidthContainer(
+                            constraints,
+                            context,
+                            true,
+                            percentWidth: 0.8,
+                          ),
+                          child: HeaderSearchMain(
+                            searchFields: searchFields,
+                            onSearch: onSearch,
+                            onReload: onReload,
+                            notShowAdvancedFilters: true,
+                            itemsSelect: itemSelect,
                           ),
                         ),
-                  // DataTableNotPaginated(
-                  //   viewModel: viewModel,
-                  //   items: items,
-                  // ),
-                ],
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    selectedPolicies.isEmpty
+                        ? Center(
+                            child: Text(
+                              roleSelected == null ? 'Selecione um papel' : 'Nenhum resultado encontrado pro papel - ${roleSelected!.name}',
+                              style: Theme.of(context).textTheme.titleLarge!,
+                            ),
+                          )
+                        : SizedBox(
+                            width: double.infinity,
+                            child: DataTablePaginated(
+                              titleTable:
+                                  'Editando políticas de ${args?.name ?? application.name} ${roleSelected != null ? '- Papel: ${roleSelected?.name}' : ''}',
+                              viewModel: widget.viewModel,
+                              streamList: widget.viewModel.policies,
+                              dialogs: null,
+                              initialFilters: initialFilters,
+                              columnsDef: const [
+                                DataColumn(
+                                  label: Text(
+                                    'Nome',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'URL',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'Método',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'Bypass',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'Sysadmin',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              fieldsData: routesRowValues,
+                              labelInclude: routesListLabelInclude,
+                              validActionsList: const [],
+                              actions: [
+                                OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () async {
+                                      var result = await EditPolicyDialog(
+                                        context: context,
+                                        disponiveis: widget.viewModel.avaliableCapabilities,
+                                        roleId: roleSelected!.id,
+                                      ).addDialog();
+                                      if (result != null && result == true) {
+                                        onReload();
+                                      }
+                                    },
+                                    tooltip: 'Adicionar políticas de acesso',
+                                    icon: Icon(
+                                      Icons.add_outlined,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () async {
+                                      var selecteds = selectedPolicies.where((element) => element.selected).toList();
+                                      if (selecteds.isNotEmpty) {
+                                        var result = await Dialogs(context: context).showConfirmDialog({
+                                          'title_text': 'Removendo políticas de acesso',
+                                          'title_icon': Icons.delete_outline,
+                                          'message':
+                                              'Você tem certeza que deseja executar essa ação?\n${selecteds.length.toString() + ' itens'.toUpperCase()} serão removidos.'
+                                        });
+                                        if (result != null && result == true && context.mounted) {
+                                          widget.viewModel.onRemovePolicies(
+                                            showInfoMessage,
+                                            context,
+                                            selecteds,
+                                          );
+                                        }
+                                      }
+                                    },
+                                    tooltip: 'Remover políticas de acesso',
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                              ],
+                              items: selectedPolicies.map((e) {
+                                return e.toJson();
+                              }).toList(),
+                            ),
+                          ),
+                    // DataTableNotPaginated(
+                    //   viewModel: viewModel,
+                    //   items: items,
+                    // ),
+                  ],
+                ),
               ),
-            ),
-          );
+            );
+          });
         }
       },
     );
