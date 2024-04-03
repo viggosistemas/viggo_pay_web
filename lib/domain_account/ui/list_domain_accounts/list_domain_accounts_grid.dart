@@ -39,6 +39,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
     'client_name',
     'client_tax_identifier_tax_id',
     'tem_chave_pix',
+    'tem_taxa',
     'status',
   ];
 
@@ -60,6 +61,12 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
       'search_field': 'tem_chave_pix',
       'type': 'bool',
       'icon': Icons.pix_outlined,
+    },
+    {
+      'label': 'Possui taxa cadastrada',
+      'search_field': 'tem_taxa',
+      'type': 'bool',
+      'icon': Icons.percent_outlined,
     },
     {
       'label': 'Status',
@@ -255,6 +262,14 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                             label: Center(
                                 child: Text(
                           'Possui chave PIX',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ))),
+                        DataColumn(
+                            label: Center(
+                                child: Text(
+                          'Possui taxa cadastrada',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),

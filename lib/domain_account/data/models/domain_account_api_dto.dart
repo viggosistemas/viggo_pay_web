@@ -30,6 +30,7 @@ class DomainAccountApiDto extends EntityDto {
   late String? password;
   late bool? temChavePix;
   late bool? usoLiberado;
+  late bool? temTaxa;
   late DomainAccountStatus status;
   bool selected = false;
 
@@ -69,6 +70,7 @@ class DomainAccountApiDto extends EntityDto {
     temChavePix = json['tem_chave_pix'];
     usoLiberado = json['uso_liberado'];
     status = DomainAccountStatus.values.firstWhere((element) => element.name == json['status']);
+    temTaxa = json['tem_taxa'];
   }
 
   @override
@@ -113,6 +115,7 @@ class DomainAccountApiDto extends EntityDto {
     result['tem_chave_pix'] = temChavePix;
     result['uso_liberado'] = usoLiberado;
     result['status'] = status.name;
+    result['tem_taxa'] = temTaxa;
 
     return result;
   }
