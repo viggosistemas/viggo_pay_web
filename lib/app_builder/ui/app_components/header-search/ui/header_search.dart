@@ -27,7 +27,7 @@ class HeaderSearch extends StatefulWidget {
 
   final List<Map<String, dynamic>> searchFields;
   final Function(List<Map<String, dynamic>> params) onSearch;
-  final Function onReload;
+  final Function() onReload;
   List<Map<String, dynamic>> itemsSelect = [];
   bool notShowAdvancedFilters = false;
 
@@ -225,7 +225,7 @@ class _HeaderSearchState extends State<HeaderSearch> {
         ),
         OnHoverButton(
           child: IconButton.outlined(
-            onPressed: () => widget.onReload,
+            onPressed: () => widget.onReload(),
             color: Theme.of(context).colorScheme.primary,
             icon: Icon(
               Icons.replay_outlined,
@@ -357,8 +357,8 @@ class _HeaderSearchState extends State<HeaderSearch> {
             ),
           ),
         SizedBox(
-          width: constraints.maxWidth >= 600 ? 20 : 0,
-          height: constraints.maxWidth >= 600 ? 0 : 20,
+          width: constraints.maxWidth >= 960 ? 20 : 0,
+          height: constraints.maxWidth >= 960 ? 0 : 20,
         ),
         OnHoverButton(
           child: Theme(
@@ -423,11 +423,11 @@ class _HeaderSearchState extends State<HeaderSearch> {
           ),
         ),
         SizedBox(
-          width: constraints.maxWidth >= 600 ? 20 : 0,
-          height: constraints.maxWidth >= 600 ? 0 : 20,
+          width: constraints.maxWidth >= 960 ? 20 : 0,
+          height: constraints.maxWidth >= 960 ? 0 : 20,
         ),
         SizedBox(
-          width: constraints.maxWidth >= 600
+          width: constraints.maxWidth >= 960
               ? constraints.maxWidth * 0.5
               : constraints.maxWidth,
           child: StreamBuilder<String>(
@@ -512,8 +512,8 @@ class _HeaderSearchState extends State<HeaderSearch> {
           ),
         ),
         SizedBox(
-          width: constraints.maxWidth >= 600 ? 20 : 0,
-          height: constraints.maxWidth >= 600 ? 0 : 20,
+          width: constraints.maxWidth >= 960 ? 20 : 0,
+          height: constraints.maxWidth >= 960 ? 0 : 20,
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -533,7 +533,7 @@ class _HeaderSearchState extends State<HeaderSearch> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                constraints.maxWidth >= 600
+                constraints.maxWidth >= 960
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: contentSearch(constraints),

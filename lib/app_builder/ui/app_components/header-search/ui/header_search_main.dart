@@ -24,7 +24,7 @@ class HeaderSearchMain extends StatelessWidget {
 
   final List<Map<String, dynamic>> searchFields;
   final Function(List<Map<String, dynamic>> params) onSearch;
-  final Function onReload;
+  final Function() onReload;
   bool notShowAdvancedFilters = false;
   List<Map<String, dynamic>> itemsSelect = [];
 
