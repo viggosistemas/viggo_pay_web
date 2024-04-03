@@ -28,8 +28,7 @@ class _TimelineExtratoPageState extends State<TimelineExtratoPage> {
   );
 
   Map<String, String> initialParams = {
-    'start': DateFormat('yyyy-MM-dd')
-        .format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
+    'start': DateFormat('yyyy-MM-dd').format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
     'ending': DateFormat('yyyy-MM-dd').format(DateTime.now()),
   };
 
@@ -57,10 +56,20 @@ class _TimelineExtratoPageState extends State<TimelineExtratoPage> {
       DateTimeRange? newDateRange = await showDateRangePicker(
         context: context,
         initialDateRange: dateRange,
-        firstDate: dateRange.start,
+        firstDate: DateTime(dateRange.start.year - 5),
         lastDate: dateRange.end,
-        initialEntryMode: DatePickerEntryMode.input,
+        initialEntryMode: DatePickerEntryMode.calendar,
         confirmText: 'Confirmar',
+        builder: (context, child) {
+          return Column(
+            children: [
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400.0, maxHeight: 500.0),
+                child: child,
+              )
+            ],
+          );
+        },
       );
 
       if (newDateRange == null) return;
@@ -95,9 +104,7 @@ class _TimelineExtratoPageState extends State<TimelineExtratoPage> {
                   Text(
                     'Faixa de datas',
                     style: GoogleFonts.lato(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
@@ -118,8 +125,7 @@ class _TimelineExtratoPageState extends State<TimelineExtratoPage> {
                                 Icons.calendar_month_outlined,
                                 size: 16,
                               ),
-                              label:
-                                  Text(DateFormat('dd/MM/yyyy').format(start)),
+                              label: Text(DateFormat('dd/MM/yyyy').format(start)),
                             ),
                           ),
                         ),
@@ -155,10 +161,8 @@ class _TimelineExtratoPageState extends State<TimelineExtratoPage> {
                               child: ExtratoPdfViewer(
                                 domainAccountId: snapshot.data!.id,
                                 params: {
-                                  'start': DateFormat('yyyy-MM-dd')
-                                      .format(dateRange.start),
-                                  'ending': DateFormat('yyyy-MM-dd')
-                                      .format(dateRange.end),
+                                  'start': DateFormat('yyyy-MM-dd').format(dateRange.start),
+                                  'ending': DateFormat('yyyy-MM-dd').format(dateRange.end),
                                 },
                               ),
                             ),
@@ -168,16 +172,12 @@ class _TimelineExtratoPageState extends State<TimelineExtratoPage> {
                       label: Text(
                         'Gerar extrato em PDF',
                         style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         ),
                       ),
                       icon: Icon(
                         Icons.picture_as_pdf_outlined,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       ),
                     ),
                   ),
@@ -189,7 +189,11 @@ class _TimelineExtratoPageState extends State<TimelineExtratoPage> {
                           snapshot.data!.materaId!,
                           initialParams,
                         );
-                        return const CircularProgressIndicator();
+                        return CircularProgressIndicator(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Theme.of(context).colorScheme.secondary
+                              : Theme.of(context).colorScheme.primary,
+                        );
                       } else {
                         return Expanded(
                           child: TimelineExtrato(
