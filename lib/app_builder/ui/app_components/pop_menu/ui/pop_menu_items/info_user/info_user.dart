@@ -132,6 +132,7 @@ class InfoUserDialog {
                 ],
               ),
               content: SizedBox(
+                width: 400,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -143,8 +144,8 @@ class InfoUserDialog {
                           builder: (context, snapshot) {
                             return Center(
                               child: SizedBox(
-                                height: 100,
-                                width: 100,
+                                height: 150,
+                                width: 150,
                                 child: getImagem(snapshot.data?.photoId),
                               ),
                             );

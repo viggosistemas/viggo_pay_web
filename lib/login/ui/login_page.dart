@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              themeViewModel.logoAsset,
+              themeViewModel.logoAsset(Theme.of(context).brightness),
               width: 80,
               height: 80,
             ),
@@ -85,16 +85,17 @@ class _LoginPageState extends State<LoginPage> {
       body: Stack(
         children: [
           Container(
+            width: double.infinity,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(themeViewModel.backgroundAsset),
+                image: AssetImage(themeViewModel.backgroundAsset(Theme.of(context).brightness)),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          SizedBox(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height,
+          FractionallySizedBox(
+            widthFactor: 1,
+            heightFactor: 1,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,

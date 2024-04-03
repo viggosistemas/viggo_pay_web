@@ -10,6 +10,7 @@ import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-endereco/edit_in
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-taxa-empresa/edit_taxa_empresa.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_view_model.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
+import 'package:viggo_pay_admin/utils/container.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 class MatrizInfoEdit extends StatefulWidget {
@@ -71,61 +72,43 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
       var formAddressFields = viewModel.formAddress.getValues();
       var formTaxa = viewModel.formConfig.getValues();
 
-      viewModel.form.clientTaxId
-          .onValueChange(formFields!['client_tax_identifier_tax_id'] ?? '');
+      viewModel.form.clientTaxId.onValueChange(formFields!['client_tax_identifier_tax_id'] ?? '');
       viewModel.form.clientName.onValueChange(formFields['client_name'] ?? '');
-      viewModel.form.clientMobilePhone
-          .onValueChange(formFields['client_mobile_phone'] ?? '');
-      viewModel.form.clientMobilePhoneCountry
-          .onValueChange(formFields['client_mobile_phone_country'] ?? '');
-      viewModel.form.clientEmail
-          .onValueChange(formFields['client_email'] ?? '');
+      viewModel.form.clientMobilePhone.onValueChange(formFields['client_mobile_phone'] ?? '');
+      viewModel.form.clientMobilePhoneCountry.onValueChange(formFields['client_mobile_phone_country'] ?? '');
+      viewModel.form.clientEmail.onValueChange(formFields['client_email'] ?? '');
 
-      viewModel.formAddress.logradouro.onValueChange(
-          formAddressFields!['billing_address_logradouro'] ?? '');
-      viewModel.formAddress.numero
-          .onValueChange(formAddressFields['billing_address_numero'] ?? '');
-      viewModel.formAddress.complemento.onValueChange(
-          formAddressFields['billing_address_complemento'] ?? '');
-      viewModel.formAddress.bairro
-          .onValueChange(formAddressFields['billing_address_bairro'] ?? '');
-      viewModel.formAddress.cidade
-          .onValueChange(formAddressFields['billing_address_cidade'] ?? '');
-      viewModel.formAddress.estado
-          .onValueChange(formAddressFields['billing_address_estado'] ?? '');
-      viewModel.formAddress.cep
-          .onValueChange(formAddressFields['billing_address_cep'] ?? '');
-      viewModel.formAddress.pais
-          .onValueChange(formAddressFields['billing_address_pais'] ?? '');
+      viewModel.formAddress.logradouro.onValueChange(formAddressFields!['billing_address_logradouro'] ?? '');
+      viewModel.formAddress.numero.onValueChange(formAddressFields['billing_address_numero'] ?? '');
+      viewModel.formAddress.complemento.onValueChange(formAddressFields['billing_address_complemento'] ?? '');
+      viewModel.formAddress.bairro.onValueChange(formAddressFields['billing_address_bairro'] ?? '');
+      viewModel.formAddress.cidade.onValueChange(formAddressFields['billing_address_cidade'] ?? '');
+      viewModel.formAddress.estado.onValueChange(formAddressFields['billing_address_estado'] ?? '');
+      viewModel.formAddress.cep.onValueChange(formAddressFields['billing_address_cep'] ?? '');
+      viewModel.formAddress.pais.onValueChange(formAddressFields['billing_address_pais'] ?? '');
 
       viewModel.formConfig.taxa.onValueChange(formTaxa!['taxa']!.toString());
-      viewModel.formConfig.porcentagem.onValueChange(
-          formTaxa['porcentagem'].toString().parseBool().toString());
+      viewModel.formConfig.porcentagem.onValueChange(formTaxa['porcentagem'].toString().parseBool().toString());
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 200.0,
-        vertical: 20.0,
-      ),
-      alignment: Alignment.topCenter,
-      width: double.infinity,
-      child: StreamBuilder<DomainAccountApiDto>(
-          stream: viewModel.matriz,
-          builder: (context, snapshot) {
-            if (snapshot.data == null) {
-              viewModel.getEntities();
-              return ProgressLoading(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black,
-              );
-            } else {
-              return Card(
-                elevation: 8,
-                margin: const EdgeInsets.all(18),
-                child: Padding(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Card(
+          elevation: 8,
+          margin: const EdgeInsets.all(18),
+          child: StreamBuilder<DomainAccountApiDto>(
+            stream: viewModel.matriz,
+            builder: (context, snapshot) {
+              if (snapshot.data == null) {
+                viewModel.getEntities();
+                return ProgressLoading(
+                  color: Theme.of(context).colorScheme.primary,
+                );
+              } else {
+                return Container(
                   padding: const EdgeInsets.all(10.0),
+                  constraints: constraints,
+                  width: constraints.maxWidth >= 600 ? 450 : ContainerClass().maxWidthContainer(constraints, context, false),
                   child: SizedBox(
                     height: double.maxFinite,
                     child: SingleChildScrollView(
@@ -166,10 +149,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                           Theme(
                             data: Theme.of(context).copyWith(
                               colorScheme: Theme.of(context).colorScheme,
-                              hoverColor: Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withOpacity(0.3),
+                              hoverColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                             ),
                             child: Stepper(
                               // type: StepperType.horizontal,
@@ -197,8 +177,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                   });
                                 }
                               },
-                              controlsBuilder: (BuildContext context,
-                                  ControlsDetails details) {
+                              controlsBuilder: (BuildContext context, ControlsDetails details) {
                                 return Row(
                                   children: details.stepIndex != 3
                                       ? <Widget>[
@@ -206,16 +185,8 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                             child: TextButton(
                                               onPressed: details.onStepCancel,
                                               style: ButtonStyle(
-                                                foregroundColor:
-                                                    MaterialStateColor
-                                                        .resolveWith((states) =>
-                                                            details.stepIndex ==
-                                                                    0
-                                                                ? Colors.grey
-                                                                : Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .primary),
+                                                foregroundColor: MaterialStateColor.resolveWith(
+                                                    (states) => details.stepIndex == 0 ? Colors.grey : Theme.of(context).colorScheme.primary),
                                               ),
                                               child: const Text('Anterior'),
                                             ),
@@ -225,107 +196,52 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                           ),
                                           details.stepIndex == 0
                                               ? StreamBuilder<bool>(
-                                                  stream:
-                                                      viewModel.form.isValid,
+                                                  stream: viewModel.form.isValid,
                                                   builder: (context, snapshot) {
                                                     return OnHoverButton(
                                                       child: TextButton(
-                                                        onPressed: snapshot
-                                                                        .data ==
-                                                                    true &&
-                                                                snapshot.data !=
-                                                                    null
-                                                            ? details
-                                                                .onStepContinue
-                                                            : () {},
+                                                        onPressed: snapshot.data == true && snapshot.data != null ? details.onStepContinue : () {},
                                                         style: ButtonStyle(
-                                                          foregroundColor: MaterialStateColor.resolveWith(
-                                                              (states) => snapshot
-                                                                              .data ==
-                                                                          true &&
-                                                                      snapshot.data !=
-                                                                          null
-                                                                  ? Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .primary
-                                                                  : Colors
-                                                                      .grey),
+                                                          foregroundColor: MaterialStateColor.resolveWith((states) =>
+                                                              snapshot.data == true && snapshot.data != null
+                                                                  ? Theme.of(context).colorScheme.primary
+                                                                  : Colors.grey),
                                                         ),
-                                                        child: const Text(
-                                                            'Próximo'),
+                                                        child: const Text('Próximo'),
                                                       ),
                                                     );
                                                   })
                                               : details.stepIndex == 2
-                                                  ? StreamBuilder<
-                                                          List<
-                                                              Map<String,
-                                                                  dynamic>>>(
-                                                      stream:
-                                                          viewModel.fileList,
-                                                      builder:
-                                                          (context, snapshot) {
+                                                  ? StreamBuilder<bool>(
+                                                      stream: viewModel.fileListValid,
+                                                      builder: (context, snapshot) {
                                                         return OnHoverButton(
                                                           child: TextButton(
-                                                            onPressed: snapshot
-                                                                            .data !=
-                                                                        null &&
-                                                                    snapshot
-                                                                        .data!
-                                                                        .isNotEmpty
-                                                                ? details
-                                                                    .onStepContinue
-                                                                : () {},
+                                                            onPressed: snapshot.data == true ? details.onStepContinue : () {},
                                                             style: ButtonStyle(
-                                                              foregroundColor: MaterialStateColor.resolveWith((states) => snapshot
-                                                                              .data !=
-                                                                          null &&
-                                                                      snapshot
-                                                                          .data!
-                                                                          .isNotEmpty
-                                                                  ? Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .primary
-                                                                  : Colors
-                                                                      .grey),
+                                                              foregroundColor: MaterialStateColor.resolveWith(
+                                                                (states) =>
+                                                                    snapshot.data == true ? Theme.of(context).colorScheme.primary : Colors.grey,
+                                                              ),
                                                             ),
-                                                            child: const Text(
-                                                                'Próximo'),
+                                                            child: const Text('Próximo'),
                                                           ),
                                                         );
                                                       })
                                                   : StreamBuilder<bool>(
-                                                      stream: viewModel
-                                                          .formAddress.isValid,
-                                                      builder:
-                                                          (context, snapshot) {
+                                                      stream: viewModel.formAddress.isValid,
+                                                      builder: (context, snapshot) {
                                                         return OnHoverButton(
                                                           child: TextButton(
-                                                            onPressed: snapshot
-                                                                            .data ==
-                                                                        true &&
-                                                                    snapshot.data !=
-                                                                        null
-                                                                ? details
-                                                                    .onStepContinue
-                                                                : () {},
+                                                            onPressed:
+                                                                snapshot.data == true && snapshot.data != null ? details.onStepContinue : () {},
                                                             style: ButtonStyle(
-                                                              foregroundColor: MaterialStateColor.resolveWith((states) => snapshot
-                                                                              .data ==
-                                                                          true &&
-                                                                      snapshot.data !=
-                                                                          null
-                                                                  ? Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .primary
-                                                                  : Colors
-                                                                      .grey),
+                                                              foregroundColor: MaterialStateColor.resolveWith((states) =>
+                                                                  snapshot.data == true && snapshot.data != null
+                                                                      ? Theme.of(context).colorScheme.primary
+                                                                      : Colors.grey),
                                                             ),
-                                                            child: const Text(
-                                                                'Próximo'),
+                                                            child: const Text('Próximo'),
                                                           ),
                                                         );
                                                       })
@@ -350,17 +266,14 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                 );
                               },
                               connectorColor: MaterialStateColor.resolveWith(
-                                (states) =>
-                                    Theme.of(context).colorScheme.primary,
+                                (states) => Theme.of(context).colorScheme.primary,
                               ),
                               stepIconBuilder: (stepIndex, stepState) {
                                 if (stepIndex == 0) {
                                   return Icon(
                                     Icons.domain_outlined,
                                     color: stepState == StepState.indexed
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary
+                                        ? Theme.of(context).colorScheme.onPrimary
                                         : Theme.of(context).colorScheme.primary,
                                   );
                                 }
@@ -368,9 +281,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                   return Icon(
                                     Icons.location_on_outlined,
                                     color: stepState == StepState.indexed
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary
+                                        ? Theme.of(context).colorScheme.onPrimary
                                         : Theme.of(context).colorScheme.primary,
                                   );
                                 }
@@ -378,9 +289,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                   return Icon(
                                     Icons.file_upload_sharp,
                                     color: stepState == StepState.indexed
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary
+                                        ? Theme.of(context).colorScheme.onPrimary
                                         : Theme.of(context).colorScheme.primary,
                                   );
                                 }
@@ -388,9 +297,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                   return Icon(
                                     Icons.percent_outlined,
                                     color: stepState == StepState.indexed
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary
+                                        ? Theme.of(context).colorScheme.onPrimary
                                         : Theme.of(context).colorScheme.primary,
                                   );
                                 }
@@ -400,26 +307,22 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                 Step(
                                   isActive: currentStep == 0,
                                   title: const Text('Editando informações'),
-                                  content:
-                                      EditInfoEmpresa(viewModel: viewModel),
+                                  content: EditInfoEmpresa(viewModel: viewModel),
                                 ),
                                 Step(
                                   isActive: currentStep == 1,
                                   title: const Text('Editando endereço'),
-                                  content:
-                                      EditInfoEndereco(viewModel: viewModel),
+                                  content: EditInfoEndereco(viewModel: viewModel),
                                 ),
                                 Step(
                                   isActive: currentStep == 2,
                                   title: const Text('Editando documentos'),
-                                  content:
-                                      EditInfoDocumentos(viewModel: viewModel),
+                                  content: EditInfoDocumentos(viewModel: viewModel, constraints: constraints),
                                 ),
                                 Step(
                                   isActive: currentStep == 3,
                                   title: const Text('Editando taxa'),
-                                  content:
-                                      EditTaxaEmpresa(viewModel: viewModel),
+                                  content: EditTaxaEmpresa(viewModel: viewModel),
                                 ),
                               ],
                             ),
@@ -428,10 +331,12 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                       ),
                     ),
                   ),
-                ),
-              );
-            }
-          }),
+                );
+              }
+            },
+          ),
+        );
+      },
     );
   }
 }

@@ -145,7 +145,9 @@ class EditFuncionario {
             canPop: false,
             onPopInvoked: (bool didPop) {
               if (didPop) return;
-              Navigator.pop(context, true);
+              if (context.mounted) {
+                Navigator.pop(context, true);
+              }
             },
             child: SimpleDialog(
               insetPadding: const EdgeInsets.all(10),

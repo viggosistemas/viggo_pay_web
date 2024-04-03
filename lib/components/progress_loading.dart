@@ -6,7 +6,7 @@ class ProgressLoading extends StatelessWidget {
     super.key,
   });
 
-  final Color color;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -16,12 +16,12 @@ class ProgressLoading extends StatelessWidget {
       children: [
         Text(
           'Carregando...',
-          style: TextStyle(color: color),
+          style: TextStyle(color: color ?? Colors.white),
         ),
         const SizedBox(
           height: 10,
         ),
-        CircularProgressIndicator(color: color),
+        CircularProgressIndicator(color: color ?? Colors.white),
       ],
     );
   }

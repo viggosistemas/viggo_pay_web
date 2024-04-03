@@ -19,55 +19,68 @@ class _EditTaxaEmpresaState extends State<EditTaxaEmpresa> {
   @override
   Widget build(BuildContext context) {
     final taxaFieldControll = TextEditingController();
-    return Column(
-      children: [
-        StreamBuilder<String>(
-          stream: widget.viewModel.formConfig.taxa.field,
-          builder: (context, snapshot) {
-            taxaFieldControll.value =
-                taxaFieldControll.value.copyWith(text: snapshot.data);
-            return TextFormField(
-                // onChanged: (value) {
-                //   _txtAmountValue = value;
-                // },
-                controller: taxaFieldControll,
-                decoration: InputDecoration(
-                  labelText: 'Taxa',
-                  suffixText: isPercentualTaxa ? ' %' : '',
-                  prefixText: !isPercentualTaxa ? 'R\$ ' : '',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                ),
-                onChanged: (value) {
-                  widget.viewModel.formConfig.taxa.onValueChange(value);
-                });
-          },
-        ),
-        const SizedBox(height: 10),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.start,
-        //   crossAxisAlignment: CrossAxisAlignment.center,
-        //   children: [
-        //     StreamBuilder<bool>(
-        //       stream: widget.viewModel.formConfig.porcentagem,
-        //       builder: (context, snapshot) {
-        //         isPercentualTaxa = snapshot.data ?? false;
-        //         return Checkbox(
-        //           value: snapshot.data ?? false,
-        //           onChanged: (value) {
-        //             setState(() {
-        //               widget.viewModel.formConfig.onPorcentagemChange(value!);
-        //               isPercentualTaxa = value;
-        //             });
-        //           },
-        //         );
-        //       },
-        //     ),
-        //     const SizedBox(width: 6),
-        //     const Text('Taxa em porcentagem'),
-        //   ],
-        // ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Column(
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: constraints.maxWidth >= 960 ? constraints.maxWidth * 0.2 : constraints.maxWidth,
+                    child: StreamBuilder<String>(
+                      stream: widget.viewModel.formConfig.taxa.field,
+                      builder: (context, snapshot) {
+                        taxaFieldControll.value = taxaFieldControll.value.copyWith(text: snapshot.data);
+                        return TextFormField(
+                            // onChanged: (value) {
+                            //   _txtAmountValue = value;
+                            // },
+                            controller: taxaFieldControll,
+                            decoration: InputDecoration(
+                              labelText: 'Taxa',
+                              suffixText: isPercentualTaxa ? ' %' : '',
+                              prefixText: !isPercentualTaxa ? 'R\$ ' : '',
+                              border: const OutlineInputBorder(),
+                              errorText: snapshot.error?.toString(),
+                            ),
+                            onChanged: (value) {
+                              widget.viewModel.formConfig.taxa.onValueChange(value);
+                            });
+                      },
+                    ),
+                  ),
+                  // const SizedBox(height: 10),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.start,
+                  //   crossAxisAlignment: CrossAxisAlignment.center,
+                  //   children: [
+                  //     StreamBuilder<bool>(
+                  //       stream: widget.viewModel.formConfig.porcentagem,
+                  //       builder: (context, snapshot) {
+                  //         isPercentualTaxa = snapshot.data ?? false;
+                  //         return Checkbox(
+                  //           value: snapshot.data ?? false,
+                  //           onChanged: (value) {
+                  //             setState(() {
+                  //               widget.viewModel.formConfig.onPorcentagemChange(value!);
+                  //               isPercentualTaxa = value;
+                  //             });
+                  //           },
+                  //         );
+                  //       },
+                  //     ),
+                  //     const SizedBox(width: 6),
+                  //     const Text('Taxa em porcentagem'),
+                  //   ],
+                  // ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -112,7 +112,7 @@ List<Destination> menuItems = [
     null,
     4,
     null,
-    Routes.DOMAINS,
+    Routes.DOMAIN_ACCOUNTS,
     ['/domain_accounts'],
     ['/GET'],
     Icons.domain_outlined,

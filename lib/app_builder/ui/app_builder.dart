@@ -6,6 +6,7 @@ import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_builder_view_model.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/ui/main_drawer.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/ui/main_rail.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
@@ -86,9 +87,7 @@ class _AppBuilderState extends State<AppBuilder> {
                         return const CircularProgressIndicator();
                       } else {
                         return Text(
-                          snapshot.data?.name ??
-                              snapshot.data?.displayName ??
-                              '',
+                          snapshot.data?.name ?? snapshot.data?.displayName ?? '',
                           style: const TextStyle(
                             color: Colors.white,
                           ),
@@ -126,9 +125,7 @@ class _AppBuilderState extends State<AppBuilder> {
                         return const CircularProgressIndicator();
                       } else {
                         return Text(
-                          snapshot.data?.name ??
-                              snapshot.data?.displayName ??
-                              '',
+                          snapshot.data?.name ?? snapshot.data?.displayName ?? '',
                           style: const TextStyle(
                             color: Colors.white,
                           ),
@@ -149,111 +146,116 @@ class _AppBuilderState extends State<AppBuilder> {
           viewModel.getUser();
           return const CircularProgressIndicator();
         } else {
-          return Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              toolbarHeight: 70,
-              title: GestureDetector(
-                onTap: () {
-                  sharedPrefs.setString('SELECTED_INDEX', jsonEncode(0));
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Navigator.of(context)
-                        .pushReplacementNamed(Routes.WORKSPACE);
-                  });
-                },
-                child: Tooltip(
-                  message: 'Ir para início',
-                  child: OnHoverButton(
-                    child: Image.asset(
-                      themeViewModel.logoAsset,
-                      width: 70,
-                      height: 70,
-                      fit: BoxFit.contain,
-                      alignment: Alignment.center,
-                    ),
-                  ),
-                ),
-              ),
-              shadowColor: const Color.fromRGBO(0, 0, 0, 1),
-              elevation: 8,
-              actions: [
-                OnHoverButton(
-                  child: IconButton(
-                    style: IconButton.styleFrom(
-                      foregroundColor: Colors.white,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        isActioned = true;
-                        if (isDarkMode) {
-                          iconMode = Icons.dark_mode_outlined;
-                          colorIconMode = Colors.white;
-                          themeViewModel.changeTheme(ThemeMode.light.name);
-                        } else {
-                          iconMode = Icons.light_mode_outlined;
-                          colorIconMode = Colors.yellow;
-                          themeViewModel.changeTheme(ThemeMode.dark.name);
-                        }
-                      });
-                    },
-                    icon: Icon(
-                      iconMode,
-                      color: colorIconMode,
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                getAvatar(snapshot.data!),
-                const SizedBox(
-                  width: 20,
-                ),
-                PopUpMenuUser(
-                  onSelectScreen: setScreen,
-                  updateUser: () {
-                    viewModel.getUser();
+          return LayoutBuilder(builder: (context, constraints) {
+            return Scaffold(
+              appBar: AppBar(
+                automaticallyImplyLeading: constraints.maxWidth <= 960,
+                toolbarHeight: 70,
+                title: GestureDetector(
+                  onTap: () {
+                    sharedPrefs.setString('SELECTED_INDEX', jsonEncode(0));
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.of(context).pushReplacementNamed(Routes.WORKSPACE);
+                    });
                   },
-                )
-              ],
-            ),
-            // TODO: USAR NO DRAWER
-            // drawer: MainDrawer(
-            //   onSelectScreen: setScreen,
-            // ),
-            // body: Center(
-            //   child: widget.child,
-            // ),
-            body: SafeArea(
-              bottom: false,
-              top: false,
-              child: Row(
-                children: <Widget>[
-                  StreamBuilder<List<RouteApiDto>?>(
-                    stream: viewModel.routesDto,
-                    builder: (context, snapshot) {
-                      if (snapshot.data == null) {
-                        viewModel.getRoutes();
-                        return const CircularProgressIndicator();
-                      } else {
-                        return MainRail(
-                          routes: snapshot.data!,
-                          onSelectScreen: setScreen,
-                        );
-                      }
-                    },
-                  ),
-                  const VerticalDivider(thickness: 1, width: 1),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: widget.child,
+                  child: Tooltip(
+                    message: 'Ir para início',
+                    child: OnHoverButton(
+                      child: Image.asset(
+                        themeViewModel.logoAsset(Theme.of(context).brightness),
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.center,
+                      ),
                     ),
                   ),
+                ),
+                shadowColor: const Color.fromRGBO(0, 0, 0, 1),
+                elevation: 8,
+                actions: [
+                  OnHoverButton(
+                    child: IconButton(
+                      style: IconButton.styleFrom(
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isActioned = true;
+                          if (isDarkMode) {
+                            iconMode = Icons.dark_mode_outlined;
+                            colorIconMode = Colors.white;
+                            themeViewModel.changeTheme(ThemeMode.light.name);
+                          } else {
+                            iconMode = Icons.light_mode_outlined;
+                            colorIconMode = Colors.yellow;
+                            themeViewModel.changeTheme(ThemeMode.dark.name);
+                          }
+                        });
+                      },
+                      icon: Icon(
+                        iconMode,
+                        color: colorIconMode,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  getAvatar(snapshot.data!),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  PopUpMenuUser(
+                    onSelectScreen: setScreen,
+                    updateUser: () {
+                      viewModel.getUser();
+                    },
+                  )
                 ],
               ),
-            ),
-          );
+              drawer: MainDrawer(
+                onSelectScreen: setScreen,
+              ),
+              body: constraints.maxWidth <= 960
+                  ? Center(
+                      child: widget.child,
+                    )
+                  : SafeArea(
+                      bottom: false,
+                      top: false,
+                      child: Row(
+                        children: <Widget>[
+                          StreamBuilder<List<RouteApiDto>?>(
+                            stream: viewModel.routesDto,
+                            builder: (context, snapshot) {
+                              if (snapshot.data == null) {
+                                viewModel.getRoutes();
+                                return const CircularProgressIndicator();
+                              } else {
+                                return MainRail(
+                                  routes: snapshot.data!,
+                                  onSelectScreen: setScreen,
+                                );
+                              }
+                            },
+                          ),
+                          const VerticalDivider(thickness: 1, width: 1),
+                          Expanded(
+                            child: FractionallySizedBox(
+                              widthFactor: 1,
+                              heightFactor: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                child: widget.child,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+            );
+          });
         }
       },
     );

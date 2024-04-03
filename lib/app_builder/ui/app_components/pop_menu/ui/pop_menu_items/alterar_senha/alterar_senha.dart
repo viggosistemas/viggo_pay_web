@@ -76,6 +76,7 @@ class AlterarSenha {
                 ],
               ),
               content: SizedBox(
+                width: 300,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

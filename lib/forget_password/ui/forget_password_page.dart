@@ -44,7 +44,7 @@ class _ForgetPassPageState extends State<ForgetPassPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              themeViewModel.logoAsset,
+              themeViewModel.logoAsset(Theme.of(context).brightness),
               width: 80,
               height: 80,
             ),
@@ -85,7 +85,7 @@ class _ForgetPassPageState extends State<ForgetPassPage> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(themeViewModel.backgroundAsset),
+                image: AssetImage(themeViewModel.backgroundAsset(Theme.of(context).brightness)),
                 fit: BoxFit.cover,
               ),
             ),

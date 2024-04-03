@@ -45,8 +45,8 @@ class LazyLoadingWidget extends StatelessWidget {
             height: double.infinity,
             child: ProgressLoading(
               color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
+                  ? Theme.of(context).colorScheme.secondary
+                  : Theme.of(context).colorScheme.primary,
             ),
           );
         });
