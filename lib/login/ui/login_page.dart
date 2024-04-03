@@ -93,9 +93,9 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          SizedBox(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height,
+          FractionallySizedBox(
+            widthFactor: 1,
+            heightFactor: 1,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
