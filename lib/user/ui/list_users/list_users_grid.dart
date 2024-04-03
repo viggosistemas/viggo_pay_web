@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/card/list_view_mode_card.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/table/data_table_paginated.dart';
 import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users.dart';
@@ -141,80 +142,95 @@ class _ListUsersGridState extends State<ListUsersGrid> {
         if (snapshot.data == null) {
           onReload();
           return ProgressLoading(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Theme.of(context).colorScheme.secondary
-                : Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary,
           );
         } else {
           List<UserApiDto> items = (snapshot.data as List<UserApiDto>);
-          return SizedBox(
-            height: double.maxFinite,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  HeaderSearchMain(
-                    onReload: onReload,
-                    onSearch: onSearch,
-                    searchFields: searchFields,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: DataTablePaginated(
-                      viewModel: viewModel,
-                      streamList: viewModel.users,
-                      dialogs: dialogs,
-                      initialFilters: filters,
-                      columnsDef: const [
-                        DataColumn(
-                          label: Text(
-                            'Nome',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Email',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Domínio',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                      labelInclude: const ['name'],
-                      fieldsData: usersRowsValues,
-                      validActionsList: usersValidActions,
-                      items: items.map((e) {
-                        return e.toJson();
-                      }).toList(),
+          return LayoutBuilder(builder: (context, constraints) {
+            return SizedBox(
+              height: double.maxFinite,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
-                  // DataTableNotPaginated(
-                  //   viewModel: viewModel,
-                  //   items: items,
-                  // ),
-                ],
+                    HeaderSearchMain(
+                      onReload: onReload,
+                      onSearch: onSearch,
+                      searchFields: searchFields,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: constraints.maxWidth <= 960
+                          ? Padding(
+                              padding: const EdgeInsets.all(50.0),
+                              child: ListViewCard(
+                                onReloadData: onReload,
+                                viewModel: viewModel,
+                                dialogs: dialogs,
+                                fieldsData: 'name',
+                                fieldsSubtitleData: 'domain.name',
+                                validActionsList: usersValidActions,
+                                items: items.map((e) {
+                                  return e.toJson();
+                                }).toList(),
+                              ),
+                            )
+                          : DataTablePaginated(
+                              viewModel: viewModel,
+                              streamList: viewModel.users,
+                              dialogs: dialogs,
+                              initialFilters: filters,
+                              columnsDef: const [
+                                DataColumn(
+                                  label: Text(
+                                    'Nome',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'Email',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'Domínio',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              labelInclude: const ['name'],
+                              fieldsData: usersRowsValues,
+                              validActionsList: usersValidActions,
+                              items: items.map((e) {
+                                return e.toJson();
+                              }).toList(),
+                            ),
+                    ),
+                    // DataTableNotPaginated(
+                    //   viewModel: viewModel,
+                    //   items: items,
+                    // ),
+                  ],
+                ),
               ),
-            ),
-          );
+            );
+          });
         }
       },
     );
