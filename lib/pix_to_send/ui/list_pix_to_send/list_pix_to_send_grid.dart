@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/card/list_view_mode_card.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/table/data_table_paginated.dart';
 import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
@@ -119,84 +120,99 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
         if (snapshot.data == null) {
           onReload();
           return ProgressLoading(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Theme.of(context).colorScheme.secondary
-                : Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary,
           );
         } else {
-          List<PixToSendApiDto> items =
-              (snapshot.data as List<PixToSendApiDto>);
-          return SizedBox(
-            height: double.maxFinite,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  HeaderSearchMain(
-                    onSearch: onSearch,
-                    onReload: onReload,
-                    searchFields: searchFields,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: DataTablePaginated(
-                      viewModel: viewModel,
-                      streamList: viewModel.pixToSends,
-                      initialFilters: filters,
-                      columnsDef: const [
-                        DataColumn(
-                          label: Center(
-                            child: Text(
-                              'Chave',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Center(
-                            child: Text(
-                              'Proprietário',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Center(
-                            child: Text(
-                              'Instituição',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                      addFunction: () => dialogs.addDialog(null),
-                      validActionsList: pixToSendsValidActions,
-                      fieldsData: pixToSendRowsValues,
-                      dialogs: dialogs,
-                      items: items.map((e) {
-                        return e.toJson();
-                      }).toList(),
+          List<PixToSendApiDto> items = (snapshot.data as List<PixToSendApiDto>);
+          return LayoutBuilder(builder: (context, constraints) {
+            return SizedBox(
+              height: double.maxFinite,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
-                  // DataTableNotPaginated(
-                  //   viewModel: viewModel,
-                  //   items: items,
-                  // ),
-                ],
+                    HeaderSearchMain(
+                      onSearch: onSearch,
+                      onReload: onReload,
+                      searchFields: searchFields,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: constraints.maxWidth <= 960
+                          ? Padding(
+                              padding: const EdgeInsets.all(50.0),
+                              child: ListViewCard(
+                                onReloadData: onReload,
+                                viewModel: viewModel,
+                                dialogs: dialogs,
+                                fieldsData: 'alias',
+                                iconCard: Icons.key,
+                                fieldsSubtitleData: 'holder_name',
+                                validActionsList: pixToSendsValidActions,
+                                items: items.map((e) {
+                                  return e.toJson();
+                                }).toList(),
+                              ),
+                            )
+                          : DataTablePaginated(
+                              viewModel: viewModel,
+                              streamList: viewModel.pixToSends,
+                              initialFilters: filters,
+                              columnsDef: const [
+                                DataColumn(
+                                  label: Center(
+                                    child: Text(
+                                      'Chave',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Center(
+                                    child: Text(
+                                      'Proprietário',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Center(
+                                    child: Text(
+                                      'Instituição',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              addFunction: () => dialogs.addDialog(null),
+                              validActionsList: pixToSendsValidActions,
+                              fieldsData: pixToSendRowsValues,
+                              dialogs: dialogs,
+                              items: items.map((e) {
+                                return e.toJson();
+                              }).toList(),
+                            ),
+                    ),
+                    // DataTableNotPaginated(
+                    //   viewModel: viewModel,
+                    //   items: items,
+                    // ),
+                  ],
+                ),
               ),
-            ),
-          );
+            );
+          });
         }
       },
     );
