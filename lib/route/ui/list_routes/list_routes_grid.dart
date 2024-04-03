@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/card/list_view_mode_card.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/table/data_table_paginated.dart';
 import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/route/ui/edit_routes/edit_routes.dart';
@@ -34,13 +35,7 @@ class _ListRoutesGridState extends State<ListRoutesGrid> {
     },
   ];
 
-  static const routesRowValues = [
-    'name',
-    'url',
-    'method',
-    'bypass',
-    'sysadmin'
-  ];
+  static const routesRowValues = ['name', 'url', 'method', 'bypass', 'sysadmin'];
 
   final List<Map<String, dynamic>> itemSelect = [
     {
@@ -131,11 +126,11 @@ class _ListRoutesGridState extends State<ListRoutesGrid> {
         } else {
           fieldValue = element['value'];
         }
-        if(element['search_field'] == 'bypass') {
+        if (element['search_field'] == 'bypass') {
           filters.addEntries(
             <String, String>{element['value']: 'true'}.entries,
           );
-        }else{
+        } else {
           filters.addEntries(
             <String, String>{element['search_field']: fieldValue}.entries,
           );
@@ -181,98 +176,113 @@ class _ListRoutesGridState extends State<ListRoutesGrid> {
         if (snapshot.data == null) {
           onReload();
           return ProgressLoading(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Theme.of(context).colorScheme.secondary
-                : Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary,
           );
         } else {
           List<RouteApiDto> items = (snapshot.data as List<RouteApiDto>);
-          return SizedBox(
-            height: double.maxFinite,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  HeaderSearchMain(
-                    onReload: onReload,
-                    onSearch: onSearch,
-                    searchFields: searchFields,
-                    itemsSelect: itemSelect,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: DataTablePaginated(
-                      viewModel: viewModel,
-                      streamList: viewModel.routes,
-                      dialogs: dialogs,
-                      initialFilters: filters,
-                      columnsDef: const [
-                        DataColumn(
-                          label: Text(
-                            'Nome',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'URL',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Método',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Bypass',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Sysadmin',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                      fieldsData: routesRowValues,
-                      validActionsList: routesValidActions,
-                      items: items.map((e) {
-                        return e.toJson();
-                      }).toList(),
+          return LayoutBuilder(builder: (context, constraints) {
+            return SizedBox(
+              height: double.maxFinite,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
-                  // DataTableNotPaginated(
-                  //   viewModel: viewModel,
-                  //   items: items,
-                  // ),
-                ],
+                    HeaderSearchMain(
+                      onReload: onReload,
+                      onSearch: onSearch,
+                      searchFields: searchFields,
+                      itemsSelect: itemSelect,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: constraints.maxWidth <= 960
+                          ? Padding(
+                              padding: const EdgeInsets.all(50.0),
+                              child: ListViewCard(
+                                onReloadData: onReload,
+                                viewModel: viewModel,
+                                dialogs: dialogs,
+                                fieldsData: 'url',
+                                fieldsSubtitleData: 'method',
+                                validActionsList: routesValidActions,
+                                items: items.map((e) {
+                                  return e.toJson();
+                                }).toList(),
+                              ),
+                            )
+                          : DataTablePaginated(
+                              viewModel: viewModel,
+                              streamList: viewModel.routes,
+                              dialogs: dialogs,
+                              initialFilters: filters,
+                              columnsDef: const [
+                                DataColumn(
+                                  label: Text(
+                                    'Nome',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'URL',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'Método',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'Bypass',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'Sysadmin',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              fieldsData: routesRowValues,
+                              validActionsList: routesValidActions,
+                              items: items.map((e) {
+                                return e.toJson();
+                              }).toList(),
+                            ),
+                    ),
+                    // DataTableNotPaginated(
+                    //   viewModel: viewModel,
+                    //   items: items,
+                    // ),
+                  ],
+                ),
               ),
-            ),
-          );
+            );
+          });
         }
       },
     );
