@@ -33,31 +33,23 @@ class DashboardViewModel extends BaseViewModel {
   final SetDomainUseCase setDomain;
   final ParseImageUrlUseCase parseImage;
 
-  final StreamController<bool> _streamControllerSuccess =
-      StreamController<bool>.broadcast();
+  final StreamController<bool> _streamControllerSuccess = StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
-  final StreamController<DomainAccountApiDto?> _streamMatrizController =
-      StreamController<DomainAccountApiDto?>.broadcast();
+  final StreamController<DomainAccountApiDto?> _streamMatrizController = StreamController<DomainAccountApiDto?>.broadcast();
   Stream<DomainAccountApiDto?> get matriz => _streamMatrizController.stream;
 
-  final StreamController<List<ExtratoApiDto>> _streamExtratoController =
-      StreamController<List<ExtratoApiDto>>.broadcast();
+  final StreamController<List<ExtratoApiDto>> _streamExtratoController = StreamController<List<ExtratoApiDto>>.broadcast();
   Stream<List<ExtratoApiDto>> get extrato => _streamExtratoController.stream;
 
-  final StreamController<DomainApiDto?> _streamControllerDomain =
-      StreamController<DomainApiDto?>.broadcast();
+  final StreamController<DomainApiDto?> _streamControllerDomain = StreamController<DomainApiDto?>.broadcast();
   Stream<DomainApiDto?> get domain => _streamControllerDomain.stream;
-  
-  final StreamController<SaldoApiDto> _streamSaldoController =
-      StreamController<SaldoApiDto>.broadcast();
+
+  final StreamController<SaldoApiDto> _streamSaldoController = StreamController<SaldoApiDto>.broadcast();
   Stream<SaldoApiDto> get saldo => _streamSaldoController.stream;
 
-  final StreamController<List<PixToSendApiDto>>
-      _streamChavePixToSendsController =
-      StreamController<List<PixToSendApiDto>>.broadcast();
-  Stream<List<PixToSendApiDto>> get chavePixToSends =>
-      _streamChavePixToSendsController.stream;
+  final StreamController<List<PixToSendApiDto>> _streamChavePixToSendsController = StreamController<List<PixToSendApiDto>>.broadcast();
+  Stream<List<PixToSendApiDto>> get chavePixToSends => _streamChavePixToSendsController.stream;
 
   DashboardViewModel({
     required this.getDomainAccount,
@@ -70,17 +62,19 @@ class DashboardViewModel extends BaseViewModel {
     required this.parseImage,
   });
 
-  void getDomain() {
+  Future<DomainApiDto?> getDomain() async {
     var domainDto = getDomainFromSettings.invoke();
 
     if (domainDto != null) {
       domainId = domainDto.id;
       _streamControllerDomain.sink.add(domainDto);
+      return domainDto;
     }
+    return null;
   }
 
-  void catchEntity() async {
-    if (isLoading) return;
+  Future<DomainAccountApiDto?> catchEntity() async {
+    if (isLoading) return null;
 
     setLoading();
 
@@ -91,14 +85,16 @@ class DashboardViewModel extends BaseViewModel {
       _streamMatrizController.sink.add(result.right);
       domainAccountId = result.right.id;
       if (result.right.materaId != null) materaId = result.right.materaId!;
+      return result.right;
     } else if (result.isLeft) {
       postError(result.left.message);
+      return null;
     }
     return null;
   }
 
-  void loadExtrato(String materaId) async {
-    if (isLoading) return;
+  Future<List<ExtratoApiDto>> loadExtrato(String materaId) async {
+    if (isLoading) return [];
 
     setLoading();
 
@@ -106,8 +102,7 @@ class DashboardViewModel extends BaseViewModel {
       'id': materaId,
       'account_id': materaId,
       'parametros': {
-        'start': DateFormat('yyyy-MM-dd')
-            .format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
+        'start': DateFormat('yyyy-MM-dd').format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
         'ending': DateFormat('yyyy-MM-dd').format(DateTime.now()),
       }
     };
@@ -119,33 +114,36 @@ class DashboardViewModel extends BaseViewModel {
     if (result.isLeft) {
       postError(result.left.message);
       _streamExtratoController.sink.add([]);
+      return [];
     } else {
       if (!_streamExtratoController.isClosed) {
         _streamExtratoController.sink.add(result.right);
+        return result.right;
       }
     }
+    return [];
   }
 
-  void loadSaldo(String materaId) async {
-    if (isLoading) return;
+  Future<SaldoApiDto?> loadSaldo(String materaId) async {
+    if (materaId.isNotEmpty) {
+      Map<String, dynamic> data = {
+        'id': materaId,
+        'account_id': materaId,
+      };
 
-    setLoading();
+      var result = await getSaldo.invoke(body: data);
 
-    Map<String, dynamic> data = {
-      'id': materaId,
-      'account_id': materaId,
-    };
-
-    var result = await getSaldo.invoke(body: data);
-
-    setLoading();
-    if (result.isLeft) {
-      postError(result.left.message);
-    } else {
-      if (!_streamSaldoController.isClosed) {
-        _streamSaldoController.sink.add(result.right);
+      if (result.isLeft) {
+        postError(result.left.message);
+        return null;
+      } else {
+        if (!_streamSaldoController.isClosed) {
+          _streamSaldoController.sink.add(result.right);
+          return result.right;
+        }
       }
     }
+    return null;
   }
 
   void loadChavePixToSends(String domainAccountId) async {
@@ -166,14 +164,10 @@ class DashboardViewModel extends BaseViewModel {
     if (isLoading) return;
     setLoading();
 
-    var kb = (file.bytes!.lengthInBytes * 0.001 * 100).round() /
-        100; // TAMANHO EM KBYTES
+    var kb = (file.bytes!.lengthInBytes * 0.001 * 100).round() / 100; // TAMANHO EM KBYTES
     var mb = (kb * 0.001 * 100).round() / 100; // TAMANHO EM MEGABYTES
     // var gb = (mb * 0.001 * 100).round() / 100; // TAMANHO EM GYGABYTES
-    if (file.extension != 'png' &&
-        file.extension != 'jpg' &&
-        file.extension != 'wbp' &&
-        file.extension != 'jpeg') {
+    if (file.extension != 'png' && file.extension != 'jpg' && file.extension != 'wbp' && file.extension != 'jpeg') {
       onError('Somente é permitidos arquivos de imagem!');
       return;
     }

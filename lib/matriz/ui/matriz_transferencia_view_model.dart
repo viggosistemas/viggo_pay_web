@@ -105,8 +105,8 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     required this.updatePixToSendSelect,
   });
 
-  void catchEntity() async {
-    if (isLoading) return;
+  Future<DomainAccountApiDto?> catchEntity() async {
+    if (isLoading) return null;
     setLoading();
 
     var result = await getDomainAccount.invoke(id: getDomainFromSettings.invoke()!.id);
@@ -117,8 +117,10 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       domainAccountId = result.right.id;
       if (result.right.materaId != null) materaId = result.right.materaId!;
       getConfigInfo(result.right.id);
+      return result.right;
     } else if (result.isLeft) {
       postError(result.left.message);
+    return null;
     }
     return null;
   }

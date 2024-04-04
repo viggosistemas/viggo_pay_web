@@ -554,6 +554,7 @@ class _HeaderSearchState extends State<HeaderSearch> {
                           right: 10.0,
                         ),
                         child: Chip(
+                          backgroundColor: Colors.white,
                           deleteIconColor: listFilters[idx]['viewValue'] == null
                               ? Colors.red
                               : Colors.red.withOpacity(
