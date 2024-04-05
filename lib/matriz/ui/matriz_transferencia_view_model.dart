@@ -120,7 +120,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       return result.right;
     } else if (result.isLeft) {
       postError(result.left.message);
-    return null;
+      return null;
     }
     return null;
   }
@@ -319,11 +319,11 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       postError(result.left.message);
       _streamComprovanteController.sink.add(const Left(true));
       setLoading(value: false);
-      return result.left.message;
+      return result;
     }
     setLoading(value: false);
     _streamComprovanteController.sink.add(Right(result.right));
-    return result.right;
+    return result;
   }
 
   String encryptPassword(String value) {

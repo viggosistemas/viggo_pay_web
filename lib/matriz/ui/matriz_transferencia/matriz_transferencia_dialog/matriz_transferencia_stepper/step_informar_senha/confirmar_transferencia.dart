@@ -87,8 +87,12 @@ class StepInformarSenha extends StatelessWidget {
                               ),
                             ),
                           );
-                          if (result != null && result == true && context.mounted) {
-                            Navigator.pop(context, result);
+                          if (context.mounted) {
+                            if (result != null && result == true) {
+                              Navigator.pop(context, result);
+                            } else if (result.isLeft) {
+                              Navigator.pop(context, result);
+                            }
                           }
                         },
                         icon: const Icon(

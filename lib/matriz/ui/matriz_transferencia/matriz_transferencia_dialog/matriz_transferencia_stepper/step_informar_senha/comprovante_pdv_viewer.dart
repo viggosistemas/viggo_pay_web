@@ -1,9 +1,7 @@
 import 'dart:convert';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
-import 'dart:typed_data';
 
-import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
@@ -56,11 +54,10 @@ class _ComprovantePdfViewerState extends State<ComprovantePdfViewer> {
       },
       child: SafeArea(
         child: Scaffold(
-          body: StreamBuilder<Either<bool, Uint8List>?>(
-            stream: widget.viewModel.extratoPdf,
+          body: FutureBuilder<dynamic>(
+            future: widget.viewModel.onCashoutSubmit(context),
             builder: (ctx, transfSnapshot) {
               if (transfSnapshot.data == null) {
-                widget.viewModel.onCashoutSubmit(context);
                 return const Center(child: CircularProgressIndicator());
               } else if (transfSnapshot.data!.isRight) {
                 return Stack(
@@ -107,7 +104,7 @@ class _ComprovantePdfViewerState extends State<ComprovantePdfViewer> {
                   ],
                 );
               } else {
-                navigateBack(false);
+                navigateBack(transfSnapshot.data);
                 return const Center(child: CircularProgressIndicator());
               }
             },

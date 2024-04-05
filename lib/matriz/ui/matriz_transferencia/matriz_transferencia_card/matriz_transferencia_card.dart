@@ -257,7 +257,12 @@ class _TransferenciaCardState extends State<TransferenciaCard> {
                                 onPressed: () async {
                                   if (saldoData.data!.real > 0) {
                                     var result = await dialogs.transferenciaDialog(
-                                        materaId: null, saldo: saldoData.data!, pixToSendList: pixToSendData.data!, constraints: constraints);
+                                      materaId: null,
+                                      saldo: saldoData.data!,
+                                      pixToSendList: pixToSendData.data!,
+                                      constraints: constraints,
+                                      taxa: null,
+                                    );
                                     if (result != null && result == true && context.mounted) {
                                       showInfoMessage(
                                         context,

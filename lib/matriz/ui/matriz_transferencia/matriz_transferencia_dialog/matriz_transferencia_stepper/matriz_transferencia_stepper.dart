@@ -17,19 +17,19 @@ class MatrizTransferenciaStepper extends StatefulWidget {
     required this.materaId,
     required this.saldo,
     required this.pixToSendList,
+    required this.taxa,
   });
 
   final String? materaId;
   final SaldoApiDto saldo;
   final List<PixToSendApiDto> pixToSendList;
+  final Map<String, dynamic>? taxa;
 
   @override
-  State<MatrizTransferenciaStepper> createState() =>
-      _MatrizTransferenciaStepperState();
+  State<MatrizTransferenciaStepper> createState() => _MatrizTransferenciaStepperState();
 }
 
-class _MatrizTransferenciaStepperState extends State<MatrizTransferenciaStepper>
-    with TickerProviderStateMixin {
+class _MatrizTransferenciaStepperState extends State<MatrizTransferenciaStepper> with TickerProviderStateMixin {
   late PageController pageViewController;
   late TabController tabController;
   int currentPageIndex = 0;
@@ -125,6 +125,7 @@ class _MatrizTransferenciaStepperState extends State<MatrizTransferenciaStepper>
               currentPage: currentPageIndex,
               saldo: widget.saldo,
               materaId: widget.materaId,
+              taxa: widget.taxa,
             ),
             StepInformarSenha(
               changePage: updateCurrentPageIndex,
