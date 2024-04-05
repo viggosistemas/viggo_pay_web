@@ -79,6 +79,18 @@ class _DashboardPageState extends State<DashboardPage> {
       }
     });
 
+    showMsgSuccess(String value) {
+      showInfoMessage(
+        context,
+        2,
+        Colors.green,
+        value,
+        'X',
+        () {},
+        Colors.white,
+      );
+    }
+
     showMsgError(String value) {
       showInfoMessage(
         context,
@@ -103,16 +115,18 @@ class _DashboardPageState extends State<DashboardPage> {
           viewModel.uploadPhoto(
             element,
             showMsgError,
+            showMsgSuccess,
           );
         }
       }
     }
 
     return AppBuilder(
-      child: FutureBuilder<DomainApiDto?>(
-        future: viewModel.getDomain(),
+      child: StreamBuilder<DomainApiDto?>(
+        stream: viewModel.domain,
         builder: (context, domain) {
           if (domain.data == null) {
+            viewModel.getDomain();
             return Center(
               child: SizedBox(
                 width: 20,
@@ -126,10 +140,11 @@ class _DashboardPageState extends State<DashboardPage> {
             if (domain.data!.name == 'default') {
               return const Text('');
             } else {
-              return FutureBuilder<DomainAccountApiDto?>(
-                future: viewModel.catchEntity(),
+              return StreamBuilder<DomainAccountApiDto?>(
+                stream: viewModel.matriz,
                 builder: (context, matriz) {
                   if (matriz.data == null) {
+                    viewModel.catchEntity();
                     return Center(
                       child: SizedBox(
                         width: 20,
@@ -328,19 +343,16 @@ class _DashboardPageState extends State<DashboardPage> {
                                                                         saldo: saldoData.data!,
                                                                         pixToSendList: pixToSendData.data!,
                                                                         constraints: constraints,
+                                                                        taxa: viewModel.taxaMediatorFee,
                                                                       );
                                                                       if (result != null && result == true && context.mounted) {
-                                                                        showInfoMessage(
-                                                                          context,
-                                                                          2,
-                                                                          Colors.green,
+                                                                        showMsgSuccess(
                                                                           'Transferência realizada com sucesso!',
-                                                                          'X',
-                                                                          () {},
-                                                                          Colors.white,
                                                                         );
                                                                         viewModel.loadSaldo(matriz.data!.materaId!);
                                                                         viewModel.loadExtrato(matriz.data!.materaId!);
+                                                                      } else if (result != null && result.isLeft) {
+                                                                        showMsgError(result.left.message);
                                                                       }
                                                                     }
                                                                   },
@@ -366,63 +378,6 @@ class _DashboardPageState extends State<DashboardPage> {
                                 );
                               },
                             ),
-                            if (lengthExtrato <= totalLength)
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.5,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Últimas movimentações',
-                                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                            color: Theme.of(context).brightness == Brightness.dark
-                                                ? Theme.of(context).colorScheme.secondary.withOpacity(0.8)
-                                                : Theme.of(context).colorScheme.primary,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Tooltip(
-                                          message: 'Carregar mais 5 itens',
-                                          child: OnHoverButton(
-                                            child: Directionality(
-                                              textDirection: TextDirection.rtl,
-                                              child: TextButton.icon(
-                                                icon: Icon(
-                                                  Icons.keyboard_double_arrow_right_outlined,
-                                                  color: Theme.of(context).brightness == Brightness.dark
-                                                      ? Theme.of(context).colorScheme.secondary.withOpacity(0.8)
-                                                      : Theme.of(context).colorScheme.primary,
-                                                ),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    lengthExtrato += 5;
-                                                  });
-                                                },
-                                                label: Text(
-                                                  'Carregar mais',
-                                                  style: GoogleFonts.lato(
-                                                    color: Theme.of(context).brightness == Brightness.dark
-                                                        ? Theme.of(context).colorScheme.secondary.withOpacity(0.8)
-                                                        : Theme.of(context).colorScheme.primary,
-                                                    fontSize: 18,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
                             StreamBuilder<List<ExtratoApiDto>>(
                               stream: viewModel.extrato,
                               builder: (context, extrato) {
@@ -433,6 +388,78 @@ class _DashboardPageState extends State<DashboardPage> {
                                   );
                                 } else {
                                   totalLength = extrato.data!.length;
+                                  if (lengthExtrato <= totalLength) {
+                                    return SizedBox(
+                                      width: MediaQuery.of(context).size.width * 0.5,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'Últimas movimentações',
+                                            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                                  color: Theme.of(context).brightness == Brightness.dark
+                                                      ? Theme.of(context).colorScheme.secondary.withOpacity(0.8)
+                                                      : Theme.of(context).colorScheme.primary,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                          ),
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Tooltip(
+                                                message: 'Carregar mais 5 itens',
+                                                child: OnHoverButton(
+                                                  child: Directionality(
+                                                    textDirection: TextDirection.rtl,
+                                                    child: TextButton.icon(
+                                                      icon: Icon(
+                                                        Icons.keyboard_double_arrow_right_outlined,
+                                                        color: Theme.of(context).brightness == Brightness.dark
+                                                            ? Theme.of(context).colorScheme.secondary.withOpacity(0.8)
+                                                            : Theme.of(context).colorScheme.primary,
+                                                      ),
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          lengthExtrato += 5;
+                                                        });
+                                                      },
+                                                      label: Text(
+                                                        'Carregar mais',
+                                                        style: GoogleFonts.lato(
+                                                          color: Theme.of(context).brightness == Brightness.dark
+                                                              ? Theme.of(context).colorScheme.secondary.withOpacity(0.8)
+                                                              : Theme.of(context).colorScheme.primary,
+                                                          fontSize: 18,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return const SizedBox(height: 0);
+                                  }
+                                }
+                              },
+                            ),
+                            StreamBuilder<List<ExtratoApiDto>>(
+                              stream: viewModel.extrato,
+                              builder: (context, extrato) {
+                                if (extrato.data == null) {
+                                  viewModel.loadExtrato(viewModel.materaId);
+                                  return CircularProgressIndicator(
+                                    color: Theme.of(context).colorScheme.secondary,
+                                  );
+                                } else {
                                   return Expanded(
                                     child: ExtratoTimeline(
                                       listExtrato: extrato.data!,

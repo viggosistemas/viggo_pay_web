@@ -10,6 +10,7 @@ import 'package:viggo_core_frontend/domain/domain/usecases/upload_logo_use_case.
 import 'package:viggo_core_frontend/image/domain/usecases/parse_image_url_use_case.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/get_config_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/extrato_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/saldo_api_dto.dart';
@@ -22,6 +23,7 @@ class DashboardViewModel extends BaseViewModel {
   String materaId = '';
   String domainAccountId = '';
   String domainId = '';
+  Map<String, dynamic> taxaMediatorFee = {};
 
   //USE_CASES
   final GetDomainAccountByIdUseCase getDomainAccount;
@@ -32,6 +34,7 @@ class DashboardViewModel extends BaseViewModel {
   final UploadLogoDomainUseCase uploadLogo;
   final SetDomainUseCase setDomain;
   final ParseImageUrlUseCase parseImage;
+  final GetDomainAccountConfigByIdUseCase getConfigDomainAccount;
 
   final StreamController<bool> _streamControllerSuccess = StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
@@ -52,6 +55,7 @@ class DashboardViewModel extends BaseViewModel {
   Stream<List<PixToSendApiDto>> get chavePixToSends => _streamChavePixToSendsController.stream;
 
   DashboardViewModel({
+    required this.getConfigDomainAccount,
     required this.getDomainAccount,
     required this.getDomainFromSettings,
     required this.getExtrato,
@@ -73,8 +77,8 @@ class DashboardViewModel extends BaseViewModel {
     return null;
   }
 
-  Future<DomainAccountApiDto?> catchEntity() async {
-    if (isLoading) return null;
+  void catchEntity() async {
+    if (isLoading) return;
 
     setLoading();
 
@@ -85,12 +89,32 @@ class DashboardViewModel extends BaseViewModel {
       _streamMatrizController.sink.add(result.right);
       domainAccountId = result.right.id;
       if (result.right.materaId != null) materaId = result.right.materaId!;
-      return result.right;
     } else if (result.isLeft) {
       postError(result.left.message);
-      return null;
     }
-    return null;
+  }
+
+  Future getConfigInfo(String id) async {
+    if (isLoading) return;
+    setLoading();
+
+    Map<String, String> filters = {'domain_account_id': id};
+    var result = await getConfigDomainAccount.invoke(filters: filters);
+    setLoading();
+
+    if (result.isRight && result.right.domainAccountTaxas.isNotEmpty) {
+      var taxa = result.right.domainAccountTaxas[0].taxa;
+      var isPorcentagem = result.right.domainAccountTaxas[0].porcentagem;
+      taxaMediatorFee = {
+        'taxa': taxa ?? 0.0,
+        'porcentagem': isPorcentagem ?? false,
+      };
+      if (taxaMediatorFee['porcentagem']) {
+        taxaMediatorFee['taxa'] = taxaMediatorFee['taxa'] / 100;
+      }
+    } else if (result.isLeft) {
+      postError(result.left.message);
+    }
   }
 
   Future<List<ExtratoApiDto>> loadExtrato(String materaId) async {
@@ -154,13 +178,18 @@ class DashboardViewModel extends BaseViewModel {
     };
     var result = await listChavePixToSends.invoke(filters: filters);
     if (result.isRight) {
+      await getConfigInfo(domainAccountId);
       _streamChavePixToSendsController.sink.add(result.right.pixToSends);
     } else if (result.isLeft) {
       postError(result.left.message);
     }
   }
 
-  void uploadPhoto(PlatformFile file, Function onError) async {
+  void uploadPhoto(
+    PlatformFile file,
+    Function onError,
+    Function onSuccess,
+  ) async {
     if (isLoading) return;
     setLoading();
 
@@ -188,9 +217,11 @@ class DashboardViewModel extends BaseViewModel {
       if (!_streamControllerSuccess.isClosed) {
         DomainApiDto domainSave = getDomainFromSettings.invoke()!;
         domainSave.logoId = result.right.logoId;
+        domainSave.settings = '';
         setDomain.invoke(domainSave);
         _streamControllerDomain.sink.add(domainSave);
         _streamControllerSuccess.sink.add(true);
+        onSuccess('Imagem alterada com sucesso!');
       }
     }
   }
