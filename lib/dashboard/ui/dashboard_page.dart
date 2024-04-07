@@ -141,10 +141,9 @@ class _DashboardPageState extends State<DashboardPage> {
               return const Text('');
             } else {
               return StreamBuilder<DomainAccountApiDto?>(
-                stream: viewModel.matriz,
+                stream: viewModel.loadDomainAccount(),
                 builder: (context, matriz) {
                   if (matriz.data == null) {
-                    viewModel.catchEntity();
                     return Center(
                       child: SizedBox(
                         width: 20,

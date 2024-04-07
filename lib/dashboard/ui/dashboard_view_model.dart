@@ -77,6 +77,11 @@ class DashboardViewModel extends BaseViewModel {
     return null;
   }
 
+  Stream<DomainAccountApiDto?> loadDomainAccount() {
+    catchEntity();
+    return matriz;
+  }
+
   void catchEntity() async {
     if (isLoading) return;
 
