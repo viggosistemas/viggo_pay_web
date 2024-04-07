@@ -18,6 +18,7 @@ class MatrizTransferenciaDialog {
     required SaldoApiDto saldo,
     required List<PixToSendApiDto> pixToSendList,
     required BoxConstraints constraints,
+    required Map<String, dynamic>? taxa,
   }) {
     return showDialog(
       context: context,
@@ -77,12 +78,18 @@ class MatrizTransferenciaDialog {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 SizedBox(
-                                  width: ContainerClass().maxWidthContainer(constraints, context, true, percentWidth: 0.3),
+                                  width: ContainerClass().maxWidthContainer(
+                                    constraints,
+                                    context,
+                                    true,
+                                    percentWidth: 0.3,
+                                  ),
                                   height: 500,
                                   child: MatrizTransferenciaStepper(
                                     materaId: materaId,
                                     saldo: saldo,
                                     pixToSendList: pixToSendList,
+                                    taxa: taxa,
                                   ),
                                 ),
                               ],

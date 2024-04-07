@@ -10,6 +10,7 @@ import 'package:viggo_core_frontend/domain/domain/usecases/upload_logo_use_case.
 import 'package:viggo_core_frontend/image/domain/usecases/parse_image_url_use_case.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/get_config_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/extrato_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/saldo_api_dto.dart';
@@ -22,6 +23,7 @@ class DashboardViewModel extends BaseViewModel {
   String materaId = '';
   String domainAccountId = '';
   String domainId = '';
+  Map<String, dynamic> taxaMediatorFee = {};
 
   //USE_CASES
   final GetDomainAccountByIdUseCase getDomainAccount;
@@ -32,34 +34,28 @@ class DashboardViewModel extends BaseViewModel {
   final UploadLogoDomainUseCase uploadLogo;
   final SetDomainUseCase setDomain;
   final ParseImageUrlUseCase parseImage;
+  final GetDomainAccountConfigByIdUseCase getConfigDomainAccount;
 
-  final StreamController<bool> _streamControllerSuccess =
-      StreamController<bool>.broadcast();
+  final StreamController<bool> _streamControllerSuccess = StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
-  final StreamController<DomainAccountApiDto?> _streamMatrizController =
-      StreamController<DomainAccountApiDto?>.broadcast();
+  final StreamController<DomainAccountApiDto?> _streamMatrizController = StreamController<DomainAccountApiDto?>.broadcast();
   Stream<DomainAccountApiDto?> get matriz => _streamMatrizController.stream;
 
-  final StreamController<List<ExtratoApiDto>> _streamExtratoController =
-      StreamController<List<ExtratoApiDto>>.broadcast();
+  final StreamController<List<ExtratoApiDto>> _streamExtratoController = StreamController<List<ExtratoApiDto>>.broadcast();
   Stream<List<ExtratoApiDto>> get extrato => _streamExtratoController.stream;
 
-  final StreamController<DomainApiDto?> _streamControllerDomain =
-      StreamController<DomainApiDto?>.broadcast();
+  final StreamController<DomainApiDto?> _streamControllerDomain = StreamController<DomainApiDto?>.broadcast();
   Stream<DomainApiDto?> get domain => _streamControllerDomain.stream;
-  
-  final StreamController<SaldoApiDto> _streamSaldoController =
-      StreamController<SaldoApiDto>.broadcast();
+
+  final StreamController<SaldoApiDto> _streamSaldoController = StreamController<SaldoApiDto>.broadcast();
   Stream<SaldoApiDto> get saldo => _streamSaldoController.stream;
 
-  final StreamController<List<PixToSendApiDto>>
-      _streamChavePixToSendsController =
-      StreamController<List<PixToSendApiDto>>.broadcast();
-  Stream<List<PixToSendApiDto>> get chavePixToSends =>
-      _streamChavePixToSendsController.stream;
+  final StreamController<List<PixToSendApiDto>> _streamChavePixToSendsController = StreamController<List<PixToSendApiDto>>.broadcast();
+  Stream<List<PixToSendApiDto>> get chavePixToSends => _streamChavePixToSendsController.stream;
 
   DashboardViewModel({
+    required this.getConfigDomainAccount,
     required this.getDomainAccount,
     required this.getDomainFromSettings,
     required this.getExtrato,
@@ -70,13 +66,20 @@ class DashboardViewModel extends BaseViewModel {
     required this.parseImage,
   });
 
-  void getDomain() {
+  Future<DomainApiDto?> getDomain() async {
     var domainDto = getDomainFromSettings.invoke();
 
     if (domainDto != null) {
       domainId = domainDto.id;
       _streamControllerDomain.sink.add(domainDto);
+      return domainDto;
     }
+    return null;
+  }
+
+  Stream<DomainAccountApiDto?> loadDomainAccount() {
+    catchEntity();
+    return matriz;
   }
 
   void catchEntity() async {
@@ -94,11 +97,33 @@ class DashboardViewModel extends BaseViewModel {
     } else if (result.isLeft) {
       postError(result.left.message);
     }
-    return null;
   }
 
-  void loadExtrato(String materaId) async {
+  Future getConfigInfo(String id) async {
     if (isLoading) return;
+    setLoading();
+
+    Map<String, String> filters = {'domain_account_id': id};
+    var result = await getConfigDomainAccount.invoke(filters: filters);
+    setLoading();
+
+    if (result.isRight && result.right.domainAccountTaxas.isNotEmpty) {
+      var taxa = result.right.domainAccountTaxas[0].taxa;
+      var isPorcentagem = result.right.domainAccountTaxas[0].porcentagem;
+      taxaMediatorFee = {
+        'taxa': taxa ?? 0.0,
+        'porcentagem': isPorcentagem ?? false,
+      };
+      if (taxaMediatorFee['porcentagem']) {
+        taxaMediatorFee['taxa'] = taxaMediatorFee['taxa'] / 100;
+      }
+    } else if (result.isLeft) {
+      postError(result.left.message);
+    }
+  }
+
+  Future<List<ExtratoApiDto>> loadExtrato(String materaId) async {
+    if (isLoading) return [];
 
     setLoading();
 
@@ -106,8 +131,7 @@ class DashboardViewModel extends BaseViewModel {
       'id': materaId,
       'account_id': materaId,
       'parametros': {
-        'start': DateFormat('yyyy-MM-dd')
-            .format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
+        'start': DateFormat('yyyy-MM-dd').format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
         'ending': DateFormat('yyyy-MM-dd').format(DateTime.now()),
       }
     };
@@ -119,33 +143,36 @@ class DashboardViewModel extends BaseViewModel {
     if (result.isLeft) {
       postError(result.left.message);
       _streamExtratoController.sink.add([]);
+      return [];
     } else {
       if (!_streamExtratoController.isClosed) {
         _streamExtratoController.sink.add(result.right);
+        return result.right;
       }
     }
+    return [];
   }
 
-  void loadSaldo(String materaId) async {
-    if (isLoading) return;
+  Future<SaldoApiDto?> loadSaldo(String materaId) async {
+    if (materaId.isNotEmpty) {
+      Map<String, dynamic> data = {
+        'id': materaId,
+        'account_id': materaId,
+      };
 
-    setLoading();
+      var result = await getSaldo.invoke(body: data);
 
-    Map<String, dynamic> data = {
-      'id': materaId,
-      'account_id': materaId,
-    };
-
-    var result = await getSaldo.invoke(body: data);
-
-    setLoading();
-    if (result.isLeft) {
-      postError(result.left.message);
-    } else {
-      if (!_streamSaldoController.isClosed) {
-        _streamSaldoController.sink.add(result.right);
+      if (result.isLeft) {
+        postError(result.left.message);
+        return null;
+      } else {
+        if (!_streamSaldoController.isClosed) {
+          _streamSaldoController.sink.add(result.right);
+          return result.right;
+        }
       }
     }
+    return null;
   }
 
   void loadChavePixToSends(String domainAccountId) async {
@@ -156,24 +183,25 @@ class DashboardViewModel extends BaseViewModel {
     };
     var result = await listChavePixToSends.invoke(filters: filters);
     if (result.isRight) {
+      await getConfigInfo(domainAccountId);
       _streamChavePixToSendsController.sink.add(result.right.pixToSends);
     } else if (result.isLeft) {
       postError(result.left.message);
     }
   }
 
-  void uploadPhoto(PlatformFile file, Function onError) async {
+  void uploadPhoto(
+    PlatformFile file,
+    Function onError,
+    Function onSuccess,
+  ) async {
     if (isLoading) return;
     setLoading();
 
-    var kb = (file.bytes!.lengthInBytes * 0.001 * 100).round() /
-        100; // TAMANHO EM KBYTES
+    var kb = (file.bytes!.lengthInBytes * 0.001 * 100).round() / 100; // TAMANHO EM KBYTES
     var mb = (kb * 0.001 * 100).round() / 100; // TAMANHO EM MEGABYTES
     // var gb = (mb * 0.001 * 100).round() / 100; // TAMANHO EM GYGABYTES
-    if (file.extension != 'png' &&
-        file.extension != 'jpg' &&
-        file.extension != 'wbp' &&
-        file.extension != 'jpeg') {
+    if (file.extension != 'png' && file.extension != 'jpg' && file.extension != 'wbp' && file.extension != 'jpeg') {
       onError('Somente é permitidos arquivos de imagem!');
       return;
     }
@@ -194,9 +222,11 @@ class DashboardViewModel extends BaseViewModel {
       if (!_streamControllerSuccess.isClosed) {
         DomainApiDto domainSave = getDomainFromSettings.invoke()!;
         domainSave.logoId = result.right.logoId;
+        domainSave.settings = '';
         setDomain.invoke(domainSave);
         _streamControllerDomain.sink.add(domainSave);
         _streamControllerSuccess.sink.add(true);
+        onSuccess('Imagem alterada com sucesso!');
       }
     }
   }

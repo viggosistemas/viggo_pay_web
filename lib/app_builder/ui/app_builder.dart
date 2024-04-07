@@ -148,6 +148,7 @@ class _AppBuilderState extends State<AppBuilder> {
         } else {
           return LayoutBuilder(builder: (context, constraints) {
             return Scaffold(
+              backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
               appBar: AppBar(
                 automaticallyImplyLeading: constraints.maxWidth <= 960,
                 toolbarHeight: 70,
