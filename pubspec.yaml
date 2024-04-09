@@ -44,8 +44,9 @@ dependencies:
   file_picker: ^6.1.1
   decimal: ^2.3.3
   flutter_masked_text2: ^0.9.1
+  dio: ^5.4.2+1
 
-  viggo_core_frontend: ^1.0.2
+  viggo_core_frontend: ^1.0.4
 
   # viggo_core_frontend:
   #   path: ../viggo_pay_core_frontend
@@ -98,6 +99,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/util/
     - assets/images/login-bg.png
     - assets/images/login-bg-dark.png
     - assets/images/icone.png

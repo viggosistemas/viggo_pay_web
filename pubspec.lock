@@ -249,6 +249,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0"
+  dio:
+    dependency: "direct main"
+    description:
+      name: dio
+      sha256: "0978e9a3e45305a80a7210dbeaf79d6ee8bee33f70c8e542dc654c952070217f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.4.2+1"
   either_dart:
     dependency: "direct main"
     description:
@@ -1078,10 +1086,10 @@ packages:
     dependency: "direct main"
     description:
       name: viggo_core_frontend
-      sha256: d22ab6d3aae8e7bf0400309689172bd7db395a215cab4464212918ce32ab57bd
+      sha256: f3f893f31f1e631591809c70b254206127e7b9e95f93c22fc14310772542b00e
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.4"
   vm_service:
     dependency: transitive
     description:
