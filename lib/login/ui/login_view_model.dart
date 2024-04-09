@@ -212,6 +212,11 @@ class LoginViewModel extends BaseViewModel {
       setLoading();
     }
   }
+
+  Future<String?> getImageUrl(String? photoId) async {
+    if (photoId != null) return await parseImage.invoke(photoId);
+    return null;
+  }
 }
 
 extension BoolParsing on String {

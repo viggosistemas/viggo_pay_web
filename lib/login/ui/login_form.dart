@@ -34,66 +34,69 @@ class _LoginFormState extends State<LoginForm> {
     String? logoId,
     LoginViewModel? viewModel,
   }) {
-    var url = viewModel?.parseImage.invoke(logoId!);
-    if (url == null) {
-      return showImageDefault(
-        placeholder,
-        domainName,
-        viewModel: viewModel,
-      );
-    } else {
-      return Stack(
-        children: [
-          Tooltip(
-            message: domainName,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.7),
-                    blurRadius: 8,
-                    spreadRadius: 6,
-                    offset: const Offset(0, 0),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SizedBox(
-                  width: 150,
-                  height: 100,
-                  child: FadeInImage(
-                    image: NetworkImage(url),
-                    placeholder: AssetImage(placeholder),
-                    imageErrorBuilder: (context, error, stackTrace) {
-                      return Image.asset(placeholder, fit: BoxFit.contain);
-                    },
-                    fit: BoxFit.fitWidth,
+    return FutureBuilder(
+        future: viewModel?.getImageUrl(logoId!),
+        builder: (context, imgSnp) {
+          if (imgSnp.data == null) {
+            return showImageDefault(
+              placeholder,
+              domainName,
+              viewModel: viewModel,
+            );
+          } else {
+            return Stack(
+              children: [
+                Tooltip(
+                  message: domainName,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.7),
+                          blurRadius: 8,
+                          spreadRadius: 6,
+                          offset: const Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: SizedBox(
+                        width: 150,
+                        height: 100,
+                        child: FadeInImage(
+                          image: NetworkImage(imgSnp.data!),
+                          placeholder: AssetImage(placeholder),
+                          imageErrorBuilder: (context, error, stackTrace) {
+                            return Image.asset(placeholder, fit: BoxFit.contain);
+                          },
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: OnHoverButton(
-              child: IconButton(
-                onPressed: () {
-                  viewModel?.onClearRememberCredential();
-                },
-                icon: const Icon(
-                  Icons.cancel,
-                  color: Colors.red,
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: OnHoverButton(
+                    child: IconButton(
+                      onPressed: () {
+                        viewModel?.onClearRememberCredential();
+                      },
+                      icon: const Icon(
+                        Icons.cancel,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
+              ],
+            );
+          }
+        });
   }
 
   Widget showImageDefault(
@@ -208,10 +211,7 @@ class _LoginFormState extends State<LoginForm> {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     constraints: constraints,
-                    width: constraints.maxWidth >= 600
-                        ? 450
-                        : ContainerClass()
-                            .maxWidthContainer(constraints, context, false),
+                    width: constraints.maxWidth >= 600 ? 450 : ContainerClass().maxWidthContainer(constraints, context, false),
                     child: Column(
                       children: [
                         FieldsForm(
@@ -246,26 +246,17 @@ class _LoginFormState extends State<LoginForm> {
                                         }
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        fixedSize:
-                                            const Size(double.maxFinite, 40),
+                                        fixedSize: const Size(double.maxFinite, 40),
                                         alignment: Alignment.center,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 30,
                                           vertical: 8,
                                         ),
-                                        backgroundColor: snapshot.data == true
-                                            ? Theme.of(context)
-                                                .colorScheme
-                                                .primary
-                                            : Colors.grey,
-                                        enabledMouseCursor:
-                                            snapshot.data == true
-                                                ? SystemMouseCursors.click
-                                                : SystemMouseCursors.basic,
+                                        backgroundColor: snapshot.data == true ? Theme.of(context).colorScheme.primary : Colors.grey,
+                                        enabledMouseCursor: snapshot.data == true ? SystemMouseCursors.click : SystemMouseCursors.basic,
                                       ),
                                       label: const Text(
                                         'Acessar',
