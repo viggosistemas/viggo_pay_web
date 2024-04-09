@@ -114,10 +114,11 @@ class _DashboardPageState extends State<DashboardPage> {
     }
 
     return AppBuilder(
-      child: FutureBuilder<DomainApiDto?>(
-        future: viewModel.getDomain(),
+      child: StreamBuilder<DomainApiDto?>(
+        stream: viewModel.domain,
         builder: (context, domain) {
           if (domain.data == null) {
+            viewModel.getDomain();
             return Center(
               child: SizedBox(
                 width: 20,
