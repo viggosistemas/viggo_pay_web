@@ -10,8 +10,12 @@ class StepInformarSenha extends StatelessWidget {
     super.key,
     required this.changePage,
     required this.currentPage,
+    required this.taxa,
+    required this.materaId,
   });
 
+  final String? materaId;
+  final Map<String, dynamic>? taxa;
   final Function(int index) changePage;
   final int currentPage;
   final viewModel = locator.get<MatrizTransferenciaViewModel>();
@@ -83,7 +87,10 @@ class StepInformarSenha extends StatelessWidget {
                             builder: (BuildContext ctx) => Dialog.fullscreen(
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 14),
-                                child: ComprovantePdfViewer(),
+                                child: ComprovantePdfViewer(
+                                  materaId: materaId,
+                                  taxa: taxa,
+                                ),
                               ),
                             ),
                           );
