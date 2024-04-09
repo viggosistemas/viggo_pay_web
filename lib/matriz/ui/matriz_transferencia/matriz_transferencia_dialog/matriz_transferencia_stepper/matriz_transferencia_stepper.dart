@@ -130,6 +130,8 @@ class _MatrizTransferenciaStepperState extends State<MatrizTransferenciaStepper>
             StepInformarSenha(
               changePage: updateCurrentPageIndex,
               currentPage: currentPageIndex,
+              materaId: widget.materaId,
+              taxa: widget.taxa,
             ),
           ],
         ),

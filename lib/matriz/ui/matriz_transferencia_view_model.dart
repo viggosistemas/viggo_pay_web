@@ -274,8 +274,10 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
   }
 
   Future<dynamic> onCashoutSubmit(
-    BuildContext context,
-  ) async {
+    BuildContext context, {
+    String? materaIdDashboard,
+    Map<String, dynamic>? taxa,
+  }) async {
     if (isLoading) return null;
     setLoading(value: true);
 
@@ -285,10 +287,10 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     final pixSelected = PixToSendApiDto.fromJson(jsonDecode(formFieldsPix['pixSelect'].toString()));
 
     Map<String, dynamic> params = {
-      'id': materaId,
-      'account_id': materaId,
+      'id': materaIdDashboard ?? materaId,
+      'account_id': materaIdDashboard ?? materaId,
       'totalAmount': double.parse(formFieldsValor['valor'].toString()),
-      'mediatorFee': taxaMediatorFee['taxa'],
+      'mediatorFee': taxa?['taxa'] ?? taxaMediatorFee['taxa'],
       'currency': 'BRL',
       'natureza': 'WEB',
       'password': encryptPassword(formFieldsSenha['senha'].toString()),

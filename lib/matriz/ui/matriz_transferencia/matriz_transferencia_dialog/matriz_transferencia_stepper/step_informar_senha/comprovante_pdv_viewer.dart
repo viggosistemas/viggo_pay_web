@@ -9,8 +9,14 @@ import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 
 class ComprovantePdfViewer extends StatefulWidget {
-  ComprovantePdfViewer({super.key});
+  ComprovantePdfViewer({
+    super.key,
+    required this.materaId,
+    required this.taxa,
+  });
 
+  final String? materaId;
+  final Map<String, dynamic>? taxa;
   final MatrizTransferenciaViewModel viewModel = locator.get<MatrizTransferenciaViewModel>();
 
   @override
@@ -55,7 +61,11 @@ class _ComprovantePdfViewerState extends State<ComprovantePdfViewer> {
       child: SafeArea(
         child: Scaffold(
           body: FutureBuilder<dynamic>(
-            future: widget.viewModel.onCashoutSubmit(context),
+            future: widget.viewModel.onCashoutSubmit(
+              context,
+              materaIdDashboard: widget.materaId,
+              taxa: widget.taxa,
+            ),
             builder: (ctx, transfSnapshot) {
               if (transfSnapshot.data == null) {
                 return const Center(child: CircularProgressIndicator());

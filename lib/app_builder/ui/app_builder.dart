@@ -61,82 +61,51 @@ class _AppBuilderState extends State<AppBuilder> {
     }
 
     Widget getAvatar(UserApiDto user) {
-      if (user.photoId != null) {
-        var photoUrl = viewModel.parseImage.invoke(user.photoId!);
-        return Row(
-          children: [
-            CircleAvatar(
-              backgroundImage: NetworkImage(photoUrl),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+      return FutureBuilder(
+          future: viewModel.getImageUrl(user.photoId),
+          builder: (context, imgSnp) {
+            return Row(
               children: [
-                Text(
-                  user.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
+                imgSnp.data != null
+                    ? CircleAvatar(
+                        backgroundImage: NetworkImage(imgSnp.data!),
+                      )
+                    : const CircleAvatar(
+                        backgroundImage: AssetImage(
+                          'assets/images/avatar.png',
+                        ),
+                      ),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      user.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    StreamBuilder<DomainApiDto?>(
+                        stream: viewModel.domainDto,
+                        builder: (context, snapshot) {
+                          if (snapshot.data == null) {
+                            viewModel.getDomain();
+                            return const CircularProgressIndicator();
+                          } else {
+                            return Text(
+                              snapshot.data?.name ?? snapshot.data?.displayName ?? '',
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            );
+                          }
+                        }),
+                  ],
                 ),
-                StreamBuilder<DomainApiDto?>(
-                    stream: viewModel.domainDto,
-                    builder: (context, snapshot) {
-                      if (snapshot.data == null) {
-                        viewModel.getDomain();
-                        return const CircularProgressIndicator();
-                      } else {
-                        return Text(
-                          snapshot.data?.name ?? snapshot.data?.displayName ?? '',
-                          style: const TextStyle(
-                            color: Colors.white,
-                          ),
-                        );
-                      }
-                    }),
               ],
-            ),
-          ],
-        );
-      } else {
-        return Row(
-          children: [
-            const CircleAvatar(
-              backgroundImage: AssetImage(
-                'assets/images/avatar.png',
-              ),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  user.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                StreamBuilder<DomainApiDto?>(
-                    stream: viewModel.domainDto,
-                    builder: (context, snapshot) {
-                      if (snapshot.data == null) {
-                        viewModel.getDomain();
-                        return const CircularProgressIndicator();
-                      } else {
-                        return Text(
-                          snapshot.data?.name ?? snapshot.data?.displayName ?? '',
-                          style: const TextStyle(
-                            color: Colors.white,
-                          ),
-                        );
-                      }
-                    }),
-              ],
-            ),
-          ],
-        );
-      }
+            );
+          });
     }
 
     return StreamBuilder<UserApiDto?>(

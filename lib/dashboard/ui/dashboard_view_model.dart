@@ -82,21 +82,24 @@ class DashboardViewModel extends BaseViewModel {
     return matriz;
   }
 
-  void catchEntity() async {
-    if (isLoading) return;
+  Future<DomainAccountApiDto?> catchEntity() async {
+    // if (isLoading) return null;
 
-    setLoading();
+    // setLoading();
 
     var result = await getDomainAccount.invoke(id: domainId);
 
-    setLoading();
+    // setLoading();
     if (result.isRight) {
       _streamMatrizController.sink.add(result.right);
       domainAccountId = result.right.id;
       if (result.right.materaId != null) materaId = result.right.materaId!;
+      return result.right;
     } else if (result.isLeft) {
       postError(result.left.message);
+      return null;
     }
+    return null;
   }
 
   Future getConfigInfo(String id) async {
@@ -123,9 +126,9 @@ class DashboardViewModel extends BaseViewModel {
   }
 
   Future<List<ExtratoApiDto>> loadExtrato(String materaId) async {
-    if (isLoading) return [];
+    // if (isLoading) return [];
 
-    setLoading();
+    // setLoading();
 
     Map<String, dynamic> data = {
       'id': materaId,
@@ -138,7 +141,7 @@ class DashboardViewModel extends BaseViewModel {
 
     var result = await getExtrato.invoke(body: data);
 
-    setLoading();
+    // setLoading();
 
     if (result.isLeft) {
       postError(result.left.message);
@@ -175,7 +178,7 @@ class DashboardViewModel extends BaseViewModel {
     return null;
   }
 
-  void loadChavePixToSends(String domainAccountId) async {
+  Future<List<PixToSendApiDto>> loadChavePixToSends(String domainAccountId) async {
     Map<String, String> filters = {
       'order_by': 'alias',
       'list_options': ListOptions.ACTIVE_ONLY.name,
@@ -185,9 +188,12 @@ class DashboardViewModel extends BaseViewModel {
     if (result.isRight) {
       await getConfigInfo(domainAccountId);
       _streamChavePixToSendsController.sink.add(result.right.pixToSends);
+      return result.right.pixToSends;
     } else if (result.isLeft) {
       postError(result.left.message);
+      return [];
     }
+    return [];
   }
 
   void uploadPhoto(
@@ -238,5 +244,10 @@ class DashboardViewModel extends BaseViewModel {
     } else {
       return domainDto;
     }
+  }
+
+  Future<String?> getImageUrl(String? photoId) async {
+    if (photoId != null) return await parseImage.invoke(photoId);
+    return null;
   }
 }

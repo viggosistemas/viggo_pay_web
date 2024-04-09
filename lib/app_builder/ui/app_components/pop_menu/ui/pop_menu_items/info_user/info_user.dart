@@ -12,19 +12,10 @@ class InfoUserDialog {
   final BuildContext context;
   final viewModel = locator.get<PopMenuViewModel>();
 
-  Widget? getImagem(String? photoId) {
-    if (photoId != null && photoId.isNotEmpty) {
+  Widget? getImagem(String? photo) {
+    if (photo != null && photo.isNotEmpty) {
       return CircleAvatar(
-        backgroundImage: NetworkImage(
-          viewModel.parseImage.invoke(photoId),
-        ),
-      );
-    } else if (viewModel.user!.photoId != null &&
-        viewModel.user!.photoId!.isNotEmpty) {
-      return CircleAvatar(
-        backgroundImage: NetworkImage(
-          viewModel.parseImage.invoke(viewModel.user!.photoId!),
-        ),
+        backgroundImage: NetworkImage(photo),
       );
     } else {
       return const CircleAvatar(
@@ -142,13 +133,17 @@ class InfoUserDialog {
                       StreamBuilder<UserApiDto>(
                           stream: viewModel.userController,
                           builder: (context, snapshot) {
-                            return Center(
-                              child: SizedBox(
-                                height: 150,
-                                width: 150,
-                                child: getImagem(snapshot.data?.photoId),
-                              ),
-                            );
+                            return FutureBuilder(
+                                future: viewModel.getImageUrl(snapshot.data?.photoId ?? viewModel.user!.photoId),
+                                builder: (context, imgSnp) {
+                                  return Center(
+                                    child: SizedBox(
+                                      height: 150,
+                                      width: 150,
+                                      child: getImagem(imgSnp.data),
+                                    ),
+                                  );
+                                });
                           }),
                       const SizedBox(
                         height: 10,
@@ -166,9 +161,7 @@ class InfoUserDialog {
                               },
                               icon: const Icon(Icons.delete_outline),
                               style: IconButton.styleFrom(
-                                backgroundColor: viewModel.user!.photoId != null
-                                    ? Colors.red
-                                    : Colors.grey,
+                                backgroundColor: viewModel.user!.photoId != null ? Colors.red : Colors.grey,
                               ),
                             ),
                           ),
@@ -179,9 +172,7 @@ class InfoUserDialog {
                             child: IconButton(
                               onPressed: () => onUploadPhoto(),
                               icon: const Icon(Icons.camera_alt_outlined),
-                              style: IconButton.styleFrom(
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.primary),
+                              style: IconButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
                             ),
                           ),
                         ],
@@ -192,8 +183,7 @@ class InfoUserDialog {
                       StreamBuilder<String>(
                         stream: viewModel.form.nickname.field,
                         builder: (context, snapshot) {
-                          nickNameController.value = nickNameController.value
-                              .copyWith(text: snapshot.data);
+                          nickNameController.value = nickNameController.value.copyWith(text: snapshot.data);
                           return TextFormField(
                             decoration: InputDecoration(
                               labelText: 'Nickname',

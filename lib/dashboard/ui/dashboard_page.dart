@@ -39,18 +39,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
   int totalLength = 0;
 
-  Widget? getImagem(String? logoId) {
-    if (logoId != null && logoId.isNotEmpty) {
+  Widget? getImagem(String? logo) {
+    if (logo != null && logo.isNotEmpty) {
       return CircleAvatar(
-        backgroundImage: NetworkImage(
-          viewModel.parseImage.invoke(logoId),
-        ),
-      );
-    } else if (viewModel.domainDto!.logoId != null && viewModel.domainDto!.logoId!.isNotEmpty) {
-      return CircleAvatar(
-        backgroundImage: NetworkImage(
-          viewModel.parseImage.invoke(viewModel.domainDto!.logoId!),
-        ),
+        backgroundImage: NetworkImage(logo),
       );
     } else {
       return const CircleAvatar(
@@ -122,11 +114,10 @@ class _DashboardPageState extends State<DashboardPage> {
     }
 
     return AppBuilder(
-      child: StreamBuilder<DomainApiDto?>(
-        stream: viewModel.domain,
+      child: FutureBuilder<DomainApiDto?>(
+        future: viewModel.getDomain(),
         builder: (context, domain) {
           if (domain.data == null) {
-            viewModel.getDomain();
             return Center(
               child: SizedBox(
                 width: 20,
@@ -140,8 +131,8 @@ class _DashboardPageState extends State<DashboardPage> {
             if (domain.data!.name == 'default') {
               return const Text('');
             } else {
-              return StreamBuilder<DomainAccountApiDto?>(
-                stream: viewModel.loadDomainAccount(),
+              return FutureBuilder<DomainAccountApiDto?>(
+                future: viewModel.catchEntity(),
                 builder: (context, matriz) {
                   if (matriz.data == null) {
                     return Center(
@@ -209,18 +200,23 @@ class _DashboardPageState extends State<DashboardPage> {
                                         const SizedBox(
                                           height: 10,
                                         ),
-                                        Tooltip(
-                                          message: 'Alterar foto',
-                                          child: GestureDetector(
-                                            onTap: () => onUploadLogo(),
-                                            child: OnHoverButton(
-                                              child: SizedBox(
-                                                width: 150,
-                                                height: 150,
-                                                child: getImagem(domain.data?.logoId),
+                                        FutureBuilder(
+                                          future: viewModel.getImageUrl(domain.data?.logoId ?? viewModel.domainDto!.logoId),
+                                          builder: (context, imgSnp) {
+                                            return Tooltip(
+                                              message: 'Alterar foto',
+                                              child: GestureDetector(
+                                                onTap: () => onUploadLogo(),
+                                                child: OnHoverButton(
+                                                  child: SizedBox(
+                                                    width: 150,
+                                                    height: 150,
+                                                    child: getImagem(imgSnp.data),
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
+                                            );
+                                          },
                                         ),
                                         Text(
                                           matriz.data!.clientName,
@@ -242,11 +238,10 @@ class _DashboardPageState extends State<DashboardPage> {
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        StreamBuilder<SaldoApiDto>(
-                                          stream: viewModel.saldo,
+                                        FutureBuilder<SaldoApiDto?>(
+                                          future: viewModel.loadSaldo(matriz.data!.materaId!),
                                           builder: (context, saldoData) {
                                             if (saldoData.data == null) {
-                                              viewModel.loadSaldo(matriz.data!.materaId!);
                                               return CircularProgressIndicator(
                                                 color: Theme.of(context).colorScheme.secondary,
                                               );
@@ -309,13 +304,10 @@ class _DashboardPageState extends State<DashboardPage> {
                                                         ],
                                                       ),
                                                       const SizedBox(height: 10),
-                                                      StreamBuilder<List<PixToSendApiDto>>(
-                                                        stream: viewModel.chavePixToSends,
+                                                      FutureBuilder<List<PixToSendApiDto>>(
+                                                        future: viewModel.loadChavePixToSends(matriz.data!.id),
                                                         builder: (context, pixToSendData) {
                                                           if (pixToSendData.data == null) {
-                                                            viewModel.loadChavePixToSends(
-                                                              matriz.data!.id,
-                                                            );
                                                             return CircularProgressIndicator(
                                                               color: Theme.of(context).colorScheme.secondary,
                                                             );
@@ -377,11 +369,10 @@ class _DashboardPageState extends State<DashboardPage> {
                                 );
                               },
                             ),
-                            StreamBuilder<List<ExtratoApiDto>>(
-                              stream: viewModel.extrato,
+                            FutureBuilder<List<ExtratoApiDto>>(
+                              future: viewModel.loadExtrato(viewModel.materaId),
                               builder: (context, extrato) {
                                 if (extrato.data == null) {
-                                  viewModel.loadExtrato(viewModel.materaId);
                                   return CircularProgressIndicator(
                                     color: Theme.of(context).colorScheme.secondary,
                                   );
@@ -450,11 +441,10 @@ class _DashboardPageState extends State<DashboardPage> {
                                 }
                               },
                             ),
-                            StreamBuilder<List<ExtratoApiDto>>(
-                              stream: viewModel.extrato,
+                            FutureBuilder<List<ExtratoApiDto>>(
+                              future: viewModel.loadExtrato(viewModel.materaId),
                               builder: (context, extrato) {
                                 if (extrato.data == null) {
-                                  viewModel.loadExtrato(viewModel.materaId);
                                   return CircularProgressIndicator(
                                     color: Theme.of(context).colorScheme.secondary,
                                   );
