@@ -149,6 +149,7 @@ class DashboardViewModel extends BaseViewModel {
       return [];
     } else {
       if (!_streamExtratoController.isClosed) {
+        result.right.sort((a, b) => DateTime.parse(b.creditDate).compareTo(DateTime.parse(a.creditDate)));
         _streamExtratoController.sink.add(result.right);
         return result.right;
       }
