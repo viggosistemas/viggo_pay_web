@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:viggo_pay_admin/components/timeline_tile.dart';
-import 'package:viggo_pay_admin/pay_facs/data/models/transacoes_api_dto.dart';
+import 'package:viggo_pay_admin/pay_facs/data/models/extrato_api_dto.dart';
 import 'package:viggo_pay_admin/utils/container.dart';
 
 class TimelineMatriz extends StatelessWidget {
@@ -11,7 +11,7 @@ class TimelineMatriz extends StatelessWidget {
     required this.listTransferencia,
   });
 
-  final List<TransacaoApiDto> listTransferencia;
+  final List<ExtratoApiDto> listTransferencia;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class TimelineMatriz extends StatelessWidget {
                               width: 10,
                             ),
                             Text(
-                              'Transferência de retirada',
+                              listTransferencia[index].description,
                               style: GoogleFonts.lato(
                                 color: Theme.of(context).brightness == Brightness.dark
                                     ? Theme.of(context).colorScheme.primary.withOpacity(0.7)
@@ -76,21 +76,19 @@ class TimelineMatriz extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'R\$ ${listTransferencia[index].totalAmount}',
+                              '${listTransferencia[index].type == 'D' ? '-' : '+'} R\$ ${listTransferencia[index].amount}',
                               style: GoogleFonts.lato(
-                                color: Theme.of(context).brightness == Brightness.dark
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context).colorScheme.onPrimary,
+                                color: listTransferencia[index].type == 'D' ? Colors.red : Colors.green,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
-                              DateFormat('dd/MM/yyyy').format(DateTime.parse(listTransferencia[index].transactionDate)),
+                              DateFormat('dd/MM/yyyy').format(DateTime.parse(listTransferencia[index].creditDate)),
                               style: GoogleFonts.lato(
-                                color: Theme.of(context).brightness == Brightness.dark
-                                    ? Theme.of(context).colorScheme.primary.withOpacity(0.7)
-                                    : Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                                fontSize: 14,
+                                color:
+                                    Theme.of(context).brightness == Brightness.dark ? Colors.black.withOpacity(0.7) : Colors.white.withOpacity(0.7),
                               ),
                             ),
                           ],

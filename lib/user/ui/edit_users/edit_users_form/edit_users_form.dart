@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
@@ -59,6 +61,12 @@ class _EditUsersFormState extends State<EditUsersForm> {
       widget.viewModel.form.domainId.onValueChange('');
     }
 
+    isDefaultDomain() {
+      var domain = widget.viewModel.sharedPrefs.getString('DOMAIN');
+      if (domain != null) return jsonDecode(domain)['name'] == 'default';
+      return false;
+    }
+
     contentRolesSelect() {
       if (widget.entity != null) {
         return Column(
@@ -115,13 +123,8 @@ class _EditUsersFormState extends State<EditUsersForm> {
                                   Text(
                                     role.name,
                                     textAlign: TextAlign.left,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                          color: Theme.of(context).colorScheme.primary,
                                         ),
                                   ),
                                 ],
@@ -140,13 +143,122 @@ class _EditUsersFormState extends State<EditUsersForm> {
       }
     }
 
+    contentDomainField() {
+      return StreamBuilder<String>(
+        stream: widget.viewModel.form.domainId.field,
+        builder: (context, snapshot) {
+          domainFieldControll.value = domainFieldControll.value.copyWith(text: snapshot.data);
+          return Autocomplete<DomainApiDto>(
+            optionsBuilder: (TextEditingValue textEditingValue) async {
+              if (textEditingValue.text == '') {
+                var options = await widget.viewModel.loadDomains({'list_options': ListOptions.ACTIVE_ONLY.name, 'order_by': 'name'});
+                return options!.where((element) => true);
+              } else {
+                var options = await widget.viewModel
+                    .loadDomains({'list_options': ListOptions.ACTIVE_ONLY.name, 'order_by': 'name', 'name': '%${textEditingValue.text}%'});
+                return options!.where((element) => true);
+              }
+            },
+            initialValue: TextEditingValue(text: widget.entity?.domain?.name ?? ''),
+            displayStringForOption: (option) => option.name,
+            optionsViewBuilder: (context, onSelected, options) => Align(
+              alignment: Alignment.topLeft,
+              child: Material(
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(4.0)),
+                ),
+                child: SizedBox(
+                  height: 52.0 * options.length,
+                  width: 500, //define the same width of dialog
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: options.length,
+                    shrinkWrap: false,
+                    itemBuilder: (BuildContext context, int index) {
+                      final DomainApiDto option = options.elementAt(index);
+                      return option.id == 'last'
+                          ? OnHoverButton(
+                              child: Directionality(
+                                textDirection: TextDirection.rtl,
+                                child: ElevatedButton.icon(
+                                    onPressed: () {},
+                                    icon: const Icon(
+                                      Icons.add_circle_outline,
+                                      size: 18,
+                                    ),
+                                    label: const Text('Adicionar agora')),
+                              ),
+                            )
+                          : Container(
+                              color: Colors.white,
+                              child: InkWell(
+                                highlightColor: Colors.white,
+                                splashColor: Colors.white,
+                                hoverColor: Colors.grey.withOpacity(0.8),
+                                focusColor: Colors.white,
+                                overlayColor: MaterialStatePropertyAll(Colors.grey.withOpacity(0.8)),
+                                onTap: () => onSelected(option),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(option.name),
+                                ),
+                              ),
+                            );
+                    },
+                  ),
+                ),
+              ),
+            ),
+            fieldViewBuilder: (
+              BuildContext context,
+              TextEditingController controller,
+              FocusNode focusNode,
+              VoidCallback onFieldSubmitted,
+            ) {
+              return TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Domínio',
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  floatingLabelAlignment: FloatingLabelAlignment.start,
+                  border: const OutlineInputBorder(),
+                  errorText: snapshot.error?.toString(),
+                  suffix: snapshot.data != null && snapshot.data!.isNotEmpty
+                      ? OnHoverButton(
+                          child: IconButton(
+                            onPressed: () {
+                              widget.viewModel.form.domainId.onValueChange('');
+                              controller.setText('');
+                            },
+                            icon: const Icon(
+                              Icons.cancel_outlined,
+                              size: 18,
+                              color: Colors.red,
+                            ),
+                          ),
+                        )
+                      : const Text(''),
+                ),
+                controller: controller,
+                focusNode: focusNode,
+                onChanged: (value) {
+                  widget.viewModel.form.domainId.onValueChange(value);
+                },
+              );
+            },
+            onSelected: (DomainApiDto selection) {
+              widget.viewModel.form.domainId.onValueChange(selection.id);
+            },
+          );
+        },
+      );
+    }
+
     return Column(
       children: [
         StreamBuilder<String>(
             stream: widget.viewModel.form.name.field,
             builder: (context, snapshot) {
-              nameFieldControll.value =
-                  nameFieldControll.value.copyWith(text: snapshot.data);
+              nameFieldControll.value = nameFieldControll.value.copyWith(text: snapshot.data);
               return TextFormField(
                   // onChanged: (value) {
                   //   _txtAmountValue = value;
@@ -167,8 +279,7 @@ class _EditUsersFormState extends State<EditUsersForm> {
         StreamBuilder<String>(
             stream: widget.viewModel.form.email.field,
             builder: (context, snapshot) {
-              emailFieldControll.value =
-                  emailFieldControll.value.copyWith(text: snapshot.data);
+              emailFieldControll.value = emailFieldControll.value.copyWith(text: snapshot.data);
               return TextFormField(
                   // onChanged: (value) {
                   //   _txtAmountValue = value;
@@ -186,124 +297,7 @@ class _EditUsersFormState extends State<EditUsersForm> {
         const SizedBox(
           height: 10,
         ),
-        StreamBuilder<String>(
-          stream: widget.viewModel.form.domainId.field,
-          builder: (context, snapshot) {
-            domainFieldControll.value =
-                domainFieldControll.value.copyWith(text: snapshot.data);
-            return Autocomplete<DomainApiDto>(
-              optionsBuilder: (TextEditingValue textEditingValue) async {
-                if (textEditingValue.text == '') {
-                  var options = await widget.viewModel.loadDomains({
-                    'list_options': ListOptions.ACTIVE_ONLY.name,
-                    'order_by': 'name'
-                  });
-                  return options!.where((element) => true);
-                } else {
-                  var options = await widget.viewModel.loadDomains({
-                    'list_options': ListOptions.ACTIVE_ONLY.name,
-                    'order_by': 'name',
-                    'name': '%${textEditingValue.text}%'
-                  });
-                  return options!.where((element) => true);
-                }
-              },
-              initialValue:
-                  TextEditingValue(text: widget.entity?.domain?.name ?? ''),
-              displayStringForOption: (option) => option.name,
-              optionsViewBuilder: (context, onSelected, options) => Align(
-                alignment: Alignment.topLeft,
-                child: Material(
-                  shape: const RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(bottom: Radius.circular(4.0)),
-                  ),
-                  child: SizedBox(
-                    height: 52.0 * options.length,
-                    width: 500, //define the same width of dialog
-                    child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: options.length,
-                      shrinkWrap: false,
-                      itemBuilder: (BuildContext context, int index) {
-                        final DomainApiDto option = options.elementAt(index);
-                        return option.id == 'last'
-                            ? OnHoverButton(
-                                child: Directionality(
-                                  textDirection: TextDirection.rtl,
-                                  child: ElevatedButton.icon(
-                                      onPressed: () {},
-                                      icon: const Icon(
-                                        Icons.add_circle_outline,
-                                        size: 18,
-                                      ),
-                                      label: const Text('Adicionar agora')),
-                                ),
-                              )
-                            : Container(
-                                color: Colors.white,
-                                child: InkWell(
-                                  highlightColor: Colors.white,
-                                  splashColor: Colors.white,
-                                  hoverColor: Colors.grey.withOpacity(0.8),
-                                  focusColor: Colors.white,
-                                  overlayColor: MaterialStatePropertyAll(
-                                      Colors.grey.withOpacity(0.8)),
-                                  onTap: () => onSelected(option),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Text(option.name),
-                                  ),
-                                ),
-                              );
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              fieldViewBuilder: (
-                BuildContext context,
-                TextEditingController controller,
-                FocusNode focusNode,
-                VoidCallback onFieldSubmitted,
-              ) {
-                return TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Domínio',
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    floatingLabelAlignment: FloatingLabelAlignment.start,
-                    border: const OutlineInputBorder(),
-                    errorText: snapshot.error?.toString(),
-                    suffix: snapshot.data != null && snapshot.data!.isNotEmpty
-                        ? OnHoverButton(
-                            child: IconButton(
-                              onPressed: () {
-                                widget.viewModel.form.domainId
-                                    .onValueChange('');
-                                controller.setText('');
-                              },
-                              icon: const Icon(
-                                Icons.cancel_outlined,
-                                size: 18,
-                                color: Colors.red,
-                              ),
-                            ),
-                          )
-                        : const Text(''),
-                  ),
-                  controller: controller,
-                  focusNode: focusNode,
-                  onChanged: (value) {
-                    widget.viewModel.form.domainId.onValueChange(value);
-                  },
-                );
-              },
-              onSelected: (DomainApiDto selection) {
-                widget.viewModel.form.domainId.onValueChange(selection.id);
-              },
-            );
-          },
-        ),
+        if (isDefaultDomain()) contentDomainField(),
         contentRolesSelect()
       ],
     );

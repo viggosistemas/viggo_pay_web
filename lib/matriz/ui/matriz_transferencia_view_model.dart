@@ -20,10 +20,12 @@ import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferen
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_dialog/matriz_transferencia_stepper/step_inicial_informar_valor/form_field.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/chave_pix_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/destinatario_api_dto.dart';
+import 'package:viggo_pay_admin/pay_facs/data/models/extrato_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/saldo_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/transacoes_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/cashout_via_pix_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/consultar_alias_destinatario_use_case.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_extrato_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_saldo_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_transacoes_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_ultima_transacao_domain_account_use_case.dart';
@@ -51,6 +53,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
   final UpdatePasswordPixUseCase updateSenhaPix;
   final UpdatePixToSendUseCase updatePixToSendSelect;
   final CashoutViaPixDomainAccountUseCase cashout;
+  final GetExtratoDomainAccountUseCase getExtrato;
 
   //FORMS_FIELDS
   final EditValorStepFormFields formStepValor = EditValorStepFormFields();
@@ -75,8 +78,8 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
   final StreamController<SaldoApiDto> _streamSaldoController = StreamController<SaldoApiDto>.broadcast();
   Stream<SaldoApiDto> get saldo => _streamSaldoController.stream;
 
-  final StreamController<List<dynamic>> _streamExtratoController = StreamController<List<dynamic>>.broadcast();
-  Stream<List<dynamic>> get extrato => _streamExtratoController.stream;
+  final StreamController<List<ExtratoApiDto>> _streamExtratoController = StreamController<List<ExtratoApiDto>>.broadcast();
+  Stream<List<ExtratoApiDto>> get extrato => _streamExtratoController.stream;
 
   final StreamController<ChavePixApiDto> _streamChavePixController = StreamController<ChavePixApiDto>.broadcast();
   Stream<ChavePixApiDto> get chavePix => _streamChavePixController.stream;
@@ -103,6 +106,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     required this.getTransacoes,
     required this.getUltimaTransacao,
     required this.updatePixToSendSelect,
+    required this.getExtrato,
   });
 
   Future<DomainAccountApiDto?> catchEntity() async {
@@ -190,6 +194,35 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       _streamChavePixToSendsController.sink.add(result.right.pixToSends);
     } else if (result.isLeft) {
       postError(result.left.message);
+    }
+  }
+
+  void loadExtrato(String materaId) async {
+    // if (isLoading) return [];
+
+    // setLoading();
+
+    Map<String, dynamic> data = {
+      'id': materaId,
+      'account_id': materaId,
+      'parametros': {
+        'start': DateFormat('yyyy-MM-dd').format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
+        'ending': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      }
+    };
+
+    var result = await getExtrato.invoke(body: data);
+
+    // setLoading();
+
+    if (result.isLeft) {
+      postError(result.left.message);
+      _streamExtratoController.sink.add([]);
+    } else {
+      if (!_streamExtratoController.isClosed) {
+        result.right.sort((a, b) => DateTime.parse(b.creditDate).compareTo(DateTime.parse(a.creditDate)));
+        _streamExtratoController.sink.add(result.right);
+      }
     }
   }
 

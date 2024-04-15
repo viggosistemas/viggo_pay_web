@@ -41,7 +41,7 @@ class _HeaderSearchState extends State<HeaderSearch> {
   final nomeRazaoSocialFieldControll = TextEditingController();
   final searchFieldController = MaskedTextController(
     mask: defaultMask,
-    translator: {'#': RegExp(r'[0-9a-zA-Z@\.\-_]')},
+    translator: {'#': RegExp(r'[0-9a-zA-Z@\.\-_\s]')},
   );
 
   // ignore: prefer_typing_uninitialized_variables
