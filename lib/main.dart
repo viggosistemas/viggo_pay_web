@@ -91,8 +91,7 @@ class ViggoPayWeb extends StatelessWidget {
               Routes.MATRIZ_TRANSFERENCIA: (ctx) => MatrizTransferenciaPage(),
               Routes.FUNCIONARIO: (ctx) => const ListFuncionarioPage(),
             },
-            themeMode:
-                themeData.data == 'dark' ? ThemeMode.dark : ThemeMode.light,
+            themeMode: themeData.data == 'dark' ? ThemeMode.dark : ThemeMode.light,
             debugShowCheckedModeBanner: false,
             localizationsDelegates: const [
               GlobalMaterialLocalizations.delegate,
