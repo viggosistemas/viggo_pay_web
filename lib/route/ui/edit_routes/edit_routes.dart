@@ -41,6 +41,7 @@ class EditRoutes {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,
@@ -122,16 +123,12 @@ class EditRoutes {
                                 ),
                                 label: const Text('Salvar'),
                                 onPressed: () {
-                                  if (snapshot.data != null &&
-                                      snapshot.data == true) {
+                                  if (snapshot.data != null && snapshot.data == true) {
                                     onSubmit();
                                   }
                                 },
                                 style: TextButton.styleFrom(
-                                  foregroundColor: snapshot.data != null &&
-                                          snapshot.data == true
-                                      ? Colors.green
-                                      : Colors.grey,
+                                  foregroundColor: snapshot.data != null && snapshot.data == true ? Colors.green : Colors.grey,
                                 ),
                               ),
                             ),
@@ -168,6 +165,7 @@ class EditRoutes {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,
@@ -256,16 +254,12 @@ class EditRoutes {
                                 ),
                                 label: const Text('Salvar'),
                                 onPressed: () {
-                                  if (snapshot.data != null &&
-                                      snapshot.data == true) {
+                                  if (snapshot.data != null && snapshot.data == true) {
                                     onSubmit();
                                   }
                                 },
                                 style: TextButton.styleFrom(
-                                  foregroundColor: snapshot.data != null &&
-                                          snapshot.data == true
-                                      ? Colors.green
-                                      : Colors.grey,
+                                  foregroundColor: snapshot.data != null && snapshot.data == true ? Colors.green : Colors.grey,
                                 ),
                               ),
                             ),
