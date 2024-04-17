@@ -102,6 +102,7 @@ class _ListPixToSendGridState extends State<ListPixToSendGrid> {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,

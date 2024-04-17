@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:either_dart/either.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -84,6 +85,7 @@ class _DashboardPageState extends State<DashboardPage> {
     }
 
     showMsgError(String value) {
+      viewModel.clearError();
       showInfoMessage(
         context,
         2,
@@ -337,14 +339,16 @@ class _DashboardPageState extends State<DashboardPage> {
                                                                         constraints: constraints,
                                                                         taxa: viewModel.taxaMediatorFee,
                                                                       );
-                                                                      if (result != null && result == true && context.mounted) {
-                                                                        showMsgSuccess(
-                                                                          'Transferência realizada com sucesso!',
-                                                                        );
-                                                                        viewModel.loadSaldo(matriz.data!.materaId!);
-                                                                        viewModel.loadExtrato(matriz.data!.materaId!);
-                                                                      } else if (result != null && result.isLeft) {
-                                                                        showMsgError(result.left.message);
+                                                                      if (context.mounted) {
+                                                                        if (result != null && result == true) {
+                                                                          showMsgSuccess(
+                                                                            'Transferência realizada com sucesso!',
+                                                                          );
+                                                                          viewModel.loadSaldo(matriz.data!.materaId!);
+                                                                          viewModel.loadExtrato(matriz.data!.materaId!);
+                                                                        } else if (result != null && result is Left) {
+                                                                          showMsgError(result.left.message);
+                                                                        }
                                                                       }
                                                                     }
                                                                   },

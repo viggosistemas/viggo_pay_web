@@ -40,8 +40,7 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
   Widget build(BuildContext context) {
     final dialogs = EditPixToSends(context: context);
     final contatoTransferenciaControll = TextEditingController();
-    final valorTransferido =
-        viewModel.formStepValor.getValues()!['valor'].toString();
+    final valorTransferido = viewModel.formStepValor.getValues()!['valor'].toString();
 
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -67,9 +66,7 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
         StreamBuilder<String>(
             stream: viewModel.formStepSelectPix.contato.field,
             builder: (context, contatoData) {
-              contatoTransferenciaControll.value =
-                  contatoTransferenciaControll.value
-                      .copyWith(text: contatoData.data);
+              contatoTransferenciaControll.value = contatoTransferenciaControll.value.copyWith(text: contatoData.data);
               return ListTile(
                 title: TextFormField(
                   controller: contatoTransferenciaControll,
@@ -85,13 +82,12 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
                 trailing: OnHoverButton(
                   child: IconButton(
                     onPressed: () async {
-                      var result = await dialogs
-                          .addDialog(contatoTransferenciaControll.text);
+                      var result = await dialogs.addDialog(contatoTransferenciaControll.text);
+                      contatoTransferenciaControll.clear();
                       if (result != null) {
                         setState(() {
                           widget.pixToSendList.add(result);
-                          viewModel.formStepSelectPix.pixSelect
-                              .onValueChange(jsonEncode(result));
+                          viewModel.formStepSelectPix.pixSelect.onValueChange(jsonEncode(result));
                         });
                       }
                     },
@@ -123,9 +119,7 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
                     leading: CircleAvatar(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       child: Text(
-                        widget.pixToSendList[index].holderName
-                            .substring(0, 2)
-                            .toUpperCase(),
+                        widget.pixToSendList[index].holderName.substring(0, 2).toUpperCase(),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),
@@ -168,18 +162,14 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
                     ),
                     onTap: () {
                       if (pixSelectData.data != null) {
-                        var pix = PixToSendApiDto.fromJson(
-                            jsonDecode(pixSelectData.data!));
+                        var pix = PixToSendApiDto.fromJson(jsonDecode(pixSelectData.data!));
                         if (widget.pixToSendList[index].id == pix.id) {
-                          viewModel.formStepSelectPix.pixSelect
-                              .onValueChange('');
+                          viewModel.formStepSelectPix.pixSelect.onValueChange('');
                         } else {
-                          viewModel.formStepSelectPix.pixSelect.onValueChange(
-                              jsonEncode(widget.pixToSendList[index]));
+                          viewModel.formStepSelectPix.pixSelect.onValueChange(jsonEncode(widget.pixToSendList[index]));
                         }
                       } else {
-                        viewModel.formStepSelectPix.pixSelect.onValueChange(
-                            jsonEncode(widget.pixToSendList[index]));
+                        viewModel.formStepSelectPix.pixSelect.onValueChange(jsonEncode(widget.pixToSendList[index]));
                       }
                     },
                     trailing: Icon(
@@ -217,19 +207,13 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
                     child: Directionality(
                       textDirection: TextDirection.rtl,
                       child: ElevatedButton.icon(
-                        onPressed: () =>
-                            validForm.data != null && validForm.data == true
-                                ? widget.changePage(widget.currentPage + 1)
-                                : {},
+                        onPressed: () => validForm.data != null && validForm.data == true ? widget.changePage(widget.currentPage + 1) : {},
                         icon: const Icon(
                           Icons.arrow_back_outlined,
                           size: 18,
                         ),
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: validForm.data != null &&
-                                    validForm.data == true
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.grey),
+                            backgroundColor: validForm.data != null && validForm.data == true ? Theme.of(context).colorScheme.primary : Colors.grey),
                         label: const Text('Próximo'),
                       ),
                     ),
