@@ -33,6 +33,7 @@ class AlterarSenha {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,
@@ -122,8 +123,7 @@ class AlterarSenha {
                           onPressed: () {
                             var formFields = viewModel.formSenha.getValues();
                             var novaSenha = formFields?['novaSenha'] ?? '';
-                            var confirmarSenha =
-                                formFields?['confirmarSenha'] ?? '';
+                            var confirmarSenha = formFields?['confirmarSenha'] ?? '';
                             if (novaSenha == confirmarSenha) {
                               onSubmit();
                             } else {

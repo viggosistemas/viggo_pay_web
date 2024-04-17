@@ -114,6 +114,7 @@ class _ListRolesGridState extends State<ListRolesGrid> {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,

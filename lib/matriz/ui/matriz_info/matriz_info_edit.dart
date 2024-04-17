@@ -54,6 +54,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,
