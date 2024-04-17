@@ -20,10 +20,12 @@ import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferen
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_dialog/matriz_transferencia_stepper/step_inicial_informar_valor/form_field.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/chave_pix_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/destinatario_api_dto.dart';
+import 'package:viggo_pay_admin/pay_facs/data/models/extrato_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/saldo_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/transacoes_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/cashout_via_pix_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/consultar_alias_destinatario_use_case.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_extrato_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_saldo_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_transacoes_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_ultima_transacao_domain_account_use_case.dart';
@@ -51,61 +53,45 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
   final UpdatePasswordPixUseCase updateSenhaPix;
   final UpdatePixToSendUseCase updatePixToSendSelect;
   final CashoutViaPixDomainAccountUseCase cashout;
+  final GetExtratoDomainAccountUseCase getExtrato;
 
   //FORMS_FIELDS
   final EditValorStepFormFields formStepValor = EditValorStepFormFields();
-  final EditSelectPixStepFormFields formStepSelectPix =
-      EditSelectPixStepFormFields();
+  final EditSelectPixStepFormFields formStepSelectPix = EditSelectPixStepFormFields();
   final EditSenhaStepFormFields formStepSenha = EditSenhaStepFormFields();
 
   final AlterarSenhaPixFormFields formSenha = AlterarSenhaPixFormFields();
 
   //STREAMS
-  final StreamController<DomainAccountApiDto?> _streamMatrizController =
-      StreamController<DomainAccountApiDto?>.broadcast();
+  final StreamController<DomainAccountApiDto?> _streamMatrizController = StreamController<DomainAccountApiDto?>.broadcast();
   Stream<DomainAccountApiDto?> get matriz => _streamMatrizController.stream;
 
-  final StreamController<bool> _streamControllerSuccess =
-      StreamController<bool>.broadcast();
+  final StreamController<bool> _streamControllerSuccess = StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
-  final StreamController<List<TransacaoApiDto>> _streamTransacoesController =
-      StreamController<List<TransacaoApiDto>>.broadcast();
-  Stream<List<TransacaoApiDto>> get transacoes =>
-      _streamTransacoesController.stream;
+  final StreamController<List<TransacaoApiDto>> _streamTransacoesController = StreamController<List<TransacaoApiDto>>.broadcast();
+  Stream<List<TransacaoApiDto>> get transacoes => _streamTransacoesController.stream;
 
-  final StreamController<TransacaoApiDto> _streamUltimaTransacaoController =
-      StreamController<TransacaoApiDto>.broadcast();
-  Stream<TransacaoApiDto> get ultimaTransacao =>
-      _streamUltimaTransacaoController.stream;
+  final StreamController<TransacaoApiDto> _streamUltimaTransacaoController = StreamController<TransacaoApiDto>.broadcast();
+  Stream<TransacaoApiDto> get ultimaTransacao => _streamUltimaTransacaoController.stream;
 
-  final StreamController<SaldoApiDto> _streamSaldoController =
-      StreamController<SaldoApiDto>.broadcast();
+  final StreamController<SaldoApiDto> _streamSaldoController = StreamController<SaldoApiDto>.broadcast();
   Stream<SaldoApiDto> get saldo => _streamSaldoController.stream;
 
-  final StreamController<List<dynamic>> _streamExtratoController =
-      StreamController<List<dynamic>>.broadcast();
-  Stream<List<dynamic>> get extrato => _streamExtratoController.stream;
+  final StreamController<List<ExtratoApiDto>> _streamExtratoController = StreamController<List<ExtratoApiDto>>.broadcast();
+  Stream<List<ExtratoApiDto>> get extrato => _streamExtratoController.stream;
 
-  final StreamController<ChavePixApiDto> _streamChavePixController =
-      StreamController<ChavePixApiDto>.broadcast();
+  final StreamController<ChavePixApiDto> _streamChavePixController = StreamController<ChavePixApiDto>.broadcast();
   Stream<ChavePixApiDto> get chavePix => _streamChavePixController.stream;
 
-  final StreamController<DestinatarioApiDto> _streamDestinatarioController =
-      StreamController<DestinatarioApiDto>.broadcast();
-  Stream<DestinatarioApiDto> get destinatarioInfo =>
-      _streamDestinatarioController.stream;
+  final StreamController<DestinatarioApiDto> _streamDestinatarioController = StreamController<DestinatarioApiDto>.broadcast();
+  Stream<DestinatarioApiDto> get destinatarioInfo => _streamDestinatarioController.stream;
 
-  final StreamController<List<PixToSendApiDto>>
-      _streamChavePixToSendsController =
-      StreamController<List<PixToSendApiDto>>.broadcast();
-  Stream<List<PixToSendApiDto>> get chavePixToSends =>
-      _streamChavePixToSendsController.stream;
+  final StreamController<List<PixToSendApiDto>> _streamChavePixToSendsController = StreamController<List<PixToSendApiDto>>.broadcast();
+  Stream<List<PixToSendApiDto>> get chavePixToSends => _streamChavePixToSendsController.stream;
 
-  final _streamComprovanteController =
-      BehaviorSubject<Either<bool, Uint8List>?>();
-  Stream<Either<bool, Uint8List>?> get extratoPdf =>
-      _streamComprovanteController.stream;
+  final _streamComprovanteController = BehaviorSubject<Either<bool, Uint8List>?>();
+  Stream<Either<bool, Uint8List>?> get extratoPdf => _streamComprovanteController.stream;
 
   MatrizTransferenciaViewModel({
     required this.getConfigDomainAccount,
@@ -120,14 +106,14 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     required this.getTransacoes,
     required this.getUltimaTransacao,
     required this.updatePixToSendSelect,
+    required this.getExtrato,
   });
 
-  void catchEntity() async {
-    if (isLoading) return;
+  Future<DomainAccountApiDto?> catchEntity() async {
+    if (isLoading) return null;
     setLoading();
 
-    var result =
-        await getDomainAccount.invoke(id: getDomainFromSettings.invoke()!.id);
+    var result = await getDomainAccount.invoke(id: getDomainFromSettings.invoke()!.id);
 
     setLoading();
     if (result.isRight) {
@@ -135,8 +121,10 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       domainAccountId = result.right.id;
       if (result.right.materaId != null) materaId = result.right.materaId!;
       getConfigInfo(result.right.id);
+      return result.right;
     } else if (result.isLeft) {
       postError(result.left.message);
+      return null;
     }
     return null;
   }
@@ -209,13 +197,41 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     }
   }
 
+  void loadExtrato(String materaId) async {
+    // if (isLoading) return [];
+
+    // setLoading();
+
+    Map<String, dynamic> data = {
+      'id': materaId,
+      'account_id': materaId,
+      'parametros': {
+        'start': DateFormat('yyyy-MM-dd').format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
+        'ending': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      }
+    };
+
+    var result = await getExtrato.invoke(body: data);
+
+    // setLoading();
+
+    if (result.isLeft) {
+      postError(result.left.message);
+      _streamExtratoController.sink.add([]);
+    } else {
+      if (!_streamExtratoController.isClosed) {
+        result.right.sort((a, b) => DateTime.parse(b.creditDate).compareTo(DateTime.parse(a.creditDate)));
+        _streamExtratoController.sink.add(result.right);
+      }
+    }
+  }
+
   void loadTransacoes(String materaId) async {
     Map<String, dynamic> data = {
       'id': materaId,
       'account_id': materaId,
       'parametros': {
-        'begin': DateFormat('yyyy-MM-dd')
-            .format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
+        'begin': DateFormat('yyyy-MM-dd').format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
         'end': DateFormat('yyyy-MM-dd').format(DateTime.now()),
         'status': 'APPROVED',
         'paymentTypes': 'WithdrawInstantPayment',
@@ -269,15 +285,12 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       postError(result.left.message);
     } else {
       endToEndId = result.right.endToEndId;
-      var pixSelect = PixToSendApiDto.fromJson(
-          jsonDecode(formStepSelectPix.pixSelect.value!));
-      if (pixSelect.destinationAccount != result.right.accountDestination &&
-          pixSelect.destinationBranch !=
-              result.right.accountBranchDestination) {
+      var pixSelect = PixToSendApiDto.fromJson(jsonDecode(formStepSelectPix.pixSelect.value!));
+      if (pixSelect.destinationAccount != result.right.accountDestination && pixSelect.destinationBranch != result.right.accountBranchDestination) {
         pixSelect.destinationAccount = result.right.accountDestination;
         pixSelect.destinationBranch = result.right.accountBranchDestination;
         var resultPix = await updatePixToSendSelect.invoke(id: pixSelect.id, body: body);
-        if(resultPix.isRight){
+        if (resultPix.isRight) {
           _streamDestinatarioController.sink.add(result.right);
         }
       } else {
@@ -293,23 +306,24 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     formStepSenha.senha.onValueChange('');
   }
 
-  Future<Uint8List?> onCashoutSubmit(
-    BuildContext context,
-  ) async {
+  Future<dynamic> onCashoutSubmit(
+    BuildContext context, {
+    String? materaIdDashboard,
+    Map<String, dynamic>? taxa,
+  }) async {
     if (isLoading) return null;
     setLoading(value: true);
 
     var formFieldsSenha = formStepSenha.getValues()!;
     var formFieldsValor = formStepValor.getValues()!;
     var formFieldsPix = formStepSelectPix.getValues()!;
-    final pixSelected = PixToSendApiDto.fromJson(
-        jsonDecode(formFieldsPix['pixSelect'].toString()));
+    final pixSelected = PixToSendApiDto.fromJson(jsonDecode(formFieldsPix['pixSelect'].toString()));
 
     Map<String, dynamic> params = {
-      'id': materaId,
-      'account_id': materaId,
+      'id': materaIdDashboard ?? materaId,
+      'account_id': materaIdDashboard ?? materaId,
       'totalAmount': double.parse(formFieldsValor['valor'].toString()),
-      'mediatorFee': taxaMediatorFee['taxa'],
+      'mediatorFee': taxa?['taxa'] ?? taxaMediatorFee['taxa'],
       'currency': 'BRL',
       'natureza': 'WEB',
       'password': encryptPassword(formFieldsSenha['senha'].toString()),
@@ -340,11 +354,11 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       postError(result.left.message);
       _streamComprovanteController.sink.add(const Left(true));
       setLoading(value: false);
-      return null;
+      return result;
     }
     setLoading(value: false);
     _streamComprovanteController.sink.add(Right(result.right));
-    return result.right;
+    return result;
   }
 
   String encryptPassword(String value) {
@@ -366,9 +380,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
       'password': '',
     };
     var formFields = formSenha.getValues();
-    params['old_password'] = formFields?['senhaAntiga'] == 'senha1'
-        ? null
-        : formFields!['senhaAntiga'];
+    params['old_password'] = formFields?['senhaAntiga'] == 'senha1' ? null : formFields!['senhaAntiga'];
     params['password'] = formFields!['novaSenha'];
 
     var result = await updateSenhaPix.invoke(id: domainAccountId, body: params);

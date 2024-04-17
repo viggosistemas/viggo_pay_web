@@ -13,6 +13,7 @@ import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_view_model.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/cashout_via_pix_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/consultar_alias_destinatario_use_case.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_extrato_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_saldo_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_transacoes_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_ultima_transacao_domain_account_use_case.dart';
@@ -39,6 +40,7 @@ class MatrizAccountLocator {
 
     locator.registerLazySingleton(
       () => MatrizTransferenciaViewModel(
+        getExtrato: locator.get<GetExtratoDomainAccountUseCase>(),
         updatePixToSendSelect: locator.get<UpdatePixToSendUseCase>(),
         getTransacoes: locator.get<GetTransacoesDomainAccountUseCase>(),
         getConfigDomainAccount:

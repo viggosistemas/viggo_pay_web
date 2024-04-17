@@ -20,6 +20,7 @@ import 'package:viggo_pay_admin/funcionario/domain/usecases/update_funcionario_u
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/funcionario_view_model.dart';
 import 'package:viggo_pay_admin/funcionario/ui/list_funcionario/list_funcionario_view_model.dart';
 import 'package:viggo_pay_admin/parceiro/domain/usecases/create_parceiro_use_case.dart';
+import 'package:viggo_pay_admin/parceiro/domain/usecases/get_parceiro_by_params_use_case.dart';
 import 'package:viggo_pay_admin/parceiro/domain/usecases/update_parceiro_use_case.dart';
 class FuncionarioLocator {
   void setup() {
@@ -88,6 +89,8 @@ class FuncionarioLocator {
 
     locator.registerFactory(
       () => EditFuncionarioViewModel(
+        getFuncionario: locator.get<GetFuncionarioByIdUseCase>(),
+        getParceiro: locator.get<GetParceiroByParamsUseCase>(),
         getMunicipio: locator.get<GetMunicipioByParamsUseCase>(),
         searchCep: locator.get<SearchCepUseCase>(),
         getUsers: locator.get<GetUsersDisponiveisUseCase>(),

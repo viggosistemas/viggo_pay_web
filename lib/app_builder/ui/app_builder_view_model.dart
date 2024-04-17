@@ -121,4 +121,8 @@ class AppBuilderViewModel extends BaseViewModel {
     }
   }
 
+  Future<String?> getImageUrl(String? photoId) async {
+    if (photoId != null) return await parseImage.invoke(photoId);
+    return null;
+  }
 }

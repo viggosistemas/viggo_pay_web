@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/base/base_view_model.dart';
 import 'package:viggo_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
+import 'package:viggo_pay_admin/pay_facs/data/models/chave_pix_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/destinatario_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/consultar_alias_destinatario_use_case.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/list_chave_pix_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/create_pix_to_send_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/update_pix_to_send_use_case.dart';
@@ -18,29 +20,25 @@ class EditPixToSendViewModel extends BaseViewModel {
 
   final UpdatePixToSendUseCase updatePixToSend;
   final CreatePixToSendUseCase createPixToSend;
+  final ListChavePixDomainAccountUseCase listChavePix;
   final GetDomainFromSettingsUseCase getDomainFromSettings;
   final ConsultarAliasDestinatarioUseCase consultarDestinatario;
   final GetDomainAccountByIdUseCase getDomainAccount;
 
   final EditPixToSendFormFields form = EditPixToSendFormFields();
 
-  final StreamController<bool> _streamControllerSuccess =
-      StreamController<bool>.broadcast();
+  final StreamController<bool> _streamControllerSuccess = StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
-  final StreamController<PixToSendApiDto> _streamSuccessPixToSend =
-      StreamController<PixToSendApiDto>.broadcast();
-  Stream<PixToSendApiDto> get pixToSendSuccess =>
-      _streamSuccessPixToSend.stream;
+  final StreamController<PixToSendApiDto> _streamSuccessPixToSend = StreamController<PixToSendApiDto>.broadcast();
+  Stream<PixToSendApiDto> get pixToSendSuccess => _streamSuccessPixToSend.stream;
 
-  Function(DestinatarioApiDto?) get onDestinatarioChange =>
-      _streamDestinatarioController.sink.add;
-  final StreamController<DestinatarioApiDto?> _streamDestinatarioController =
-      StreamController<DestinatarioApiDto?>.broadcast();
-  Stream<DestinatarioApiDto?> get destinatarioInfo =>
-      _streamDestinatarioController.stream;
+  Function(DestinatarioApiDto?) get onDestinatarioChange => _streamDestinatarioController.sink.add;
+  final StreamController<DestinatarioApiDto?> _streamDestinatarioController = StreamController<DestinatarioApiDto?>.broadcast();
+  Stream<DestinatarioApiDto?> get destinatarioInfo => _streamDestinatarioController.stream;
 
   EditPixToSendViewModel({
+    required this.listChavePix,
     required this.consultarDestinatario,
     required this.updatePixToSend,
     required this.createPixToSend,
@@ -67,6 +65,20 @@ class EditPixToSendViewModel extends BaseViewModel {
     return null;
   }
 
+  Future loadChavePix() async {
+    Map<String, dynamic> data = {
+      'account_id': materaId,
+    };
+
+    var result = await listChavePix.invoke(body: data);
+    if (result.isLeft) {
+      // postError(result.left.message);
+      return null;
+    } else {
+      return result.right[0];
+    }
+  }
+
   void submit(
     String? id,
     Function showMsg,
@@ -75,29 +87,35 @@ class EditPixToSendViewModel extends BaseViewModel {
     if (isLoading) return;
     setLoading();
 
+    ChavePixApiDto chave = await loadChavePix();
     dynamic result;
 
-    if (id != null) {
-      entity.addEntries(
-        <String, dynamic>{'id': id}.entries,
-      );
-    }
-    if (id != null) {
-      result = await updatePixToSend.invoke(
-        id: id,
-        body: entity,
-      );
+    if (chave.name == entity['alias']) {
+      setLoading();
+      postError('Chave PIX já é a mesma do Matera!');
     } else {
-      result = await createPixToSend.invoke(body: entity);
-    }
+      if (id != null) {
+        entity.addEntries(
+          <String, dynamic>{'id': id}.entries,
+        );
+      }
+      if (id != null) {
+        result = await updatePixToSend.invoke(
+          id: id,
+          body: entity,
+        );
+      } else {
+        result = await createPixToSend.invoke(body: entity);
+      }
 
-    setLoading();
-    if (result.isLeft) {
-      postError(result.left.message);
-    } else {
-      if (!_streamControllerSuccess.isClosed) {
-        _streamControllerSuccess.sink.add(true);
-        _streamSuccessPixToSend.sink.add(result.right);
+      setLoading();
+      if (result.isLeft) {
+        postError(result.left.message);
+      } else {
+        if (!_streamControllerSuccess.isClosed) {
+          _streamControllerSuccess.sink.add(true);
+          _streamSuccessPixToSend.sink.add(result.right);
+        }
       }
     }
   }
@@ -106,8 +124,7 @@ class EditPixToSendViewModel extends BaseViewModel {
     String aliasCountry,
     String aliasValue,
   ) async {
-    
-    if(isLoading) return;
+    if (isLoading) return;
     setLoading();
 
     Map<String, String> body = {
@@ -141,7 +158,6 @@ class EditPixToSendViewModel extends BaseViewModel {
     entity['holder_name'] = destinatario.aliasHolderName;
     entity['holder_tax_identifier_country'] = destinatario.aliasHolderCountry;
     entity['holder_tax_identifier_tax_id'] = destinatario.aliasHolderTaxId;
-    entity['holder_tax_identifier_tax_id_masked'] =
-        destinatario.aliasHolderTaxIdMasked;
+    entity['holder_tax_identifier_tax_id_masked'] = destinatario.aliasHolderTaxIdMasked;
   }
 }

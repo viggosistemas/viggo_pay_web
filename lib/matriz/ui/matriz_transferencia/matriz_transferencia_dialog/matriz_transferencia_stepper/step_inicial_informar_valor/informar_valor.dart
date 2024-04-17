@@ -5,11 +5,7 @@ import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/saldo_api_dto.dart';
 
 class StepInformarValor extends StatelessWidget {
-  StepInformarValor(
-      {super.key,
-      required this.changePage,
-      required this.currentPage,
-      required this.saldo});
+  StepInformarValor({super.key, required this.changePage, required this.currentPage, required this.saldo});
 
   final Function(int index) changePage;
   final int currentPage;
@@ -31,9 +27,8 @@ class StepInformarValor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final valorTransferenciaControll = TextEditingController();
-    valorTransferenciaControll.text =
-        viewModel.formStepValor.getValues()!['valor'].toString();
-    
+    valorTransferenciaControll.text = viewModel.formStepValor.getValues()!['valor'].toString();
+
     return Column(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,9 +53,7 @@ class StepInformarValor extends StatelessWidget {
         StreamBuilder<String>(
             stream: viewModel.formStepValor.valor.field,
             builder: (context, snapshot) {
-              valorTransferenciaControll.value = valorTransferenciaControll
-                  .value
-                  .copyWith(text: snapshot.data);
+              valorTransferenciaControll.value = valorTransferenciaControll.value.copyWith(text: snapshot.data);
               return TextFormField(
                 controller: valorTransferenciaControll,
                 decoration: InputDecoration(
@@ -71,6 +64,10 @@ class StepInformarValor extends StatelessWidget {
                     snapshot.error?.toString(),
                     valorTransferenciaControll.value.text,
                   ),
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: false,
                 ),
                 onChanged: (value) {
                   viewModel.formStepValor.valor.onValueChange(value);
@@ -105,10 +102,8 @@ class StepInformarValor extends StatelessWidget {
                           backgroundColor: snapshot.data != null &&
                                   snapshot.data == true &&
                                   valorTransferenciaControll.text.isNotEmpty &&
-                                  double.parse(valorTransferenciaControll.text) <
-                                      saldo.real &&
-                                  double.parse(valorTransferenciaControll.text) >
-                                      0
+                                  double.parse(valorTransferenciaControll.text) < saldo.real &&
+                                  double.parse(valorTransferenciaControll.text) > 0
                               ? Theme.of(context).colorScheme.primary
                               : Colors.grey,
                         ),
@@ -116,8 +111,7 @@ class StepInformarValor extends StatelessWidget {
                           if (snapshot.data != null &&
                               snapshot.data == true &&
                               valorTransferenciaControll.text.isNotEmpty &&
-                              double.parse(valorTransferenciaControll.text) <
-                                  saldo.real &&
+                              double.parse(valorTransferenciaControll.text) < saldo.real &&
                               double.parse(valorTransferenciaControll.text) > 0) {
                             changePage(currentPage + 1);
                           }

@@ -2,7 +2,7 @@ class FormatMask {
   FormatMask();
 
   String formated(String value){
-    value = value.replaceAll('/\D/g', "");
+    value = value.replaceAll('/D/g', "");
 
   if (value.length <= 11) {
     var path = '${value.substring(0, 3)}.';

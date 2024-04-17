@@ -23,8 +23,7 @@ import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-empresa/edit-inf
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-endereco/edit-endereco-form/edit_endereco_form_fields.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-taxa-empresa/edit-taxa-form/edit_taxa_form_fields.dart';
 
-class MatrizViewModel extends BaseViewModel
-    with RegisterDomainAccountDocumentsTransformer {
+class MatrizViewModel extends BaseViewModel with RegisterDomainAccountDocumentsTransformer {
   late DomainAccountApiDto matrizAccount;
   late DomainAccountConfigApiDto matrizAccountTaxa;
   late String estadoAddress = '';
@@ -43,19 +42,14 @@ class MatrizViewModel extends BaseViewModel
   final EditInfoEnderecoFormFields formAddress = EditInfoEnderecoFormFields();
   final ConfigMatrizTaxaFormFields formConfig = ConfigMatrizTaxaFormFields();
 
-  final StreamController<bool> _streamControllerSuccess =
-      StreamController<bool>.broadcast();
+  final StreamController<bool> _streamControllerSuccess = StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
-  final StreamController<DomainAccountApiDto> _streamMatrizController =
-      StreamController<DomainAccountApiDto>.broadcast();
+  final StreamController<DomainAccountApiDto> _streamMatrizController = StreamController<DomainAccountApiDto>.broadcast();
   Stream<DomainAccountApiDto> get matriz => _streamMatrizController.stream;
 
-  final StreamController<DomainAccountConfigApiDto>
-      _streamMatrizTaxaController =
-      StreamController<DomainAccountConfigApiDto>.broadcast();
-  Stream<DomainAccountConfigApiDto> get matrizTaxa =>
-      _streamMatrizTaxaController.stream;
+  final StreamController<DomainAccountConfigApiDto> _streamMatrizTaxaController = StreamController<DomainAccountConfigApiDto>.broadcast();
+  Stream<DomainAccountConfigApiDto> get matrizTaxa => _streamMatrizTaxaController.stream;
 
   MatrizViewModel({
     required this.updateDomainAccount,
@@ -83,20 +77,16 @@ class MatrizViewModel extends BaseViewModel
 
   initialFormValues() {
     form.clientTaxId.onValueChange(matrizAccount.clientTaxIdentifierTaxId);
-    form.clientTaxCountry
-        .onValueChange(matrizAccount.clientTaxIdentifierCountry ?? '');
+    form.clientTaxCountry.onValueChange(matrizAccount.clientTaxIdentifierCountry ?? '');
     form.clientName.onValueChange(matrizAccount.clientName);
     form.clientMobilePhone.onValueChange(matrizAccount.clientMobilePhone);
-    form.clientMobilePhoneCountry
-        .onValueChange(matrizAccount.clientMobilePhoneCountry);
+    form.clientMobilePhoneCountry.onValueChange(matrizAccount.clientMobilePhoneCountry ?? '');
     form.clientEmail.onValueChange(matrizAccount.clientEmail);
 
-    formAddress.logradouro
-        .onValueChange(matrizAccount.billingAddressLogradouro);
+    formAddress.logradouro.onValueChange(matrizAccount.billingAddressLogradouro);
     formAddress.numero.onValueChange(matrizAccount.billingAddressNumero);
-    formAddress.complemento
-        .onValueChange(matrizAccount.billingAddressComplemento);
-    formAddress.bairro.onValueChange(matrizAccount.billingAddressBairro);
+    formAddress.complemento.onValueChange(matrizAccount.billingAddressComplemento ?? '');
+    formAddress.bairro.onValueChange(matrizAccount.billingAddressBairro ?? '');
     formAddress.cidade.onValueChange(matrizAccount.billingAddressCidade);
     formAddress.estado.onValueChange(matrizAccount.billingAddressEstado);
     formAddress.cep.onValueChange(matrizAccount.billingAddressCep);
@@ -109,8 +99,7 @@ class MatrizViewModel extends BaseViewModel
   }
 
   Future<DomainAccountApiDto?> catchEntity() async {
-    var result =
-        await getDomainAccount.invoke(id: getDomainFromSettings.invoke()!.id);
+    var result = await getDomainAccount.invoke(id: getDomainFromSettings.invoke()!.id);
 
     if (result.isRight) {
       _streamMatrizController.sink.add(result.right);
@@ -150,21 +139,17 @@ class MatrizViewModel extends BaseViewModel
       'client_mobile_phone_phone_number': formFields['client_mobile_phone'],
       'client_mobile_phone_country': formFields['client_mobile_phone_country'],
       'client_email': formFields['client_email'],
-      'billing_address_logradouro':
-          formAddressFields!['billing_address_logradouro'],
+      'billing_address_logradouro': formAddressFields!['billing_address_logradouro'],
       'billing_address_numero': formAddressFields['billing_address_numero'],
-      'billing_address_complemento':
-          formAddressFields['billing_address_complemento'],
+      'billing_address_complemento': formAddressFields['billing_address_complemento'],
       'billing_address_bairro': formAddressFields['billing_address_bairro'],
       'billing_address_cidade': formAddressFields['billing_address_cidade'],
       'billing_address_estado': formAddressFields['billing_address_estado'],
       'billing_address_cep': formAddressFields['billing_address_cep'],
-      'billing_address_pais':
-          formAddressFields['billing_address_pais'] ?? 'BRA',
+      'billing_address_pais': formAddressFields['billing_address_pais'] ?? 'BRA',
     };
 
-    var result =
-        await updateDomainAccount.invoke(id: matrizAccount.id, body: data);
+    var result = await updateDomainAccount.invoke(id: matrizAccount.id, body: data);
     setLoading();
     if (result.isLeft) {
       postError(result.left.message);
@@ -248,7 +233,7 @@ class MatrizViewModel extends BaseViewModel
 
   final _fileList = BehaviorSubject<List<Map<String, dynamic>>>();
   Stream<List<Map<String, dynamic>>> get fileList => _fileList.stream;
-  Stream<int> get fileListSize => _fileList.stream.transform(fileListMaxFiles);
+  Stream<bool> get fileListValid => _fileList.stream.transform(fileListMaxFiles);
 
   Future<void> onLoadDomainAccount(Function onError) async {
     var domain = getDomainFromSettings.invoke();
@@ -267,9 +252,12 @@ class MatrizViewModel extends BaseViewModel
     _fileList.sink.add(result.right.documents.map((e) => e.toJson()).toList());
   }
 
-  Future<void> onSelectedFile(PlatformFile file, Function onError) async {
-    var kb = (file.bytes!.lengthInBytes * 0.001 * 100).round() /
-        100; // TAMANHO EM KBYTES
+  Future<void> onSelectedFile(
+    PlatformFile file,
+    Function onError,
+    String tipo,
+  ) async {
+    var kb = (file.bytes!.lengthInBytes * 0.001 * 100).round() / 100; // TAMANHO EM KBYTES
     var mb = (kb * 0.001 * 100).round() / 100; // TAMANHO EM MEGABYTES
     // var gb = (mb * 0.001 * 100).round() / 100; // TAMANHO EM GYGABYTES
     if (file.extension != 'pdf') {
@@ -280,13 +268,16 @@ class MatrizViewModel extends BaseViewModel
       onError('Só é permitido arquivos com até 10Mb de tamanho!');
       return;
     }
+    List<Map<String, dynamic>> previous = (_fileList.valueOrNull ?? []).where((element) => element['tipo'] == tipo).toList();
+    if (previous.isNotEmpty) onRemoveItem(previous[0]);
+
     List<Map<String, dynamic>> currentList = _fileList.valueOrNull ?? [];
     // if (file.path != null) {
     //   Uint8List? bytes = await _readFileByte(file.path!);
     if (file.bytes != null) {
       currentList.add({
         'content': base64.encode(file.bytes!),
-        'tipo': 'UNKNOWN',
+        'tipo': tipo,
         'title': file.name,
       });
     }
@@ -321,8 +312,7 @@ class MatrizViewModel extends BaseViewModel
       return;
     }
 
-    var result =
-        await addDomainAccountDocuments.invoke(domain.id, {'documents': itens});
+    var result = await addDomainAccountDocuments.invoke(domain.id, {'documents': itens});
     if (result.isLeft) {
       postError(result.left.message);
       return;
@@ -341,10 +331,11 @@ extension BoolParsing on String {
 }
 
 mixin RegisterDomainAccountDocumentsTransformer {
-  final fileListMaxFiles =
-      StreamTransformer<List<Map<String, dynamic>>, int>.fromHandlers(
+  final fileListMaxFiles = StreamTransformer<List<Map<String, dynamic>>, bool>.fromHandlers(
     handleData: (value, sink) {
-      sink.add(value.length);
+      sink.add(
+        value.isNotEmpty && value.length < 3 && value.where((element) => element['tipo'] == 'CONTRATO_SOCIAL').toList().isNotEmpty,
+      );
     },
   );
 }

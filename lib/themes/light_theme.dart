@@ -16,6 +16,11 @@ class LightTheme {
         foregroundColor: kColorScheme.primaryContainer,
         titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
       ),
+      navigationRailTheme: const NavigationRailThemeData().copyWith(
+        selectedIconTheme: const IconThemeData(color: Colors.white),
+        unselectedIconTheme: IconThemeData(color: kColorScheme.primary),
+        indicatorColor: kColorScheme.primary.withOpacity(0.8),
+      ),
       cardTheme: const CardTheme(
         color: Colors.white,
         surfaceTintColor: Colors.white,

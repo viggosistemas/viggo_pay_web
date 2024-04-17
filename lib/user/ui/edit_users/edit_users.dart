@@ -12,10 +12,10 @@ class EditUsers {
   final BuildContext context;
   final viewModel = locator.get<EditUsersViewModel>();
 
-  Future<void> addDialog() {
+  Future addDialog() {
     onSubmit() {
       viewModel.submit(null, showInfoMessage, context);
-      // Navigator.of(context).pop();
+      Navigator.of(context).pop(true);
     }
 
     viewModel.isSuccess.listen((value) {
@@ -28,7 +28,7 @@ class EditUsers {
         () {},
         Colors.white,
       );
-      Navigator.pop(context, true);
+      // Navigator.pop(context, true);
     });
 
     viewModel.errorMessage.listen(
@@ -127,10 +127,10 @@ class EditUsers {
         });
   }
 
-  Future<void> editDialog(UserApiDto entity) {
+  Future editDialog(UserApiDto entity) {
     onSubmit() {
       viewModel.submit(entity.id, showInfoMessage, context);
-      // Navigator.of(context).pop();
+      Navigator. pop(context, true);
     }
 
     viewModel.isSuccess.listen((value) {
@@ -143,7 +143,7 @@ class EditUsers {
         () {},
         Colors.white,
       );
-      Navigator.pop(context, true);
+      // Navigator.pop(context, true);
     });
 
     viewModel.errorMessage.listen(

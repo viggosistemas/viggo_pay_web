@@ -17,6 +17,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
     required this.currentPage,
     required this.saldo,
     required this.materaId,
+    required this.taxa,
   });
 
   final String? materaId;
@@ -24,12 +25,21 @@ class StepTransferenciaDetalhe extends StatelessWidget {
   final int currentPage;
   final SaldoApiDto saldo;
   final viewModel = locator.get<MatrizTransferenciaViewModel>();
+  final Map<String, dynamic>? taxa;
 
   getValorTaxa(String valor) {
-    if (viewModel.taxaMediatorFee['porcentagem']) {
-      return double.parse(valor) * viewModel.taxaMediatorFee['taxa'];
+    if (taxa != null) {
+      if (taxa!['porcentagem']) {
+        return double.parse(valor) * taxa!['taxa'];
+      } else {
+        return taxa!['taxa'];
+      }
     } else {
-      return viewModel.taxaMediatorFee['taxa'];
+      if (viewModel.taxaMediatorFee['porcentagem']) {
+        return double.parse(valor) * viewModel.taxaMediatorFee['taxa'];
+      } else {
+        return viewModel.taxaMediatorFee['taxa'];
+      }
     }
   }
 
@@ -40,10 +50,8 @@ class StepTransferenciaDetalhe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var valorTransferido =
-        viewModel.formStepValor.getValues()!['valor'].toString();
-    final pixSelected = PixToSendApiDto.fromJson(jsonDecode(
-        viewModel.formStepSelectPix.getValues()!['pixSelect'].toString()));
+    var valorTransferido = viewModel.formStepValor.getValues()!['valor'].toString();
+    final pixSelected = PixToSendApiDto.fromJson(jsonDecode(viewModel.formStepSelectPix.getValues()!['pixSelect'].toString()));
 
     return StreamBuilder<DestinatarioApiDto>(
         stream: viewModel.destinatarioInfo,
@@ -71,11 +79,10 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                       children: [
                         Text(
                           'Transferindo',
-                          style:
-                              Theme.of(context).textTheme.titleLarge!.copyWith(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         const SizedBox(
                           width: 10,
@@ -85,14 +92,10 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                             builder: (context, snapshot) {
                               return Text(
                                 'R\$ ${snapshot.data ?? valorTransferido}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(
+                                style: Theme.of(context).textTheme.titleMedium!.copyWith(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+                                      color: Theme.of(context).colorScheme.primary,
                                     ),
                               );
                             }),
@@ -104,8 +107,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                                 saldo: saldo,
                               ).openDialog();
                               if (result != true) {
-                                viewModel.formStepValor.valor
-                                    .onValueChange(valorTransferido);
+                                viewModel.formStepValor.valor.onValueChange(valorTransferido);
                               }
                             },
                             icon: const Icon(
@@ -117,20 +119,19 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                       ],
                     ),
                     StreamBuilder<String>(
-                        stream: viewModel.formStepValor.valor.field,
-                        builder: (context, snapshot) {
-                          return Text(
-                            'Valor a ser debitado pelos encargos será R\$ ${getValorTaxa(snapshot.data ?? valorTransferido)}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                          );
-                        }),
+                      initialData: valorTransferido,
+                      stream: viewModel.formStepValor.valor.field,
+                      builder: (context, snapshot) {
+                        return Text(
+                          'Valor a ser debitado pelos encargos será R\$ ${getValorTaxa(snapshot.data ?? valorTransferido)}',
+                          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                        );
+                      },
+                    ),
                   ],
                 ),
                 Column(
@@ -143,10 +144,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                       children: [
                         Text(
                           'Chave PIX',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           pixSelected.alias,
@@ -161,10 +159,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                       children: [
                         Text(
                           'Enviando para',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           destinatarioData.data!.aliasHolderName,
@@ -179,10 +174,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                       children: [
                         Text(
                           'CPF/CNPJ',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           destinatarioData.data!.aliasHolderTaxIdMasked,
@@ -197,10 +189,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                       children: [
                         Text(
                           'Intituição',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           destinatarioData.data!.pspName,
@@ -215,10 +204,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                       children: [
                         Text(
                           'Agência',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           destinatarioData.data!.accountBranchDestination,
@@ -233,10 +219,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                       children: [
                         Text(
                           'Conta',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           destinatarioData.data!.accountDestination,
@@ -251,10 +234,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                       children: [
                         Text(
                           'Tipo da conta',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           destinatarioData.data!.accountTypeDestination,
@@ -272,17 +252,11 @@ class StepTransferenciaDetalhe extends StatelessWidget {
                             children: [
                               Text(
                                 'Valor total debitado',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(fontWeight: FontWeight.bold),
+                                style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
                               ),
                               Text(
                                 'R\$ ${getValorTotal(snapshot.data ?? valorTransferido)}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
+                                style: Theme.of(context).textTheme.titleSmall!.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/table/data_table_paginated.dart';
 import 'package:viggo_pay_admin/application/ui/edit_capability/edit_capability_view_model.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';

@@ -25,37 +25,31 @@ class _MainDrawerState extends State<MainDrawer> {
   AppBuilderViewModel appViewModel = locator.get<AppBuilderViewModel>();
   final viewModel = MenuViewModel(menuItems: menuItems);
 
-  var screenIndex = 0;
-
-  _buildMenu(List<RouteApiDto> routes) {
+  _buildMenu(
+    List<RouteApiDto> routes,
+    int screenIndex,
+  ) {
     destinations = viewModel.createMenu(routes);
     navDestinations = destinations.map(
       (Destination destination) {
-        var index = destinations
-            .indexWhere((element) => destination.label == element.label);
+        var index = destinations.indexWhere((element) => destination.label == element.label);
         return ListTile(
           selected: screenIndex == index,
           selectedColor: Theme.of(context).colorScheme.primary,
           selectedTileColor: Theme.of(context).colorScheme.primary,
           onTap: () {
-            setState(() {
-              screenIndex = index;
-            });
+            appViewModel.setScreenIndex(index);
             widget.onSelectScreen(destination.route);
           },
           leading: Icon(
             destination.iconName,
             size: 18,
-            color: screenIndex == index
-                ? Theme.of(context).colorScheme.onPrimary
-                : Theme.of(context).colorScheme.primary,
+            color: screenIndex == index ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.primary,
           ),
           title: Text(
             destination.label,
             style: GoogleFonts.roboto(
-              color: screenIndex == index
-                  ? Theme.of(context).colorScheme.onPrimary
-                  : Theme.of(context).colorScheme.primary,
+              color: screenIndex == index ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.primary,
               fontSize: 18,
             ),
           ),
@@ -66,42 +60,51 @@ class _MainDrawerState extends State<MainDrawer> {
 
   @override
   Widget build(context) {
-    return StreamBuilder<List<RouteApiDto>?>(
-        stream: appViewModel.routesDto,
-        builder: (context, snapshot) {
-          if (snapshot.data == null) {
-            appViewModel.getRoutes();
+    return StreamBuilder<int>(
+        stream: appViewModel.indexSelected,
+        builder: (context, index) {
+          if (index.data == null) {
+            appViewModel.getScreenIndex();
+            return const CircularProgressIndicator();
           } else {
-            _buildMenu(snapshot.data!);
+            return StreamBuilder<List<RouteApiDto>?>(
+                stream: appViewModel.routesDto,
+                builder: (context, routes) {
+                  if (routes.data == null) {
+                    appViewModel.getRoutes();
+                  } else {
+                    _buildMenu(routes.data!, index.data!);
+                  }
+                  return Drawer(
+                    child: Column(
+                      children: [
+                        DrawerHeader(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).colorScheme.primary.withOpacity(0.75),
+                              Theme.of(context).colorScheme.primary,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomCenter,
+                          )),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                'assets/images/logo.png',
+                                width: 80,
+                                height: 80,
+                              ),
+                            ],
+                          ),
+                        ),
+                        ...navDestinations,
+                      ],
+                    ),
+                  );
+                });
           }
-          return Drawer(
-            child: Column(
-              children: [
-                DrawerHeader(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).colorScheme.primary.withOpacity(0.75),
-                      Theme.of(context).colorScheme.primary,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomCenter,
-                  )),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        'assets/images/logo.png',
-                        width: 80,
-                        height: 80,
-                      ),
-                    ],
-                  ),
-                ),
-                ...navDestinations,
-              ],
-            ),
-          );
         });
   }
 }
@@ -112,7 +115,7 @@ List<Destination> menuItems = [
     null,
     4,
     null,
-    Routes.DOMAINS,
+    Routes.DOMAIN_ACCOUNTS,
     ['/domain_accounts'],
     ['/GET'],
     Icons.domain_outlined,

@@ -10,12 +10,15 @@ import 'package:viggo_core_frontend/localidades/domain/usecases/get_municipio_by
 import 'package:viggo_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
 import 'package:viggo_core_frontend/user/domain/usecases/get_users_disponiveis_use_case.dart';
 import 'package:viggo_core_frontend/util/constants.dart';
+import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/funcionario/domain/usecases/create_funcionario_use_case.dart';
+import 'package:viggo_pay_admin/funcionario/domain/usecases/get_funcionario_by_id_use_case.dart';
 import 'package:viggo_pay_admin/funcionario/domain/usecases/update_funcionario_use_case.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario_stepper/edit_contato_form/edit_contato_form_fields.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario_stepper/edit_endereco_form/edit_endereco_form_fields.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario_stepper/edit_funcionario_form/edit_funcionario_form_fields.dart';
 import 'package:viggo_pay_admin/parceiro/domain/usecases/create_parceiro_use_case.dart';
+import 'package:viggo_pay_admin/parceiro/domain/usecases/get_parceiro_by_params_use_case.dart';
 import 'package:viggo_pay_admin/parceiro/domain/usecases/update_parceiro_use_case.dart';
 
 class EditFuncionarioViewModel extends BaseViewModel {
@@ -27,6 +30,8 @@ class EditFuncionarioViewModel extends BaseViewModel {
   final GetUsersDisponiveisUseCase getUsers;
   final SearchCepUseCase searchCep;
   final GetMunicipioByParamsUseCase getMunicipio;
+  final GetParceiroByParamsUseCase getParceiro;
+  final GetFuncionarioByIdUseCase getFuncionario;
 
   final EditFuncionarioFormFields formDados = EditFuncionarioFormFields();
   final EditEnderecoFormFields formEndereco = EditEnderecoFormFields();
@@ -42,9 +47,11 @@ class EditFuncionarioViewModel extends BaseViewModel {
     required this.createFuncionario,
     required this.updateParceiro,
     required this.createParceiro,
+    required this.getParceiro,
     required this.getUsers,
     required this.searchCep,
     required this.getMunicipio,
+    required this.getFuncionario,
   });
 
   Future loadUsers(Map<String, String> filters) async {
@@ -95,7 +102,9 @@ class EditFuncionarioViewModel extends BaseViewModel {
           'numero': enderecosFormFields['numero'],
           'complemento': enderecosFormFields['complemento'],
           'bairro': enderecosFormFields['bairro'],
-          'cep': enderecosFormFields['cep'],
+          'cep': enderecosFormFields['cep']!
+              .replaceAll('.', '')
+              .replaceAll('-', ''),
           'ponto_referencia': enderecosFormFields['ponto_referencia'],
           'municipio_id': enderecosFormFields['municipio'],
         }
@@ -191,6 +200,60 @@ class EditFuncionarioViewModel extends BaseViewModel {
           '${result.right.municipios[0].nome}/${result.right.municipios[0].siglaUf}');
     } else if (result.isLeft) {
       postError(result.left.message);
+    }
+  }
+
+  Future checkParceiro(String cpfCnpj) async {
+    Map<String, String> filters = {};
+
+    if (isLoading) return null;
+    setLoading();
+
+    String? domainJson = sharedPrefs.getString(CoreUserPreferences.DOMAIN);
+    DomainApiDto domain = DomainApiDto.fromJson(jsonDecode(domainJson!));
+
+    filters.addEntries(
+      <String, String>{'domain_id': domain.id}.entries,
+    );
+    filters.addEntries(
+      <String, String>{'cpf_cnpj': cpfCnpj}.entries,
+    );
+    filters.addEntries(
+      <String, String>{'page': '0'}.entries,
+    );
+    filters.addEntries(
+      <String, String>{'page_size': '1'}.entries,
+    );
+    filters.addEntries(
+      <String, String>{'require_pagination': 'true'}.entries,
+    );
+
+    var result = await getParceiro.invoke(
+      filters: filters,
+      listOptions: ListOptions.ACTIVE_ONLY,
+    );
+    setLoading();
+    if (result.isRight) {
+      if (result.right.parceiros.isNotEmpty) {
+        var resultFuncionario = await getFuncionario.invoke(id: result.right.parceiros[0].id);
+        if(resultFuncionario.isRight){
+          postError('Já existe um funcionário registrado com esse CPF/CNPJ!');
+          clearError();
+          formDados.cpfCnpj.onValueChange('');
+          formDados.nomeRazaoSocial.onValueChange('');
+          formDados.apelidoNomeFantasia.onValueChange('');
+          formDados.rgInscEst.onValueChange('');
+          formDados.userId.onValueChange('');
+          return true;
+        }else{
+          return false;
+        }
+      }else{
+        return false;
+      }
+    } else if (result.isLeft) {
+      postError(result.left.message);
+      return false;
     }
   }
 }

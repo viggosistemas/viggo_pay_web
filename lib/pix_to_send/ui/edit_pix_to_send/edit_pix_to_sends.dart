@@ -10,7 +10,7 @@ import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 class EditPixToSends {
   EditPixToSends({required this.context});
 
-  final BuildContext context;
+  late BuildContext context;
   final viewModel = locator.get<EditPixToSendViewModel>();
 
   clearFields(String? alias) {
@@ -52,55 +52,45 @@ class EditPixToSends {
   Future addDialog(String? alias) {
     viewModel.catchDomainAccount();
     clearFields(alias);
-    onSubmit() {
-      viewModel.submit(null, showInfoMessage, context);
-      // Navigator.of(context).pop();
-    }
-
-    viewModel.pixToSendSuccess.listen((value) {
-      showInfoMessage(
-        context,
-        2,
-        Colors.green,
-        'Chave pix criada com sucesso!',
-        'X',
-        () {},
-        Colors.white,
-      );
-      Navigator.pop(context, value);
-    });
-
-    // viewModel.isSuccess.listen((value) {
-    //   showInfoMessage(
-    //     context,
-    //     2,
-    //     Colors.green,
-    //     'Chave pix criada com sucesso!',
-    //     'X',
-    //     () {},
-    //     Colors.white,
-    //   );
-    //   Navigator.pop(context, true);
-    // });
-
-    viewModel.errorMessage.listen(
-      (value) {
-        if (value.isNotEmpty && context.mounted) {
-          showInfoMessage(
-            context,
-            2,
-            Colors.red,
-            value,
-            'X',
-            () {},
-            Colors.white,
-          );
-        }
-      },
-    );
     return showDialog(
         context: context,
         builder: (BuildContext ctx) {
+          onSubmit() {
+            viewModel.submit(null, showInfoMessage, ctx);
+          }
+
+          viewModel.pixToSendSuccess.listen((value) {
+            if (ctx.mounted) {
+              showInfoMessage(
+                context,
+                2,
+                Colors.green,
+                'Chave pix criada com sucesso!',
+                'X',
+                () {},
+                Colors.white,
+              );
+              Navigator.pop(ctx, value);
+            }
+          });
+
+          viewModel.errorMessage.listen(
+            (value) {
+              if (value.isNotEmpty && context.mounted) {
+                viewModel.clearError();
+                showInfoMessage(
+                  context,
+                  2,
+                  Colors.red,
+                  value,
+                  'X',
+                  () {},
+                  Colors.white,
+                );
+                Navigator.pop(ctx, null);
+              }
+            },
+          );
           return PopScope(
             canPop: false,
             onPopInvoked: (bool didPop) {
@@ -168,22 +158,15 @@ class EditPixToSends {
                                           size: 20,
                                         ),
                                         label: const Text('Consultar'),
-                                        onPressed: () => snapshot.data != null &&
-                                                snapshot.data == true
+                                        onPressed: () => snapshot.data != null && snapshot.data == true
                                             ? viewModel.loadInfoDestinatario(
                                                 'BR',
-                                                viewModel.form
-                                                    .getValues()!['alias']!,
+                                                viewModel.form.getValues()!['alias']!,
                                               )
                                             : {},
                                         style: TextButton.styleFrom(
                                           foregroundColor:
-                                              snapshot.data != null &&
-                                                      snapshot.data == true
-                                                  ? Theme.of(context)
-                                                      .colorScheme
-                                                      .primary
-                                                  : Colors.grey,
+                                              snapshot.data != null && snapshot.data == true ? Theme.of(context).colorScheme.primary : Colors.grey,
                                         ),
                                       ),
                                     ),
@@ -199,12 +182,9 @@ class EditPixToSends {
                                     size: 20,
                                   ),
                                   label: const Text('Salvar'),
-                                  onPressed: () =>
-                                      snapshot.data != null ? onSubmit() : {},
+                                  onPressed: () => snapshot.data != null ? onSubmit() : {},
                                   style: TextButton.styleFrom(
-                                    foregroundColor: snapshot.data != null
-                                        ? Colors.green
-                                        : Colors.grey,
+                                    foregroundColor: snapshot.data != null ? Colors.green : Colors.grey,
                                   ),
                                 ),
                               ),
@@ -245,6 +225,7 @@ class EditPixToSends {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,
@@ -333,22 +314,15 @@ class EditPixToSends {
                                           size: 20,
                                         ),
                                         label: const Text('Consultar'),
-                                        onPressed: () => snapshot.data != null &&
-                                                snapshot.data == true
+                                        onPressed: () => snapshot.data != null && snapshot.data == true
                                             ? viewModel.loadInfoDestinatario(
                                                 'BR',
-                                                viewModel.form
-                                                    .getValues()!['alias']!,
+                                                viewModel.form.getValues()!['alias']!,
                                               )
                                             : {},
                                         style: TextButton.styleFrom(
                                           foregroundColor:
-                                              snapshot.data != null &&
-                                                      snapshot.data == true
-                                                  ? Theme.of(context)
-                                                      .colorScheme
-                                                      .primary
-                                                  : Colors.grey,
+                                              snapshot.data != null && snapshot.data == true ? Theme.of(context).colorScheme.primary : Colors.grey,
                                         ),
                                       ),
                                     ),
@@ -364,12 +338,9 @@ class EditPixToSends {
                                     size: 20,
                                   ),
                                   label: const Text('Salvar'),
-                                  onPressed: () =>
-                                      snapshot.data != null ? onSubmit() : {},
+                                  onPressed: () => snapshot.data != null ? onSubmit() : {},
                                   style: TextButton.styleFrom(
-                                    foregroundColor: snapshot.data != null
-                                        ? Colors.green
-                                        : Colors.grey,
+                                    foregroundColor: snapshot.data != null ? Colors.green : Colors.grey,
                                   ),
                                 ),
                               ),

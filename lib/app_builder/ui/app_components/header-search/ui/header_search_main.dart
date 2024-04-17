@@ -12,16 +12,21 @@ class HeaderSearchMain extends StatelessWidget {
     required this.onSearch,
     required this.onReload,
     notShowAdvancedFilters,
-  }){
-    if(notShowAdvancedFilters != null){
+    itemsSelect,
+  }) {
+    if (notShowAdvancedFilters != null) {
       this.notShowAdvancedFilters = notShowAdvancedFilters;
+    }
+    if (itemsSelect != null) {
+      this.itemsSelect = itemsSelect;
     }
   }
 
   final List<Map<String, dynamic>> searchFields;
-  final Function(List<Map<String,dynamic>> params) onSearch;
-  final Function onReload;
+  final Function(List<Map<String, dynamic>> params) onSearch;
+  final Function() onReload;
   bool notShowAdvancedFilters = false;
+  List<Map<String, dynamic>> itemsSelect = [];
 
   @override
   Widget build(context) {
@@ -32,6 +37,7 @@ class HeaderSearchMain extends StatelessWidget {
         onSearch: onSearch,
         onReload: onReload,
         notShowAdvancedFilters: notShowAdvancedFilters,
+        itemsSelect: itemsSelect,
       ),
     );
   }

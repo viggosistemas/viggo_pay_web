@@ -17,6 +17,7 @@ class PinInputSenha extends StatefulWidget {
 }
 
 class _PinInputSenhaState extends State<PinInputSenha> {
+  var hiddenPassword = true;
   final pinController = TextEditingController();
   final focusNode = FocusNode();
   final formKey = GlobalKey<FormState>();
@@ -47,24 +48,22 @@ class _PinInputSenhaState extends State<PinInputSenha> {
     );
 
     /// Optionally you can use form to validate the Pinput
-    return Column(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         StreamBuilder<String>(
             stream: widget.viewModel.formStepSenha.senha.field,
             builder: (context, snapshot) {
-              pinController.value =
-                  pinController.value.copyWith(text: snapshot.data);
+              pinController.value = pinController.value.copyWith(text: snapshot.data);
               return Directionality(
                 // Specify direction if desired
                 textDirection: TextDirection.ltr,
                 child: Pinput(
                   length: 6,
-                  obscureText: true,
+                  obscureText: hiddenPassword,
                   controller: pinController,
                   focusNode: focusNode,
-                  androidSmsAutofillMethod:
-                      AndroidSmsAutofillMethod.smsUserConsentApi,
+                  androidSmsAutofillMethod: AndroidSmsAutofillMethod.smsUserConsentApi,
                   listenForMultipleSmsOnAndroid: true,
                   defaultPinTheme: defaultPinTheme,
                   separatorBuilder: (index) => const SizedBox(width: 8),
@@ -112,6 +111,17 @@ class _PinInputSenhaState extends State<PinInputSenha> {
                 ),
               );
             }),
+        IconButton(
+          icon: Icon(
+            hiddenPassword ? Icons.visibility : Icons.visibility_off,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            setState(() {
+              hiddenPassword = !hiddenPassword;
+            });
+          },
+        )
         // TextButton(
         //   onPressed: () {
         //     focusNode.unfocus();

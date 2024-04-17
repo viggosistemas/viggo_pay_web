@@ -6,8 +6,8 @@ import 'package:viggo_core_frontend/application/data/models/application_api_dto.
 import 'package:viggo_core_frontend/capability/data/models/capability_api_dto.dart';
 import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/table/data_table_paginated.dart';
 import 'package:viggo_pay_admin/application/ui/components/dialog_manage_capability.dart';
 import 'package:viggo_pay_admin/application/ui/edit_capability/edit_capability_view_model.dart';
 import 'package:viggo_pay_admin/components/dialogs.dart';
@@ -98,6 +98,62 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
       'type': 'text',
       'icon': Icons.abc,
     },
+    {
+      'label': 'URL',
+      'search_field': 'route.url',
+      'type': 'text',
+      'icon': Icons.route_outlined,
+    },
+    {
+      'label': 'Método',
+      'search_field': 'route.method',
+      'type': 'enum',
+      'icon': Icons.http_outlined,
+    },
+    {
+      'label': 'Tipo',
+      'search_field': 'route.bypass',
+      'type': 'bool',
+      'icon': Icons.shape_line_outlined,
+    },
+  ];
+
+  final List<Map<String, dynamic>> itemSelect = [
+    {
+      'value': 'bypass',
+      'label': 'BYPASS',
+      'type': 'bool',
+    },
+    {
+      'value': 'sysadmin',
+      'label': 'SYSADMIN',
+      'type': 'bool',
+    },
+    {
+      'value': METHOD.PUT.name,
+      'label': METHOD.PUT.name,
+      'type': 'enum',
+    },
+    {
+      'value': METHOD.POST.name,
+      'label': METHOD.POST.name,
+      'type': 'enum',
+    },
+    {
+      'value': METHOD.DELETE.name,
+      'label': METHOD.DELETE.name,
+      'type': 'enum',
+    },
+    {
+      'value': METHOD.GET.name,
+      'label': METHOD.GET.name,
+      'type': 'enum',
+    },
+    {
+      'value': METHOD.LIST.name,
+      'label': METHOD.LIST.name,
+      'type': 'enum',
+    },
   ];
 
   void onSearch(List<Map<String, dynamic>> params) {
@@ -111,16 +167,25 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
         .toList();
 
     for (var element in newParams) {
-      var fieldValue = '';
+      if (element['value'].toString().isNotEmpty) {
+        var fieldValue = '';
 
-      if (element['type'] == 'text') {
-        fieldValue = '%${element['value']}%';
-      } else {
-        fieldValue = element['value'];
+        if (element['type'] == 'text') {
+          fieldValue = '%${element['value']}%';
+        } else {
+          fieldValue = element['value'];
+        }
+
+        if (element['search_field'] == 'route.bypass') {
+          filters.addEntries(
+            <String, String>{'route.$fieldValue': 'true'}.entries,
+          );
+        } else {
+          filters.addEntries(
+            <String, String>{element['search_field']: fieldValue}.entries,
+          );
+        }
       }
-      filters.addEntries(
-        <String, String>{element['search_field']: fieldValue}.entries,
-      );
     }
 
     loadCapabilities(application, filters);
@@ -171,8 +236,8 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
           checkApplication(args);
           return ProgressLoading(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.primary,
           );
         } else {
           selectedCapabilitites = (snapshot.data as List<CapabilityApiDto>);
@@ -189,6 +254,7 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
                     onSearch: onSearch,
                     searchFields: searchFields,
                     notShowAdvancedFilters: true,
+                    itemsSelect: itemSelect,
                   ),
                   const SizedBox(
                     height: 10,

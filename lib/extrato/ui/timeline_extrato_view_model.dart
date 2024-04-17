@@ -83,6 +83,7 @@ class TimelineExtratoViewModel extends BaseViewModel {
       postError(result.left.message);
     } else {
       if (!_streamExtratoController.isClosed) {
+        result.right.extrato.sort((a, b) => DateTime.parse(b.creditDate).compareTo(DateTime.parse(a.creditDate)));
         _streamExtratoController.sink.add(result.right);
       }
     }

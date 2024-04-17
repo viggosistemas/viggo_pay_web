@@ -35,15 +35,11 @@ class ListDomainAccountViewModel extends BaseViewModel {
     required this.getSelectedItems,
   });
 
-  final StreamController<List<DomainAccountApiDto>> domainsController =
-      StreamController.broadcast();
-  Stream<List<DomainAccountApiDto>> get domainAccounts =>
-      domainsController.stream;
+  final StreamController<List<DomainAccountApiDto>> domainsController = StreamController.broadcast();
+  Stream<List<DomainAccountApiDto>> get domainAccounts => domainsController.stream;
 
-  final StreamController<DomainAccountConfigApiDto?> configDomainController =
-      StreamController.broadcast();
-  Stream<DomainAccountConfigApiDto?> get configDomainAccount =>
-      configDomainController.stream;
+  final StreamController<DomainAccountConfigApiDto?> configDomainController = StreamController.broadcast();
+  Stream<DomainAccountConfigApiDto?> get configDomainAccount => configDomainController.stream;
 
   List<DomainAccountApiDto> _items = List.empty(growable: true);
 
@@ -87,8 +83,8 @@ class ListDomainAccountViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> getConfigInfo(String id) async {
-    if (isLoading) return;
+  Future<DomainAccountConfigApiDto?> getConfigInfo(String id) async {
+    if (isLoading) return null;
 
     setLoading();
     Map<String, String> filters = {'domain_account_id': id};
@@ -97,9 +93,12 @@ class ListDomainAccountViewModel extends BaseViewModel {
     setLoading();
     if (result.isRight && result.right.domainAccountTaxas.isNotEmpty) {
       configDomainController.sink.add(result.right.domainAccountTaxas[0]);
+      return result.right.domainAccountTaxas[0];
     } else if (result.isLeft) {
       postError(result.left.message);
+      return null;
     }
+    return null;
   }
 
   getEmptyConfigInfo(String id) {

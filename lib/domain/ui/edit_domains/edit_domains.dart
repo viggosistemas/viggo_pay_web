@@ -129,16 +129,12 @@ class EditDomains {
                                 ),
                                 label: const Text('Salvar'),
                                 onPressed: () {
-                                  if (snapshot.data != null &&
-                                      snapshot.data == true) {
+                                  if (snapshot.data != null && snapshot.data == true) {
                                     onSubmit();
                                   }
                                 },
                                 style: TextButton.styleFrom(
-                                  foregroundColor: snapshot.data != null &&
-                                          snapshot.data == true
-                                      ? Colors.green
-                                      : Colors.grey,
+                                  foregroundColor: snapshot.data != null && snapshot.data == true ? Colors.green : Colors.grey,
                                 ),
                               ),
                             ),
@@ -264,16 +260,12 @@ class EditDomains {
                                 ),
                                 label: const Text('Salvar'),
                                 onPressed: () {
-                                  if (snapshot.data != null &&
-                                      snapshot.data == true) {
+                                  if (snapshot.data != null && snapshot.data == true) {
                                     onSubmit();
                                   }
                                 },
                                 style: TextButton.styleFrom(
-                                  foregroundColor: snapshot.data != null &&
-                                          snapshot.data == true
-                                      ? Colors.green
-                                      : Colors.grey,
+                                  foregroundColor: snapshot.data != null && snapshot.data == true ? Colors.green : Colors.grey,
                                 ),
                               ),
                             ),

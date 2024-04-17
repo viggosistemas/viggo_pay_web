@@ -20,14 +20,14 @@ class EditAddressFormFields extends BaseForm {
     ],
   );
   final complemento = StringField(
-    isRequired: true,
+    // isRequired: true,
     validators: [
       Validator().isEmptyValue,
       FieldLengthValidator().maiorQ500,
     ],
   );
   final bairro = StringField(
-    isRequired: true,
+    // isRequired: true,
     validators: [
       Validator().isEmptyValue,
       FieldLengthValidator().maiorQ100,

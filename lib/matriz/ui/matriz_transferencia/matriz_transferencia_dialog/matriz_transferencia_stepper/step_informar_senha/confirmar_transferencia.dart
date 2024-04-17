@@ -10,8 +10,12 @@ class StepInformarSenha extends StatelessWidget {
     super.key,
     required this.changePage,
     required this.currentPage,
+    required this.taxa,
+    required this.materaId,
   });
 
+  final String? materaId;
+  final Map<String, dynamic>? taxa;
   final Function(int index) changePage;
   final int currentPage;
   final viewModel = locator.get<MatrizTransferenciaViewModel>();
@@ -75,10 +79,7 @@ class StepInformarSenha extends StatelessWidget {
                       textDirection: TextDirection.rtl,
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              snapshot.data != null && snapshot.data!.length == 6
-                                  ? Colors.green
-                                  : Colors.grey,
+                          backgroundColor: snapshot.data != null && snapshot.data!.length == 6 ? Colors.green : Colors.grey,
                         ),
                         onPressed: () async {
                           var result = await showDialog(
@@ -86,12 +87,19 @@ class StepInformarSenha extends StatelessWidget {
                             builder: (BuildContext ctx) => Dialog.fullscreen(
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 14),
-                                child: ComprovantePdfViewer(),
+                                child: ComprovantePdfViewer(
+                                  materaId: materaId,
+                                  taxa: taxa,
+                                ),
                               ),
                             ),
                           );
-                          if(result == true && context.mounted){
-                            Navigator.pop(context, true);
+                          if (context.mounted) {
+                            if (result != null && result == true) {
+                              Navigator.pop(context, result);
+                            } else if (result.isLeft) {
+                              Navigator.pop(context, result);
+                            }
                           }
                         },
                         icon: const Icon(
