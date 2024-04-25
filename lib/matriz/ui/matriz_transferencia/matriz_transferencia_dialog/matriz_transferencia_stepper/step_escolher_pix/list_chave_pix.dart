@@ -207,13 +207,18 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
                     child: Directionality(
                       textDirection: TextDirection.rtl,
                       child: ElevatedButton.icon(
-                        onPressed: () => validForm.data != null && validForm.data == true ? widget.changePage(widget.currentPage + 1) : {},
+                        onPressed: () => validForm.data != null && validForm.data == true && widget.pixToSendList.isNotEmpty
+                            ? widget.changePage(widget.currentPage + 1)
+                            : {},
                         icon: const Icon(
                           Icons.arrow_back_outlined,
                           size: 18,
                         ),
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: validForm.data != null && validForm.data == true ? Theme.of(context).colorScheme.primary : Colors.grey),
+                          backgroundColor: validForm.data != null && validForm.data == true && widget.pixToSendList.isNotEmpty
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.grey,
+                        ),
                         label: const Text('Próximo'),
                       ),
                     ),

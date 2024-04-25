@@ -248,8 +248,8 @@ class MatrizViewModel extends BaseViewModel with RegisterDomainAccountDocumentsT
       if (result.left is! NotFound) onError(result.left.message);
       return;
     }
-
-    _fileList.sink.add(result.right.documents.map((e) => e.toJson()).toList());
+    var documents = result.right.documents.map((e) => e.toJson()).toList();
+    _fileList.sink.add(documents.where((element) => element['tipo'] != 'UNKNOWN').toList());
   }
 
   Future<void> onSelectedFile(
