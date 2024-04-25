@@ -35,7 +35,7 @@ class FuncionarioApi extends BaseApi {
   ) async {
     String id = params['id'];
     String? include = params['include'];
-    String url = '$baseUrl$ENDPOINT/$id';
+    String url = '$ENDPOINT/$id';
 
     if (include != null) url = '$url?include=$include';
 
