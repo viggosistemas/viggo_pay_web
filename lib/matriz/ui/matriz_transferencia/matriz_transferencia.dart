@@ -12,8 +12,7 @@ import 'package:viggo_pay_admin/utils/container.dart';
 class MatrizTransferenciaPage extends StatelessWidget {
   MatrizTransferenciaPage({super.key});
 
-  final MatrizTransferenciaViewModel viewModel =
-      locator.get<MatrizTransferenciaViewModel>();
+  final MatrizTransferenciaViewModel viewModel = locator.get<MatrizTransferenciaViewModel>();
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +44,7 @@ class MatrizTransferenciaPage extends StatelessWidget {
                           } else {
                             return Expanded(
                               child: TimelineMatriz(
-                                listTransferencia: snapshotTimeline.data!.sublist(0, 5),
+                                listTransferencia: snapshotTimeline.data!.isEmpty ? snapshotTimeline.data! : snapshotTimeline.data!.sublist(0, 5),
                               ),
                             );
                           }
