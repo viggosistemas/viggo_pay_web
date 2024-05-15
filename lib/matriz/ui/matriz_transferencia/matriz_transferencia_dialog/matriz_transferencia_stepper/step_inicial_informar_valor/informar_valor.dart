@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
@@ -11,6 +13,11 @@ class StepInformarValor extends StatelessWidget {
   final int currentPage;
   final SaldoApiDto saldo;
   final viewModel = locator.get<MatrizTransferenciaViewModel>();
+  final valorTransferenciaControll = MoneyMaskedTextController(
+    decimalSeparator: ',',
+    thousandSeparator: '.',
+    leftSymbol: 'R\$ ',
+  );
 
   getError(String? msg, String valor) {
     if (msg != null || valor.isEmpty) {
@@ -24,11 +31,15 @@ class StepInformarValor extends StatelessWidget {
     }
   }
 
+  removerMaskValor(String value) {
+    return value
+        .replaceAll(valorTransferenciaControll.leftSymbol, '')
+        .replaceAll(valorTransferenciaControll.thousandSeparator, '')
+        .replaceAll(valorTransferenciaControll.decimalSeparator, '.');
+  }
+
   @override
   Widget build(BuildContext context) {
-    final valorTransferenciaControll = TextEditingController();
-    valorTransferenciaControll.text = viewModel.formStepValor.getValues()!['valor'].toString();
-
     return Column(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,19 +69,21 @@ class StepInformarValor extends StatelessWidget {
                 controller: valorTransferenciaControll,
                 decoration: InputDecoration(
                   labelText: 'Valor',
-                  prefixText: 'R\$   ',
                   border: const OutlineInputBorder(),
                   errorText: getError(
                     snapshot.error?.toString(),
-                    valorTransferenciaControll.value.text,
+                    removerMaskValor(valorTransferenciaControll.value.text),
                   ),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
+                  decimal: false,
                   signed: false,
                 ),
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
                 onChanged: (value) {
-                  viewModel.formStepValor.valor.onValueChange(value);
+                  viewModel.formStepValor.valor.onValueChange(removerMaskValor(value));
                 },
               );
             }),
@@ -102,8 +115,8 @@ class StepInformarValor extends StatelessWidget {
                           backgroundColor: snapshot.data != null &&
                                   snapshot.data == true &&
                                   valorTransferenciaControll.text.isNotEmpty &&
-                                  double.parse(valorTransferenciaControll.text) < saldo.real &&
-                                  double.parse(valorTransferenciaControll.text) > 0
+                                  double.parse(removerMaskValor(valorTransferenciaControll.text)) < saldo.real &&
+                                  double.parse(removerMaskValor(valorTransferenciaControll.text)) > 0
                               ? Theme.of(context).colorScheme.primary
                               : Colors.grey,
                         ),
@@ -111,8 +124,8 @@ class StepInformarValor extends StatelessWidget {
                           if (snapshot.data != null &&
                               snapshot.data == true &&
                               valorTransferenciaControll.text.isNotEmpty &&
-                              double.parse(valorTransferenciaControll.text) < saldo.real &&
-                              double.parse(valorTransferenciaControll.text) > 0) {
+                              double.parse(removerMaskValor(valorTransferenciaControll.text)) < saldo.real &&
+                              double.parse(removerMaskValor(valorTransferenciaControll.text)) > 0) {
                             changePage(currentPage + 1);
                           }
                         },
