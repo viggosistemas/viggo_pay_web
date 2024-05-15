@@ -408,7 +408,7 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
                                     },
                                     tooltip: widget.viewModel.avaliableCapabilities.isNotEmpty
                                         ? 'Adicionar políticas de acesso'
-                                        : 'Todas políticas foram adicionadas',
+                                        : 'Todas as políticas foram adicionadas',
                                     icon: Icon(
                                       Icons.add_outlined,
                                       color: Theme.of(context).colorScheme.primary,
