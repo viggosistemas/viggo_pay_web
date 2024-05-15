@@ -119,20 +119,26 @@ class _TransferenciaCardState extends State<TransferenciaCard> {
                           ),
                         ),
                         OnHoverButton(
-                          child: IconButton(
-                            onPressed: () {
-                              if (widget.matrizAccount.password == null) {
-                                viewModel.formSenha.senhaAntiga.onValueChange('senha1');
-                              } else {
-                                viewModel.formSenha.senhaAntiga.onValueChange('');
-                              }
-                              viewModel.formSenha.novaSenha.onValueChange('');
-                              viewModel.formSenha.confirmarSenha.onValueChange('');
-                              DialogAlterarSenha(context: context).showFormDialog(widget.matrizAccount.password != null);
-                            },
-                            icon: const Icon(Icons.lock_outline),
-                            tooltip: widget.matrizAccount.password != null ? 'Alterar senha' : 'Criar senha',
-                          ),
+                          child: chavePixData.data!.status != 'ACTIVE'
+                              ? IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.warning_amber, color: Colors.orangeAccent,),
+                                  tooltip: 'Chave pix inutilizada!',
+                                )
+                              : IconButton(
+                                  onPressed: () {
+                                    if (widget.matrizAccount.password == null) {
+                                      viewModel.formSenha.senhaAntiga.onValueChange('senha1');
+                                    } else {
+                                      viewModel.formSenha.senhaAntiga.onValueChange('');
+                                    }
+                                    viewModel.formSenha.novaSenha.onValueChange('');
+                                    viewModel.formSenha.confirmarSenha.onValueChange('');
+                                    DialogAlterarSenha(context: context).showFormDialog(widget.matrizAccount.password != null);
+                                  },
+                                  icon: const Icon(Icons.lock_outline),
+                                  tooltip: widget.matrizAccount.password != null ? 'Alterar senha' : 'Criar senha',
+                                ),
                         ),
                       ],
                     );
@@ -242,45 +248,59 @@ class _TransferenciaCardState extends State<TransferenciaCard> {
                           );
                           return const CircularProgressIndicator();
                         }
-                        return Tooltip(
-                          message: saldoData.data!.real == 0 ? 'Não há saldo disponível!' : '',
-                          child: OnHoverButton(
-                            child: Directionality(
-                              textDirection: TextDirection.rtl,
-                              child: ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: saldoData.data!.real > 0 ? Theme.of(context).colorScheme.primary : Colors.grey),
-                                icon: const Icon(
-                                  Icons.attach_money_outlined,
-                                  size: 20,
-                                ),
-                                onPressed: () async {
-                                  if (saldoData.data!.real > 0) {
-                                    var result = await dialogs.transferenciaDialog(
-                                      materaId: null,
-                                      saldo: saldoData.data!,
-                                      pixToSendList: pixToSendData.data!,
-                                      constraints: constraints,
-                                      taxa: null,
-                                    );
-                                    if (result != null && result == true && context.mounted) {
-                                      showInfoMessage(
-                                        context,
-                                        2,
-                                        Colors.green,
-                                        'Transferência realizada com sucesso!',
-                                        'X',
-                                        () {},
-                                        Colors.white,
-                                      );
-                                    }
-                                  }
-                                },
-                                label: const Text('Transferir'),
-                              ),
-                            ),
-                          ),
-                        );
+                        return FutureBuilder<ChavePixApiDto?>(
+                            future: viewModel.loadChavePix(widget.matrizAccount.materaId!),
+                            builder: (context, chavePixData) {
+                              if (chavePixData.data == null) {
+                                return const Text('');
+                              } else {
+                                return Tooltip(
+                                  message: saldoData.data!.real == 0
+                                      ? 'Não há saldo disponível!'
+                                      : chavePixData.data!.status != 'ACTIVE'
+                                          ? 'Chave pix inutilizada!'
+                                          : '',
+                                  child: OnHoverButton(
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ElevatedButton.icon(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: saldoData.data!.real > 0 && chavePixData.data!.status == 'ACTIVE'
+                                                ? Theme.of(context).colorScheme.primary
+                                                : Colors.grey),
+                                        icon: const Icon(
+                                          Icons.attach_money_outlined,
+                                          size: 20,
+                                        ),
+                                        onPressed: () async {
+                                          if (saldoData.data!.real > 0 && chavePixData.data!.status == 'ACTIVE') {
+                                            var result = await dialogs.transferenciaDialog(
+                                              materaId: null,
+                                              saldo: saldoData.data!,
+                                              pixToSendList: pixToSendData.data!,
+                                              constraints: constraints,
+                                              taxa: null,
+                                            );
+                                            if (result != null && result == true && context.mounted) {
+                                              showInfoMessage(
+                                                context,
+                                                2,
+                                                Colors.green,
+                                                'Transferência realizada com sucesso!',
+                                                'X',
+                                                () {},
+                                                Colors.white,
+                                              );
+                                            }
+                                          }
+                                        },
+                                        label: const Text('Transferir'),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                            });
                       }),
                 ],
               );

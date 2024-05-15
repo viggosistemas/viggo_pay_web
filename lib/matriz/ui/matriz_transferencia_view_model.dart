@@ -168,7 +168,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     }
   }
 
-  void loadChavePix(String materaId) async {
+  Future<ChavePixApiDto?> loadChavePix(String materaId) async {
     Map<String, dynamic> data = {
       'account_id': materaId,
     };
@@ -176,11 +176,14 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     var result = await listChavePix.invoke(body: data);
     if (result.isLeft) {
       postError(result.left.message);
+      return null;
     } else {
       if (!_streamChavePixController.isClosed) {
         _streamChavePixController.sink.add(result.right[0]);
+        return result.right[0];
       }
     }
+    return null;
   }
 
   void loadChavePixToSends(String domainAccountId) async {
