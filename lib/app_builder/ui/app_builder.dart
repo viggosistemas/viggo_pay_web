@@ -51,7 +51,6 @@ class _AppBuilderState extends State<AppBuilder> {
     }
 
     void setScreen(String? route) {
-      //TODO: SE ESTIVER LOGGED NO APP STATE NAO DEVE SAIR PRA LOGIN DEVE SE MANTER NO DASHBOARD
       if (route == 'LOGIN_PAGE') {
         Navigator.of(context).pushNamedAndRemoveUntil(route!, (r) => false);
       }
