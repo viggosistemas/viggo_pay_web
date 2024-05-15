@@ -213,6 +213,7 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
     widget.viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          widget.viewModel.clearError();
           showInfoMessage(
             context,
             2,
@@ -394,16 +395,20 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
                                 OnHoverButton(
                                   child: IconButton.outlined(
                                     onPressed: () async {
-                                      var result = await EditPolicyDialog(
-                                        context: context,
-                                        disponiveis: widget.viewModel.avaliableCapabilities,
-                                        roleId: roleSelected!.id,
-                                      ).addDialog();
-                                      if (result != null && result == true) {
-                                        onReload();
+                                      if (widget.viewModel.avaliableCapabilities.isNotEmpty) {
+                                        var result = await EditPolicyDialog(
+                                          context: context,
+                                          disponiveis: widget.viewModel.avaliableCapabilities,
+                                          roleId: roleSelected!.id,
+                                        ).addDialog();
+                                        if (result != null && result == true) {
+                                          onReload();
+                                        }
                                       }
                                     },
-                                    tooltip: 'Adicionar políticas de acesso',
+                                    tooltip: widget.viewModel.avaliableCapabilities.isNotEmpty
+                                        ? 'Adicionar políticas de acesso'
+                                        : 'Todas políticas foram adicionadas',
                                     icon: Icon(
                                       Icons.add_outlined,
                                       color: Theme.of(context).colorScheme.primary,

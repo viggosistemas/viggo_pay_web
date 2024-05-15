@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:viggo_core_frontend/base/base_view_model.dart';
 import 'package:viggo_core_frontend/capability/data/models/capability_api_dto.dart';
 import 'package:viggo_core_frontend/capability/domain/usecases/get_capabilities_by_params_use_case.dart';
@@ -30,17 +32,18 @@ class EditPolicyViewModel extends BaseViewModel {
   final ListDomainFormFields form = ListDomainFormFields();
   List<PolicyApiDto> _items = List.empty(growable: true);
 
-  final StreamController<List<PolicyApiDto>> policiesController =
-      StreamController.broadcast();
+  final StreamController<List<PolicyApiDto>> policiesController = StreamController.broadcast();
   Stream<List<PolicyApiDto>> get policies => policiesController.stream;
 
-  final StreamController<bool> _streamControllerSuccess =
-      StreamController<bool>.broadcast();
+  final StreamController<bool> _streamControllerSuccess = StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
-  final StreamController<List<RoleApiDto>> rolesController =
-      StreamController.broadcast();
+  final StreamController<List<RoleApiDto>> rolesController = StreamController.broadcast();
   Stream<List<RoleApiDto>> get papeisSistema => rolesController.stream;
+
+  final BehaviorSubject<List<CapabilityApiDto>> policiesSelectedController = BehaviorSubject<List<CapabilityApiDto>>();
+  Stream<List<CapabilityApiDto>> get policiesSelected => policiesSelectedController.stream;
+  Stream<bool> get policiesSelectedValid => policiesSelectedController.stream.transform(validar());
 
   EditPolicyViewModel({
     required this.getRoles,
@@ -85,9 +88,7 @@ class EditPolicyViewModel extends BaseViewModel {
         }
       }
 
-      var listOptions = ListOptions.values
-          .where((element) => element.name == filters['list_options'])
-          .first;
+      var listOptions = ListOptions.values.where((element) => element.name == filters['list_options']).first;
 
       var result = await getCapabilities.invoke(
         filters: filters,
@@ -110,9 +111,9 @@ class EditPolicyViewModel extends BaseViewModel {
           }
         }
         var idsRoutesSelecteds = role.policies!.map((p) => p.capability!.routeId).toList();
-        for(var capability in allCapabilitites){
+        for (var capability in allCapabilitites) {
           var index = idsRoutesSelecteds.indexOf(capability.route!.id);
-          if(!(index >= 0)){
+          if (!(index >= 0)) {
             avaliableCapabilities.add(capability);
           }
         }
@@ -201,5 +202,31 @@ class EditPolicyViewModel extends BaseViewModel {
         _streamControllerSuccess.sink.add(true);
       }
     }
+  }
+
+  //Adicona ou remove da lista de politicas disponiveis como selecionadas
+  addOrRemove(dynamic value) {
+    value['route'] = jsonDecode(jsonEncode(value['route']));
+    value = CapabilityApiDto.fromJson(value);
+    var list = policiesSelectedController.valueOrNull ?? [];
+    if (list.isNotEmpty) {
+      var index = list.indexWhere((element) => element.id == value.id);
+      if (index == -1) {
+        list.add(value);
+      } else {
+        list.removeWhere((element) => element.id == list[index].id);
+      }
+    } else {
+      list.add(value);
+    }
+    policiesSelectedController.sink.add(list);
+  }
+
+  StreamTransformer<List<CapabilityApiDto>, bool> validar() {
+    return StreamTransformer<List<CapabilityApiDto>, bool>.fromHandlers(
+      handleData: (value, sink) {
+        sink.add(value.isNotEmpty);
+      },
+    );
   }
 }

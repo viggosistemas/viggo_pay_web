@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/capability/data/models/capability_api_dto.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/table/data_table_paginated.dart';
+import 'package:viggo_pay_admin/application/ui/components/table_routes.dart';
 import 'package:viggo_pay_admin/application/ui/edit_policy/edit_policy_view_model.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
@@ -20,20 +20,13 @@ class EditPolicyDialog {
 
   static const routesRowValues = ['route', 'route', 'route', 'route', 'route'];
 
-  static const routesListLabelInclude = [
-    'name',
-    'url',
-    'method',
-    'bypass',
-    'sysadmin'
-  ];
+  static const routesListLabelInclude = ['name', 'url', 'method', 'bypass', 'sysadmin'];
   Future addDialog() {
-    onSubmit() {
+    onSubmit(List<CapabilityApiDto> selecionadas) {
       viewModel.onAddPolicies(
         showInfoMessage,
         context,
-        // disponiveis.where((element) => element.selected).toList(),
-        disponiveis,
+        selecionadas,
         roleId,
       );
     }
@@ -69,6 +62,8 @@ class EditPolicyDialog {
     return showDialog(
         context: context,
         builder: (BuildContext ctx) {
+          var width = MediaQuery.of(context).size.width * 0.55;
+          viewModel.policiesSelectedController.sink.add([]);
           return PopScope(
             canPop: false,
             onPopInvoked: (bool didPop) {
@@ -77,23 +72,8 @@ class EditPolicyDialog {
             },
             child: AlertDialog(
               insetPadding: const EdgeInsets.all(10),
-              title: Row(
-                children: [
-                  Text(
-                    'Adicionando capacidades',
-                    style: Theme.of(ctx).textTheme.titleMedium!.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(
-                    width: 4,
-                  ),
-                  const Icon(Icons.domain_outlined),
-                ],
-              ),
               content: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.55,
+                width: width,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -101,63 +81,26 @@ class EditPolicyDialog {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.55,
-                        child: DataTablePaginated(
+                        width: width,
+                        child: DataTableRoutes(
+                          title: Row(
+                            children: [
+                              Text(
+                                'Adicionando políticas',
+                                style: Theme.of(ctx).textTheme.titleMedium!.copyWith(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                              const SizedBox(
+                                width: 4,
+                              ),
+                              const Icon(Icons.policy_outlined),
+                            ],
+                          ),
                           viewModel: viewModel,
-                          streamList: null,
-                          dialogs: null,
-                          addReloadButton: false,
-                          initialFilters: const {},
-                          columnsDef: const [
-                            DataColumn(
-                              label: Text(
-                                'Nome',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'URL',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Método',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Bypass',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Sysadmin',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
                           fieldsData: routesRowValues,
                           labelInclude: routesListLabelInclude,
-                          validActionsList: const [],
                           items: disponiveis.map((e) {
                             return e.toJson();
                           }).toList(),
@@ -187,21 +130,28 @@ class EditPolicyDialog {
                         ),
                       ),
                     ),
-                    OnHoverButton(
-                      child: Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: TextButton.icon(
-                          icon: const Icon(
-                            Icons.check_circle_outline,
-                            size: 20,
-                          ),
-                          label: const Text('Confirmar'),
-                          onPressed: () => onSubmit(),
-                          style:
-                              TextButton.styleFrom(foregroundColor: Colors.green),
-                        ),
-                      ),
-                    ),
+                    StreamBuilder<List<CapabilityApiDto>>(
+                        stream: viewModel.policiesSelected,
+                        builder: (context, seleciondas) {
+                          return StreamBuilder<bool>(
+                              stream: viewModel.policiesSelectedValid,
+                              builder: (context, snapshot) {
+                                return OnHoverButton(
+                                  child: Directionality(
+                                    textDirection: TextDirection.rtl,
+                                    child: ElevatedButton.icon(
+                                      icon: const Icon(
+                                        Icons.check_circle_outline,
+                                        size: 20,
+                                      ),
+                                      label: const Text('Confirmar'),
+                                      onPressed: () => snapshot.data == true ? onSubmit(seleciondas.data!) : {},
+                                      style: ElevatedButton.styleFrom(backgroundColor: snapshot.data == true ? Colors.green : Colors.grey),
+                                    ),
+                                  ),
+                                );
+                              });
+                        }),
                   ],
                 ),
               ],
