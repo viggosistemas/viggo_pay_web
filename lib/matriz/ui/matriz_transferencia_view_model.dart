@@ -373,8 +373,9 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
 
   void onSubmitSenha(
     Function showMsg,
-    BuildContext context,
-  ) async {
+    BuildContext context, {
+    String? domainAccountIdExtra,
+  }) async {
     if (isLoading) return;
     setLoading();
 
@@ -386,7 +387,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     params['old_password'] = formFields?['senhaAntiga'] == 'senha1' ? null : formFields!['senhaAntiga'];
     params['password'] = formFields!['novaSenha'];
 
-    var result = await updateSenhaPix.invoke(id: domainAccountId, body: params);
+    var result = await updateSenhaPix.invoke(id: domainAccountIdExtra ?? domainAccountId, body: params);
     setLoading();
 
     if (result.isLeft) {

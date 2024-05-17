@@ -6,15 +6,32 @@ import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 class DialogAlterarSenha {
-  DialogAlterarSenha({required this.context});
+  DialogAlterarSenha({required this.context, String domainAccountId = ''}) {
+    if (domainAccountId.isNotEmpty) {
+      this.domainAccountId = domainAccountId;
+    }
+  }
 
   final BuildContext context;
   final viewModel = locator.get<MatrizTransferenciaViewModel>();
+  late String domainAccountId = '';
 
   Future<void> showFormDialog(bool jaTemSenha) {
+    viewModel.formSenha.senhaAntiga.onValueChange('');
+    viewModel.formSenha.novaSenha.onValueChange('');
+    viewModel.formSenha.confirmarSenha.onValueChange('');
+
     onSubmit() {
-      viewModel.onSubmitSenha(showInfoMessage, context);
-      // Navigator.of(context).pop();
+      if (domainAccountId.isNotEmpty) {
+        viewModel.onSubmitSenha(
+          showInfoMessage,
+          context,
+          domainAccountIdExtra: domainAccountId,
+        );
+      } else {
+        viewModel.onSubmitSenha(showInfoMessage, context);
+      }
+      Navigator.of(context).pop();
     }
 
     validarForm(bool isValid) {
@@ -46,7 +63,7 @@ class DialogAlterarSenha {
         () {},
         Colors.white,
       );
-      Navigator.pop(context, true);
+      // Navigator.pop(context, true);
     });
 
     viewModel.errorMessage.listen(
@@ -143,14 +160,9 @@ class DialogAlterarSenha {
                                   size: 20,
                                 ),
                                 label: const Text('Salvar'),
-                                onPressed: () => validarForm(
-                                    snapshot.data != null &&
-                                        snapshot.data == true),
+                                onPressed: () => validarForm(snapshot.data != null && snapshot.data == true),
                                 style: TextButton.styleFrom(
-                                  foregroundColor: snapshot.data != null &&
-                                          snapshot.data == true
-                                      ? Colors.green
-                                      : Colors.grey,
+                                  foregroundColor: snapshot.data != null && snapshot.data == true ? Colors.green : Colors.grey,
                                 ),
                               ),
                             ),

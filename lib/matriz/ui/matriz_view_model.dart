@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -11,6 +13,8 @@ import 'package:viggo_core_frontend/localidades/data/models/address_via_cep_dto.
 import 'package:viggo_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
 import 'package:viggo_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
 import 'package:viggo_core_frontend/network/network_exceptions.dart';
+import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
+import 'package:viggo_core_frontend/route/domain/usecases/get_routes_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_config_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/add_config_domain_account_use_case.dart';
@@ -22,6 +26,12 @@ import 'package:viggo_pay_admin/domain_account/domain/usecases/update_domain_acc
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-empresa/edit-info-form/edit_info_form_fields.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-endereco/edit-endereco-form/edit_endereco_form_fields.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-taxa-empresa/edit-taxa-form/edit_taxa_form_fields.dart';
+import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_alterar_senha_pix/alterar_senha_form_fields.dart';
+import 'package:viggo_pay_admin/pay_facs/data/models/chave_pix_api_dto.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/add_nova_chave_pix_domain_account.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/deletar_chave_pix_domain_account.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/list_chave_pix_domain_account_use_case.dart';
+import 'package:viggo_pay_admin/utils/validar_routes_http.dart';
 
 class MatrizViewModel extends BaseViewModel with RegisterDomainAccountDocumentsTransformer {
   late DomainAccountApiDto matrizAccount;
@@ -37,6 +47,10 @@ class MatrizViewModel extends BaseViewModel with RegisterDomainAccountDocumentsT
   final SearchCepUseCase searchCep;
   final GetMunicipioByParamsUseCase getMunicipio;
   final AddDomainAccountDocumentsUseCase addDomainAccountDocuments;
+  final ListChavePixDomainAccountUseCase getChavePixDomainAccount;
+  final DeletarChavePixDomainAccountUseCase deletarChavePixDomainAccount;
+  final AddChavePixDomainAccountUseCase addChavePixDomainAccount;
+  final GetRoutesUseCase getRoutesFromSettings;
 
   final EditInfoFormFields form = EditInfoFormFields();
   final EditInfoEnderecoFormFields formAddress = EditInfoEnderecoFormFields();
@@ -45,11 +59,19 @@ class MatrizViewModel extends BaseViewModel with RegisterDomainAccountDocumentsT
   final StreamController<bool> _streamControllerSuccess = StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
+  final StreamController<bool> _streamControllerSuccessPix = StreamController<bool>.broadcast();
+  Stream<bool> get isSuccessPix => _streamControllerSuccessPix.stream;
+
   final StreamController<DomainAccountApiDto> _streamMatrizController = StreamController<DomainAccountApiDto>.broadcast();
   Stream<DomainAccountApiDto> get matriz => _streamMatrizController.stream;
 
   final StreamController<DomainAccountConfigApiDto> _streamMatrizTaxaController = StreamController<DomainAccountConfigApiDto>.broadcast();
   Stream<DomainAccountConfigApiDto> get matrizTaxa => _streamMatrizTaxaController.stream;
+
+  final StreamController<ChavePixApiDto> _streamChavePixController = StreamController<ChavePixApiDto>.broadcast();
+  Stream<ChavePixApiDto> get chavePix => _streamChavePixController.stream;
+
+  final AlterarSenhaPixFormFields formSenha = AlterarSenhaPixFormFields();
 
   MatrizViewModel({
     required this.updateDomainAccount,
@@ -61,6 +83,10 @@ class MatrizViewModel extends BaseViewModel with RegisterDomainAccountDocumentsT
     required this.searchCep,
     required this.getMunicipio,
     required this.addDomainAccountDocuments,
+    required this.getChavePixDomainAccount,
+    required this.deletarChavePixDomainAccount,
+    required this.addChavePixDomainAccount,
+    required this.getRoutesFromSettings,
   }) {
     getEntities();
   }
@@ -227,6 +253,88 @@ class MatrizViewModel extends BaseViewModel with RegisterDomainAccountDocumentsT
     } else if (result.isLeft) {
       postError(result.left.message);
     }
+  }
+
+  List<RouteApiDto> getRoutes() {
+    var routesDto = getRoutesFromSettings.invoke();
+
+    if (routesDto != null) {
+      return routesDto;
+    }
+    return [];
+  }
+
+  void loadChavePix(String materaId) async {
+    Map<String, dynamic> data = {
+      'account_id': materaId,
+    };
+
+    var result = await getChavePixDomainAccount.invoke(body: data);
+    if (result.isLeft) {
+      postError(result.left.message);
+    } else {
+      if (!_streamChavePixController.isClosed) {
+        if (result.right.isNotEmpty) {
+          if (result.right[0].status != 'ACTIVE') {
+            loadChavePix(materaId);
+          } else {
+            _streamChavePixController.sink.add(result.right[0]);
+          }
+        } else {
+          List<ChavePixApiDto> empytList = List.empty(growable: true);
+          _streamChavePixController.sink.add(empytList[0]);
+        }
+      }
+    }
+  }
+
+  Future<dynamic> onRemoveChavePix(
+    BuildContext context,
+    String chavePix,
+    String materaId,
+  ) async {
+    if (isLoading) return null;
+    setLoading(value: true);
+
+    Map<String, dynamic> params = {'alias': chavePix, 'account_id': materaId};
+
+    var result = await deletarChavePixDomainAccount.invoke(body: params);
+    setLoading();
+    if (result.isLeft) {
+      postError(result.left.message);
+      setLoading(value: false);
+      return result;
+    }
+    setLoading(value: false);
+    return onCreateChavePix(context, materaId);
+  }
+
+  Future<dynamic> onCreateChavePix(
+    BuildContext context,
+    String materaId,
+  ) async {
+    if (isLoading) return null;
+    setLoading(value: true);
+
+    Map<String, dynamic> params = {'account_id': materaId};
+
+    var result = await addChavePixDomainAccount.invoke(body: params);
+    setLoading();
+    if (result.isLeft) {
+      postError(result.left.message);
+      setLoading(value: false);
+      return result;
+    }
+    setLoading(value: false);
+    if (!_streamControllerSuccessPix.isClosed) {
+      _streamControllerSuccessPix.sink.add(true);
+    }
+    return result.isRight;
+  }
+
+  bool validarPelasRotas(String action, String urlName) {
+    var http = ValidarRoutesHttp(routes: getRoutes());
+    return http.checkDisponibilidade(action, urlName);
   }
 
   // DOCUMENTOS
