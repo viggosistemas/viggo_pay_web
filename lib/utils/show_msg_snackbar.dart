@@ -13,11 +13,7 @@ void showInfoMessage(
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       behavior: SnackBarBehavior.floating,
-      margin: EdgeInsets.only(
-        bottom: MediaQuery.of(context).size.height/1.1,
-        left: MediaQuery.of(context).size.width/1.3,
-        right: 20
-      ),
+      margin: EdgeInsets.only(bottom: MediaQuery.of(context).size.height / 1.1, left: MediaQuery.of(context).size.width / 1.3, right: 20),
       duration: Duration(seconds: duration),
       backgroundColor: panelClass,
       content: Text(

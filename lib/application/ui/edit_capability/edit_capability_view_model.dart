@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:viggo_core_frontend/base/base_view_model.dart';
 import 'package:viggo_core_frontend/capability/data/models/capability_api_dto.dart';
 import 'package:viggo_core_frontend/capability/domain/usecases/add_capability_use_case.dart';
@@ -40,6 +41,10 @@ class EditCapabilityViewModel extends BaseViewModel {
   final StreamController<List<RouteApiDto>> routesController =
       StreamController.broadcast();
   Stream<List<RouteApiDto>> get routesSistema => routesController.stream;
+
+  final BehaviorSubject<List<RouteApiDto>> capabilitiesSelectedController = BehaviorSubject<List<RouteApiDto>>();
+  Stream<List<RouteApiDto>> get capabilitiesSelected => capabilitiesSelectedController.stream;
+  Stream<bool> get capabilitiesSelectedValid => capabilitiesSelectedController.stream.transform(validar());
 
   EditCapabilityViewModel({
     required this.getCapabilities,
@@ -170,5 +175,30 @@ class EditCapabilityViewModel extends BaseViewModel {
         _streamControllerSuccess.sink.add(true);
       }
     }
+  }
+
+  //Adicona ou remove da lista de politicas disponiveis como selecionadas
+  addOrRemove(dynamic value) {
+    value = RouteApiDto.fromJson(value);
+    var list = capabilitiesSelectedController.valueOrNull ?? [];
+    if (list.isNotEmpty) {
+      var index = list.indexWhere((element) => element.id == value.id);
+      if (index == -1) {
+        list.add(value);
+      } else {
+        list.removeWhere((element) => element.id == list[index].id);
+      }
+    } else {
+      list.add(value);
+    }
+    capabilitiesSelectedController.sink.add(list);
+  }
+
+  StreamTransformer<List<RouteApiDto>, bool> validar() {
+    return StreamTransformer<List<RouteApiDto>, bool>.fromHandlers(
+      handleData: (value, sink) {
+        sink.add(value.isNotEmpty);
+      },
+    );
   }
 }

@@ -33,7 +33,7 @@ class Dialogs {
     );
   }
 
-  showConfirmDialog(Map<String, dynamic> data) {
+  showConfirmDialog(Map<String, dynamic> data, {double? width, double? height}) {
     return showDialog(
         context: context,
         builder: (BuildContext ctx) {
@@ -61,6 +61,8 @@ class Dialogs {
                 ],
               ),
               content: SizedBox(
+                width: width,
+                height: height,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

@@ -168,7 +168,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     }
   }
 
-  void loadChavePix(String materaId) async {
+  Future<ChavePixApiDto?> loadChavePix(String materaId) async {
     Map<String, dynamic> data = {
       'account_id': materaId,
     };
@@ -176,11 +176,14 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     var result = await listChavePix.invoke(body: data);
     if (result.isLeft) {
       postError(result.left.message);
+      return null;
     } else {
       if (!_streamChavePixController.isClosed) {
         _streamChavePixController.sink.add(result.right[0]);
+        return result.right[0];
       }
     }
+    return null;
   }
 
   void loadChavePixToSends(String domainAccountId) async {
@@ -370,8 +373,9 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
 
   void onSubmitSenha(
     Function showMsg,
-    BuildContext context,
-  ) async {
+    BuildContext context, {
+    String? domainAccountIdExtra,
+  }) async {
     if (isLoading) return;
     setLoading();
 
@@ -383,7 +387,7 @@ class MatrizTransferenciaViewModel extends BaseViewModel {
     params['old_password'] = formFields?['senhaAntiga'] == 'senha1' ? null : formFields!['senhaAntiga'];
     params['password'] = formFields!['novaSenha'];
 
-    var result = await updateSenhaPix.invoke(id: domainAccountId, body: params);
+    var result = await updateSenhaPix.invoke(id: domainAccountIdExtra ?? domainAccountId, body: params);
     setLoading();
 
     if (result.isLeft) {

@@ -45,7 +45,7 @@ class StepTransferenciaDetalhe extends StatelessWidget {
 
   getValorTotal(String valor) {
     var taxa = getValorTaxa(valor);
-    return double.parse(valor) + taxa;
+    return (double.parse(valor) + taxa).toStringAsFixed(2);
   }
 
   @override

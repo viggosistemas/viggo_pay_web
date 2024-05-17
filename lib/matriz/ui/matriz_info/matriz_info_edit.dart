@@ -4,6 +4,7 @@ import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
+import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-chave-pix-empresa/edit_chave_pix_empresa.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-documentos/edit_info_documentos.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-empresa/edit_info_empresa.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_info/edit-info-endereco/edit_info_endereco.dart';
@@ -163,7 +164,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                               //   });
                               // },
                               onStepContinue: () {
-                                if (currentStep != 3) {
+                                if (currentStep != 4) {
                                   setState(() {
                                     currentStep++;
                                     updateFormValeus();
@@ -180,7 +181,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                               },
                               controlsBuilder: (BuildContext context, ControlsDetails details) {
                                 return Row(
-                                  children: details.stepIndex != 3
+                                  children: details.stepIndex != 4
                                       ? <Widget>[
                                           OnHoverButton(
                                             child: TextButton(
@@ -302,6 +303,14 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                         : Theme.of(context).colorScheme.primary,
                                   );
                                 }
+                                if (stepIndex == 4) {
+                                  return Icon(
+                                    Icons.pix_outlined,
+                                    color: stepState == StepState.indexed
+                                        ? Theme.of(context).colorScheme.onPrimary
+                                        : Theme.of(context).colorScheme.primary,
+                                  );
+                                }
                                 return const Icon(Icons.edit_outlined);
                               },
                               steps: [
@@ -324,6 +333,14 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                   isActive: currentStep == 3,
                                   title: const Text('Editando taxa'),
                                   content: EditTaxaEmpresa(viewModel: viewModel),
+                                ),
+                                Step(
+                                  isActive: currentStep == 4,
+                                  title: const Text('Chave pix'),
+                                  content: EditChavePix(
+                                    viewModel: viewModel,
+                                    materaId: snapshot.data!.materaId!,
+                                  ),
                                 ),
                               ],
                             ),

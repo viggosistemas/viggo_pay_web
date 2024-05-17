@@ -28,19 +28,12 @@ class EditCapabilityGrid extends StatefulWidget {
 }
 
 class _EditCapabilityGridState extends State<EditCapabilityGrid> {
-  bool jaPreencheu = false;
   Map<String, String> initialFilters = {};
   List<CapabilityApiDto> selectedCapabilitites = [];
 
   static const routesRowValues = ['route', 'route', 'route', 'route', 'route'];
 
-  static const routesListLabelInclude = [
-    'name',
-    'url',
-    'method',
-    'bypass',
-    'sysadmin'
-  ];
+  static const routesListLabelInclude = ['name', 'url', 'method', 'bypass', 'sysadmin'];
 
   loadCapabilities(
     ApplicationApiDto selected,
@@ -71,17 +64,14 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
     String? key = widget.sharedPrefs.getString('APPLICATION_SELECTED');
     if (key != null) {
       if (selected != null) {
-        widget.sharedPrefs
-            .setString('APPLICATION_SELECTED', jsonEncode(selected));
+        widget.sharedPrefs.setString('APPLICATION_SELECTED', jsonEncode(selected));
         loadCapabilities(selected, {});
       } else {
-        ApplicationApiDto application =
-            ApplicationApiDto.fromJson(jsonDecode(key));
+        ApplicationApiDto application = ApplicationApiDto.fromJson(jsonDecode(key));
         loadCapabilities(application, {});
       }
     } else {
-      widget.sharedPrefs
-          .setString('APPLICATION_SELECTED', jsonEncode(selected));
+      widget.sharedPrefs.setString('APPLICATION_SELECTED', jsonEncode(selected));
       loadCapabilities(selected!, {});
     }
   }
@@ -197,8 +187,7 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)?.settings.arguments as ApplicationApiDto?;
+    final args = ModalRoute.of(context)?.settings.arguments as ApplicationApiDto?;
 
     widget.viewModel.isSuccess.listen((value) {
       showInfoMessage(
@@ -216,6 +205,7 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
     widget.viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          widget.viewModel.clearError();
           showInfoMessage(
             context,
             2,
@@ -235,9 +225,7 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
         if (snapshot.data == null) {
           checkApplication(args);
           return ProgressLoading(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Theme.of(context).colorScheme.secondary
-                : Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary,
           );
         } else {
           selectedCapabilitites = (snapshot.data as List<CapabilityApiDto>);
@@ -262,8 +250,7 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
                   SizedBox(
                     width: double.infinity,
                     child: DataTablePaginated(
-                      titleTable:
-                          'Editando capacidades de ${args?.name ?? application.name}',
+                      titleTable: 'Editando capacidades de ${args?.name ?? application.name}',
                       viewModel: widget.viewModel,
                       streamList: widget.viewModel.capabilities,
                       dialogs: null,
@@ -330,8 +317,7 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
                                     tooltip: 'Adicionar capacidades',
                                     icon: Icon(
                                       Icons.add_outlined,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+                                      color: Theme.of(context).colorScheme.primary,
                                     ),
                                   ),
                                 );
@@ -339,29 +325,30 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
                                 return OnHoverButton(
                                   child: IconButton.outlined(
                                     onPressed: () async {
-                                      if (!jaPreencheu) {
-                                        jaPreencheu = true;
-                                        for (var c in selectedCapabilitites) {
-                                          var rotaSelecionada = rotas.data!
-                                              .firstWhere((rota) =>
-                                                  c.routeId == rota.id);
-                                          rotas.data!.remove(rotaSelecionada);
-                                        }
+                                      for (var c in selectedCapabilitites) {
+                                        var rotaSelecionada = rotas.data!.firstWhere((rota) => c.routeId == rota.id);
+                                        rotas.data!.remove(rotaSelecionada);
                                       }
-                                      var result = await EditCapabilityDialog(
-                                        context: context,
-                                        disponiveis: rotas.data!,
-                                        applicationId: application.id,
-                                      ).addDialog();
-                                      if (result != null && result == true) {
-                                        onReload();
+                                      if (rotas.data!.isNotEmpty) {
+                                        widget.viewModel.listRoutes();
+                                        var result = await EditCapabilityDialog(
+                                          context: context,
+                                          disponiveis: rotas.data!,
+                                          applicationId: application.id,
+                                        ).addDialog();
+                                        if (result != null && result == true) {
+                                          onReload();
+                                        }
+                                      }else{
+                                        widget.viewModel.listRoutes();
                                       }
                                     },
-                                    tooltip: 'Adicionar capacidades',
+                                    tooltip: selectedCapabilitites.length != rotas.data!.length
+                                        ? 'Adicionar capacidades'
+                                        : 'Todas as capacidades foram adicionadas',
                                     icon: Icon(
                                       Icons.add_outlined,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+                                      color: Theme.of(context).colorScheme.primary,
                                     ),
                                   ),
                                 );
@@ -370,20 +357,15 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
                         const SizedBox(width: 10),
                         IconButton.outlined(
                           onPressed: () async {
-                            var selecteds = selectedCapabilitites
-                                .where((element) => element.selected)
-                                .toList();
+                            var selecteds = selectedCapabilitites.where((element) => element.selected).toList();
                             if (selecteds.isNotEmpty) {
-                              var result = await Dialogs(context: context)
-                                  .showConfirmDialog({
+                              var result = await Dialogs(context: context).showConfirmDialog({
                                 'title_text': 'Removendo capacidades',
                                 'title_icon': Icons.delete_outline,
                                 'message':
                                     'Você tem certeza que deseja executar essa ação?\n${selecteds.length.toString() + ' itens'.toUpperCase()} serão removidos.'
                               });
-                              if (result != null &&
-                                  result == true &&
-                                  context.mounted) {
+                              if (result != null && result == true && context.mounted) {
                                 widget.viewModel.onRemoveCapabilitites(
                                   showInfoMessage,
                                   context,

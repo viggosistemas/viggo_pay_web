@@ -97,6 +97,7 @@ class _ListApplicationsGridState extends State<ListApplicationsGrid> {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,
@@ -223,87 +224,49 @@ class _ListApplicationsGridState extends State<ListApplicationsGrid> {
                               dialogs: dialogs,
                               initialFilters: filters,
                               actions: [
-                                StreamBuilder<List<ApplicationApiDto>>(
-                                    stream: viewModel.applications,
-                                    builder: (context, snapshot) {
-                                      if (snapshot.data == null) {
-                                        return OnHoverButton(
-                                          child: IconButton.outlined(
-                                            onPressed: () => {},
-                                            tooltip: 'Editar capacidades',
-                                            icon: const Icon(
-                                              Icons.polyline_outlined,
-                                            ),
-                                          ),
-                                        );
-                                      } else {
-                                        var lengthSelected = snapshot.data!.where((element) => element.selected).length;
-                                        // ignore: avoid_init_to_null
-                                        ApplicationApiDto? selected = null;
-                                        if (lengthSelected == 1) {
-                                          selected = snapshot.data!.where((element) => element.selected).first;
-                                        }
-                                        return OnHoverButton(
-                                          child: IconButton.outlined(
-                                            onPressed: () => lengthSelected == 1
-                                                ? WidgetsBinding.instance.addPostFrameCallback(
-                                                    (_) {
-                                                      Navigator.of(context).pushReplacementNamed(
-                                                        Routes.EDIT_CAPABILITY,
-                                                        arguments: selected,
-                                                      );
-                                                    },
-                                                  )
-                                                : {},
-                                            tooltip: 'Editar capacidades',
-                                            icon: const Icon(
-                                              Icons.polyline_outlined,
-                                            ),
-                                          ),
+                                OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () {
+                                      var selected = viewModel.selectedItems.where((e) => e.selected).toList();
+                                      if (selected.isNotEmpty) {
+                                        return WidgetsBinding.instance.addPostFrameCallback(
+                                          (_) {
+                                            Navigator.of(context).pushReplacementNamed(
+                                              Routes.EDIT_CAPABILITY,
+                                              arguments: selected[0],
+                                            );
+                                          },
                                         );
                                       }
-                                    }),
+                                    },
+                                    tooltip: 'Editar capacidades',
+                                    icon: const Icon(
+                                      Icons.polyline_outlined,
+                                    ),
+                                  ),
+                                ),
                                 const SizedBox(width: 10),
-                                StreamBuilder<List<ApplicationApiDto>>(
-                                    stream: viewModel.applications,
-                                    builder: (context, snapshot) {
-                                      if (snapshot.data == null) {
-                                        return OnHoverButton(
-                                          child: IconButton.outlined(
-                                            onPressed: () => {},
-                                            tooltip: 'Editar políticas',
-                                            icon: const Icon(
-                                              Icons.policy_outlined,
-                                            ),
-                                          ),
-                                        );
-                                      } else {
-                                        var lengthSelected = snapshot.data!.where((element) => element.selected).length;
-                                        // ignore: avoid_init_to_null
-                                        ApplicationApiDto? selected = null;
-                                        if (lengthSelected == 1) {
-                                          selected = snapshot.data!.where((element) => element.selected).first;
-                                        }
-                                        return OnHoverButton(
-                                          child: IconButton.outlined(
-                                            onPressed: () => lengthSelected == 1
-                                                ? WidgetsBinding.instance.addPostFrameCallback(
-                                                    (_) {
-                                                      Navigator.of(context).pushReplacementNamed(
-                                                        Routes.EDIT_POLICY,
-                                                        arguments: selected,
-                                                      );
-                                                    },
-                                                  )
-                                                : {},
-                                            tooltip: 'Editar políticas',
-                                            icon: const Icon(
-                                              Icons.policy_outlined,
-                                            ),
-                                          ),
+                                OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () {
+                                      var selected = viewModel.selectedItems.where((e) => e.selected).toList();
+                                      if (selected.isNotEmpty) {
+                                        WidgetsBinding.instance.addPostFrameCallback(
+                                          (_) {
+                                            Navigator.of(context).pushReplacementNamed(
+                                              Routes.EDIT_POLICY,
+                                              arguments: selected[0],
+                                            );
+                                          },
                                         );
                                       }
-                                    }),
+                                    },
+                                    tooltip: 'Editar políticas',
+                                    icon: const Icon(
+                                      Icons.policy_outlined,
+                                    ),
+                                  ),
+                                ),
                                 const SizedBox(width: 10),
                               ],
                               columnsDef: const [
