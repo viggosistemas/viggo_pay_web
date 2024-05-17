@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
-import 'package:viggo_pay_admin/application/ui/components/table_routes.dart';
+import 'package:viggo_pay_admin/application/ui/components/table_list_manage_capability.dart';
 import 'package:viggo_pay_admin/application/ui/edit_capability/edit_capability_view_model.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
@@ -15,10 +15,9 @@ class EditCapabilityDialog {
 
   final BuildContext context;
   final viewModel = locator.get<EditCapabilityViewModel>();
-  final List<RouteApiDto> disponiveis;
+  late List<RouteApiDto> disponiveis = [];
+  late List<RouteApiDto> bckDisponiveis = disponiveis;
   final String applicationId;
-
-  static const routesRowValues = ['name', 'url', 'method', 'bypass', 'sysadmin'];
 
   Future addDialog() {
     onSubmit(List<RouteApiDto> selecionadas) {
@@ -74,37 +73,11 @@ class EditCapabilityDialog {
               content: SizedBox(
                 width: width,
                 child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: width,
-                        child: DataTableRoutes(
-                          title: Row(
-                            children: [
-                              Text(
-                                'Adicionando capacidades',
-                                style: Theme.of(ctx).textTheme.titleMedium!.copyWith(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              const Icon(Icons.polyline_outlined),
-                            ],
-                          ),
-                          viewModel: viewModel,
-                          fieldsData: routesRowValues,
-                          items: disponiveis.map((e) {
-                            return e.toJson();
-                          }).toList(),
-                        ),
-                      ),
-                    ],
+                  child: TableListCapability(
+                    bckDisponiveis: bckDisponiveis,
+                    disponiveis: disponiveis,
+                    width: width,
+                    viewModel: viewModel,
                   ),
                 ),
               ),

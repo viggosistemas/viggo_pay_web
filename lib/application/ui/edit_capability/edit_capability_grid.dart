@@ -339,6 +339,8 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
                                         if (result != null && result == true) {
                                           onReload();
                                         }
+                                      }else{
+                                        widget.viewModel.listRoutes();
                                       }
                                     },
                                     tooltip: selectedCapabilitites.length != rotas.data!.length

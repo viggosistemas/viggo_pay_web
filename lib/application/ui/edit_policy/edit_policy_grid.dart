@@ -335,6 +335,7 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
                         : SizedBox(
                             width: double.infinity,
                             child: DataTablePaginated(
+                              addReloadButton: false,
                               titleTable:
                                   'Editando políticas de ${args?.name ?? application.name} ${roleSelected != null ? '- Papel: ${roleSelected?.name}' : ''}',
                               viewModel: widget.viewModel,
@@ -444,6 +445,15 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
                                   ),
                                 ),
                                 const SizedBox(width: 10),
+                                OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () => onReload(),
+                                    tooltip: 'Recarregar',
+                                    icon: const Icon(
+                                      Icons.replay,
+                                    ),
+                                  ),
+                                ),
                               ],
                               items: selectedPolicies.map((e) {
                                 return e.toJson();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/capability/data/models/capability_api_dto.dart';
-import 'package:viggo_pay_admin/application/ui/components/table_routes.dart';
+import 'package:viggo_pay_admin/application/ui/components/table_list_manage_policy.dart';
 import 'package:viggo_pay_admin/application/ui/edit_policy/edit_policy_view_model.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
@@ -15,12 +15,10 @@ class EditPolicyDialog {
 
   final BuildContext context;
   final viewModel = locator.get<EditPolicyViewModel>();
-  final List<CapabilityApiDto> disponiveis;
+  late List<CapabilityApiDto> disponiveis = [];
+  late List<CapabilityApiDto> bckDisponiveis = disponiveis;
   final String roleId;
 
-  static const routesRowValues = ['route', 'route', 'route', 'route', 'route'];
-
-  static const routesListLabelInclude = ['name', 'url', 'method', 'bypass', 'sysadmin'];
   Future addDialog() {
     onSubmit(List<CapabilityApiDto> selecionadas) {
       viewModel.onAddPolicies(
@@ -75,38 +73,11 @@ class EditPolicyDialog {
               content: SizedBox(
                 width: width,
                 child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: width,
-                        child: DataTableRoutes(
-                          title: Row(
-                            children: [
-                              Text(
-                                'Adicionando políticas',
-                                style: Theme.of(ctx).textTheme.titleMedium!.copyWith(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              const Icon(Icons.policy_outlined),
-                            ],
-                          ),
-                          viewModel: viewModel,
-                          fieldsData: routesRowValues,
-                          labelInclude: routesListLabelInclude,
-                          items: disponiveis.map((e) {
-                            return e.toJson();
-                          }).toList(),
-                        ),
-                      ),
-                    ],
+                  child: TableListPolicy(
+                    bckDisponiveis: bckDisponiveis,
+                    disponiveis: disponiveis,
+                    width: width,
+                    viewModel: viewModel,
                   ),
                 ),
               ),
