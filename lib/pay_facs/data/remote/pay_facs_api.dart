@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:viggo_core_frontend/base/base_api.dart';
 import 'package:viggo_core_frontend/network/bytes_response.dart';
 import 'package:viggo_core_frontend/network/network_exceptions.dart';
+import 'package:viggo_core_frontend/network/no_content_response.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/response_chave_pix.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/response_destinatario.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/response_extrato.dart';
@@ -23,6 +24,8 @@ class PayFacsApi extends BaseApi {
   static const CASHOUT_ENDPOINT = '/cashout_via_pix';
   static const PIX_ENDPOINT = '/list_chaves_pix';
   static const DESTINATARIO_ENDPOINT = '/consultar_alias_destinatario';
+  static const DELETAR_CHAVE_PIX = '/deletar_chave_pix';
+  static const ADD_CHAVE_PIX = '/add_chave_pix';
 
   Future<SaldoResponse> getSaldo(Map<String, dynamic> params) async {
     Map<String, dynamic> body = params['body'];
@@ -158,6 +161,41 @@ class PayFacsApi extends BaseApi {
       case 200:
         Map<String, dynamic> json = jsonDecode(response.body);
         return DestinatarioResponse.fromJson(json);
+      default:
+        throw NetworkException(
+          message: response.body,
+          isRetryAble: false,
+          code: response.statusCode,
+        );
+    }
+  }
+
+  Future<NoContentResponse> deletarChavePix(Map<String, dynamic> params) async {
+    Map<String, dynamic> body = params['body'];
+    String url = '$ENDPOINT$DELETAR_CHAVE_PIX';
+
+    var response = await post(url, body: body);
+    switch (response.statusCode) {
+      case 202:
+        return NoContentResponse(noContent: NoContentApiDto());
+      default:
+        throw NetworkException(
+          message: response.body,
+          isRetryAble: false,
+          code: response.statusCode,
+        );
+    }
+  }
+
+  Future<ChavePixGeradaResponse> addChavePix(Map<String, dynamic> params) async {
+    Map<String, dynamic> body = params['body'];
+    String url = '$ENDPOINT$ADD_CHAVE_PIX';
+
+    var response = await post(url, body: body);
+    switch (response.statusCode) {
+      case 202:
+        Map<String, dynamic> json = jsonDecode(response.body);
+        return ChavePixGeradaResponse.fromJson(json);
       default:
         throw NetworkException(
           message: response.body,

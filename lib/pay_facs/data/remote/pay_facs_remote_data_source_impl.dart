@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:either_dart/either.dart';
 import 'package:viggo_core_frontend/network/bytes_response.dart';
 import 'package:viggo_core_frontend/network/network_exceptions.dart';
+import 'package:viggo_core_frontend/network/no_content_response.dart';
 import 'package:viggo_core_frontend/network/safe_api_call.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/chave_pix_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/destinatario_api_dto.dart';
@@ -27,8 +28,7 @@ class PayFacsRemoteDataSourceImpl implements PayFacsRemoteDataSource {
     required Map<String, dynamic> body,
   }) {
     Map<String, dynamic> params = {'body': body};
-    return safeApiCall(api.cashoutViaPix, params: params)
-        .mapRight((right) => (right as BytesResponse).bytes);
+    return safeApiCall(api.cashoutViaPix, params: params).mapRight((right) => (right as BytesResponse).bytes);
   }
 
   @override
@@ -36,8 +36,7 @@ class PayFacsRemoteDataSourceImpl implements PayFacsRemoteDataSource {
     required Map<String, dynamic> body,
   }) {
     Map<String, dynamic> params = {'body': body};
-    return safeApiCall(api.getExtrato, params: params)
-        .mapRight((right) => (right as ExtratosResponse).extratos);
+    return safeApiCall(api.getExtrato, params: params).mapRight((right) => (right as ExtratosResponse).extratos);
   }
 
   @override
@@ -59,8 +58,7 @@ class PayFacsRemoteDataSourceImpl implements PayFacsRemoteDataSource {
     required Map<String, dynamic> body,
   }) {
     Map<String, dynamic> params = {'body': body};
-    return safeApiCall(api.getSaldo, params: params)
-        .mapRight((right) => (right as SaldoResponse).saldo);
+    return safeApiCall(api.getSaldo, params: params).mapRight((right) => (right as SaldoResponse).saldo);
   }
 
   @override
@@ -68,8 +66,7 @@ class PayFacsRemoteDataSourceImpl implements PayFacsRemoteDataSource {
     required Map<String, dynamic> body,
   }) {
     Map<String, dynamic> params = {'body': body};
-    return safeApiCall(api.getTransacoes, params: params)
-        .mapRight((right) => (right as TransacoesResponse).transacoes);
+    return safeApiCall(api.getTransacoes, params: params).mapRight((right) => (right as TransacoesResponse).transacoes);
   }
 
   @override
@@ -77,8 +74,7 @@ class PayFacsRemoteDataSourceImpl implements PayFacsRemoteDataSource {
     required Map<String, dynamic> body,
   }) {
     Map<String, dynamic> params = {'body': body};
-    return safeApiCall(api.getUltimaTransacao, params: params)
-        .mapRight((right) => (right as TransacaoResponse).transacao);
+    return safeApiCall(api.getUltimaTransacao, params: params).mapRight((right) => (right as TransacaoResponse).transacao);
   }
 
   @override
@@ -86,17 +82,26 @@ class PayFacsRemoteDataSourceImpl implements PayFacsRemoteDataSource {
     required Map<String, dynamic> body,
   }) {
     Map<String, dynamic> params = {'body': body};
-    return safeApiCall(api.listChavePix, params: params)
-        .mapRight((right) => (right as ChavesPixResponse).chavesPix);
+    return safeApiCall(api.listChavePix, params: params).mapRight((right) => (right as ChavesPixResponse).chavesPix);
   }
 
   @override
-  Future<Either<NetworkException, DestinatarioApiDto>>
-      consultarAliasDestinatario({
+  Future<Either<NetworkException, DestinatarioApiDto>> consultarAliasDestinatario({
     required Map<String, dynamic> body,
   }) {
     Map<String, dynamic> params = {'body': body};
-    return safeApiCall(api.consultarAliasDestinatario, params: params)
-        .mapRight((right) => (right as DestinatarioResponse).destinatario);
+    return safeApiCall(api.consultarAliasDestinatario, params: params).mapRight((right) => (right as DestinatarioResponse).destinatario);
+  }
+
+  @override
+  Future<Either<NetworkException, ChavePixGeradaApiDto>> addChavePix({required Map<String, dynamic> body}) {
+    Map<String, dynamic> params = {'body': body};
+    return safeApiCall(api.addChavePix, params: params).mapRight((right) => (right as ChavePixGeradaResponse).chavePix);
+  }
+
+  @override
+  Future<Either<NetworkException, NoContentApiDto>> deletarChavePix({required Map<String, dynamic> body}) {
+    Map<String, dynamic> params = {'body': body};
+    return safeApiCall(api.deletarChavePix, params: params).mapRight((right) => (right as NoContentResponse).noContent);
   }
 }

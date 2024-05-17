@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:either_dart/either.dart';
 import 'package:viggo_core_frontend/network/network_exceptions.dart';
+import 'package:viggo_core_frontend/network/no_content_response.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/chave_pix_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/destinatario_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/extrato_api_dto.dart';
@@ -51,7 +52,6 @@ class PayFacsRepositoryImpl implements PayFacsRepository {
   }) =>
       remoteDataSource.getUltimaTransacao(body: body);
 
-
   @override
   Future<Either<NetworkException, List<ChavePixApiDto>>> getListPix({
     required Map<String, dynamic> body,
@@ -63,4 +63,11 @@ class PayFacsRepositoryImpl implements PayFacsRepository {
     required Map<String, dynamic> body,
   }) =>
       remoteDataSource.consultarAliasDestinatario(body: body);
+
+  @override
+  Future<Either<NetworkException, ChavePixGeradaApiDto>> addChavePix({required Map<String, dynamic> body}) => remoteDataSource.addChavePix(body: body);
+
+  @override
+  Future<Either<NetworkException, NoContentApiDto>> deletarChavePix({required Map<String, dynamic> body}) =>
+      remoteDataSource.deletarChavePix(body: body);
 }

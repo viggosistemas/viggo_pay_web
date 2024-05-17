@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:either_dart/either.dart';
 import 'package:viggo_core_frontend/network/network_exceptions.dart';
+import 'package:viggo_core_frontend/network/no_content_response.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/chave_pix_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/destinatario_api_dto.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/extrato_api_dto.dart';
@@ -38,6 +39,14 @@ abstract class PayFacsRepository {
   });
 
   Future<Either<NetworkException, DestinatarioApiDto>> consultarAliasDestinatario({
+    required Map<String, dynamic> body,
+  });
+
+  Future<Either<NetworkException, NoContentApiDto>> deletarChavePix({
+    required Map<String, dynamic> body,
+  });
+
+  Future<Either<NetworkException, ChavePixGeradaApiDto>> addChavePix({
     required Map<String, dynamic> body,
   });
 }
