@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/card/list_view_mode_card.dart';
@@ -384,6 +386,37 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                                 const SizedBox(
                                   width: 10,
                                 ),
+                                OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () {
+                                      var selecteds = viewModel.selectedItemsList.where((e) => e.selected == true).toList();
+
+                                      if (selecteds.isEmpty || selecteds.length > 1) return;
+
+                                      if (selecteds.length == 1) {
+                                        final dataController = Get.put(DataController());
+                                        dataController.getData(selecteds[0].id);
+                                        Clipboard.setData(ClipboardData(text: dataController.data.value));
+                                        showInfoMessage(
+                                          context,
+                                          2,
+                                          Colors.green,
+                                          'Domain_id: ${selecteds[0].id} copiado com sucesso!',
+                                          'X',
+                                          () {},
+                                          Colors.white,
+                                        );
+                                      }
+                                    },
+                                    tooltip: 'Copiar domain_id',
+                                    icon: const Icon(
+                                      Icons.copy,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
                               ],
                             ),
                     ),
@@ -399,5 +432,15 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
         }
       },
     );
+  }
+}
+
+class DataController extends GetxController {
+  DataController();
+
+  var data = ''.obs;
+
+  void getData(newData) {
+    data.value = newData;
   }
 }
