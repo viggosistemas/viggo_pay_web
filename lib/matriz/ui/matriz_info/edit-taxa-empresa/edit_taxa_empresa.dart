@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_view_model.dart';
 
 class EditTaxaEmpresa extends StatefulWidget {
@@ -14,11 +16,35 @@ class EditTaxaEmpresa extends StatefulWidget {
 }
 
 class _EditTaxaEmpresaState extends State<EditTaxaEmpresa> {
+  var taxaFieldControll = MoneyMaskedTextController(
+    decimalSeparator: ',',
+    thousandSeparator: '.',
+    leftSymbol: 'R\$ ',
+  );
   bool isPercentualTaxa = false;
+
+  removerMaskValor(String value) {
+    return value
+        .replaceAll(taxaFieldControll.leftSymbol, '')
+        .replaceAll(taxaFieldControll.thousandSeparator, '')
+        .replaceAll(taxaFieldControll.decimalSeparator, '.');
+  }
 
   @override
   Widget build(BuildContext context) {
-    final taxaFieldControll = TextEditingController();
+    if (isPercentualTaxa) {
+      taxaFieldControll = MoneyMaskedTextController(
+        decimalSeparator: ',',
+        thousandSeparator: '.',
+        rightSymbol: ' %',
+      );
+    } else {
+      taxaFieldControll = MoneyMaskedTextController(
+        decimalSeparator: ',',
+        thousandSeparator: '.',
+        leftSymbol: 'R\$ ',
+      );
+    }
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(
@@ -32,21 +58,23 @@ class _EditTaxaEmpresaState extends State<EditTaxaEmpresa> {
                     child: StreamBuilder<String>(
                       stream: widget.viewModel.formConfig.taxa.field,
                       builder: (context, snapshot) {
-                        taxaFieldControll.value = taxaFieldControll.value.copyWith(text: snapshot.data);
+                        taxaFieldControll.updateValue(double.parse(snapshot.data ?? '0'));
                         return TextFormField(
-                            // onChanged: (value) {
-                            //   _txtAmountValue = value;
-                            // },
                             controller: taxaFieldControll,
                             decoration: InputDecoration(
                               labelText: 'Taxa',
-                              suffixText: isPercentualTaxa ? ' %' : '',
-                              prefixText: !isPercentualTaxa ? 'R\$ ' : '',
                               border: const OutlineInputBorder(),
                               errorText: snapshot.error?.toString(),
                             ),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: false,
+                              signed: false,
+                            ),
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             onChanged: (value) {
-                              widget.viewModel.formConfig.taxa.onValueChange(value);
+                              widget.viewModel.formConfig.taxa.onValueChange(removerMaskValor(value));
                             });
                       },
                     ),
