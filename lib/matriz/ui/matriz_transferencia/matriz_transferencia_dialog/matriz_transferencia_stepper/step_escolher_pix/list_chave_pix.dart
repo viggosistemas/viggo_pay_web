@@ -63,43 +63,55 @@ class _StepEscolherPixState extends State<StepEscolherPix> {
             ),
           ],
         ),
-        StreamBuilder<String>(
-            stream: viewModel.formStepSelectPix.contato.field,
-            builder: (context, contatoData) {
-              contatoTransferenciaControll.value = contatoTransferenciaControll.value.copyWith(text: contatoData.data);
-              return ListTile(
-                title: TextFormField(
-                  controller: contatoTransferenciaControll,
-                  decoration: InputDecoration(
-                    labelText: 'Nome, CPF/CNPJ ou Chave PIX',
-                    border: const OutlineInputBorder(),
-                    errorText: contatoData.error?.toString(),
-                  ),
-                  onChanged: (value) {
-                    viewModel.formStepSelectPix.contato.onValueChange(value);
-                  },
-                ),
-                trailing: OnHoverButton(
-                  child: IconButton(
-                    onPressed: () async {
-                      var result = await dialogs.addDialog(contatoTransferenciaControll.text);
-                      contatoTransferenciaControll.clear();
-                      if (result != null) {
-                        setState(() {
-                          widget.pixToSendList.add(result);
-                          viewModel.formStepSelectPix.pixSelect.onValueChange(jsonEncode(result));
-                        });
-                      }
-                    },
-                    tooltip: 'Adicionar nova chave Pix',
-                    icon: Icon(
-                      Icons.add_outlined,
-                      color: Theme.of(context).colorScheme.primary,
+        Column(
+          children: [
+            StreamBuilder<String>(
+                stream: viewModel.formStepSelectPix.contato.field,
+                builder: (context, contatoData) {
+                  contatoTransferenciaControll.value = contatoTransferenciaControll.value.copyWith(text: contatoData.data);
+                  return ListTile(
+                    title: TextFormField(
+                      controller: contatoTransferenciaControll,
+                      decoration: InputDecoration(
+                        labelText: 'Nome, CNPJ ou Chave PIX',
+                        border: const OutlineInputBorder(),
+                        errorText: contatoData.error?.toString(),
+                      ),
+                      onChanged: (value) {
+                        viewModel.formStepSelectPix.contato.onValueChange(value);
+                      },
                     ),
-                  ),
-                ),
-              );
-            }),
+                    trailing: OnHoverButton(
+                      child: IconButton(
+                        onPressed: () async {
+                          var result = await dialogs.addDialog(contatoTransferenciaControll.text);
+                          contatoTransferenciaControll.clear();
+                          if (result != null) {
+                            setState(() {
+                              widget.pixToSendList.add(result);
+                              viewModel.formStepSelectPix.pixSelect.onValueChange(jsonEncode(result));
+                            });
+                          }
+                        },
+                        tooltip: 'Adicionar nova chave Pix',
+                        icon: Icon(
+                          Icons.add_outlined,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+            Text(
+              "A transferência só pode ser feita para contas com o mesmo CPNJ da sua conta",
+              style: GoogleFonts.lato(
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Theme.of(context).colorScheme.primary,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          ],
+        ),
         Container(
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.symmetric(
