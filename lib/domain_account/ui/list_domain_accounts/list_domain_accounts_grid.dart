@@ -218,6 +218,21 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
       }
     }
 
+    copiarDomainId(entity) {
+      final dataController = Get.put(DataController());
+      dataController.getData(entity['id']);
+      Clipboard.setData(ClipboardData(text: dataController.data.value));
+      showInfoMessage(
+        context,
+        2,
+        Colors.green,
+        'Domain_id ${dataController.data.value} copiado com sucesso!',
+        'X',
+        () {},
+        Colors.white,
+      );
+    }
+
     return StreamBuilder<List<DomainAccountApiDto>>(
       stream: viewModel.domainAccounts,
       builder: (context, snapshot) {
@@ -265,6 +280,26 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                                         ),
                                         Icon(
                                           Icons.settings,
+                                          size: 18,
+                                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem<dynamic>(
+                                    value: {'action': copiarDomainId, 'type': 'EDIT'},
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Copiar domain_id",
+                                          style: TextStyle(
+                                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.copy,
                                           size: 18,
                                           color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                                         ),
@@ -401,7 +436,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                                           context,
                                           2,
                                           Colors.green,
-                                          'Domain_id: ${dataController.data.value} copiado com sucesso!',
+                                          'Domain_id ${dataController.data.value} copiado com sucesso!',
                                           'X',
                                           () {},
                                           Colors.white,

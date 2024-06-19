@@ -9,11 +9,16 @@ void showInfoMessage(
   Function() action,
   Color actionColor,
 ) {
+  var size = MediaQuery.of(context).size;
   ScaffoldMessenger.of(context).clearSnackBars();
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       behavior: SnackBarBehavior.floating,
-      margin: EdgeInsets.only(bottom: MediaQuery.of(context).size.height / 1.1, left: MediaQuery.of(context).size.width / 1.3, right: 20),
+      margin: size.width >= 600
+          ? size.width < 1520
+              ? EdgeInsets.only(bottom: size.height / 1.1, left: size.width / 1.5, right: 20)
+              : EdgeInsets.only(bottom: size.height / 1.1, left: size.width / 1.3, right: 20)
+          : const EdgeInsets.only(bottom: 0, left: 0, right: 0),
       duration: Duration(seconds: duration),
       backgroundColor: panelClass,
       content: Text(
