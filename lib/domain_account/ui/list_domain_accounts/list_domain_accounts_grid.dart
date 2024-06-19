@@ -401,7 +401,7 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                                           context,
                                           2,
                                           Colors.green,
-                                          'Domain_id: ${selecteds[0].id} copiado com sucesso!',
+                                          'Domain_id: ${dataController.data.value} copiado com sucesso!',
                                           'X',
                                           () {},
                                           Colors.white,
