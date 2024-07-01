@@ -32,6 +32,7 @@ class DomainAccountApiDto extends EntityDto {
   late bool? usoLiberado;
   late bool? temTaxa;
   late DomainAccountStatus status;
+  late int? numTentativasCadastro;
   bool selected = false;
 
   DomainAccountApiDto.fromJson(Map<String, dynamic> json) {
@@ -61,9 +62,7 @@ class DomainAccountApiDto extends EntityDto {
     ).toList();
 
     macMaquina = json['mac_maquina'];
-    aceitacaoTermoDh = json['aceitacao_termo_dh'] != null
-        ? DateConverter().deserializeDateTime(json['aceitacao_termo_dh'])
-        : null;
+    aceitacaoTermoDh = json['aceitacao_termo_dh'] != null ? DateConverter().deserializeDateTime(json['aceitacao_termo_dh']) : null;
     lat = json['lat'];
     lon = json['lon'];
     password = json['password'];
@@ -71,6 +70,7 @@ class DomainAccountApiDto extends EntityDto {
     usoLiberado = json['uso_liberado'];
     status = DomainAccountStatus.values.firstWhere((element) => element.name == json['status']);
     temTaxa = json['tem_taxa'];
+    numTentativasCadastro = json['num_tentativas_cadastro'];
   }
 
   @override
@@ -106,11 +106,11 @@ class DomainAccountApiDto extends EntityDto {
 
     if (macMaquina != null) result['mac_maquina'] = macMaquina;
     if (aceitacaoTermoDh != null) {
-      result['aceitacao_termo_dh'] =
-          DateConverter().serializeDateTime(aceitacaoTermoDh!);
+      result['aceitacao_termo_dh'] = DateConverter().serializeDateTime(aceitacaoTermoDh!);
     }
     if (lat != null) result['lat'] = lat;
     if (lon != null) result['lon'] = lon;
+    if (numTentativasCadastro != null) result['num_tentativas_cadastro'] = numTentativasCadastro;
     if (password != null) result['password'] = password;
     result['tem_chave_pix'] = temChavePix;
     result['uso_liberado'] = usoLiberado;
@@ -132,8 +132,7 @@ enum DomainAccountStatus {
 }
 
 extension DomainAccountStatusMapper on String {
-  DomainAccountStatus toDomainAccountStatus() =>
-      DomainAccountStatus.values.firstWhere(
+  DomainAccountStatus toDomainAccountStatus() => DomainAccountStatus.values.firstWhere(
         (element) => element.name == this,
         orElse: () => DomainAccountStatus.UNKNOWN,
       );

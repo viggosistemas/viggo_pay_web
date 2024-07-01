@@ -40,4 +40,9 @@ abstract class DomainAccountRemoteDataSource {
     required String de,
     required String ate,
   });
+
+  Future<Either<NetworkException, NoContentApiDto>> resetarNumTentativas({
+    required String id,
+    required Map<String, dynamic> body,
+  });
 }

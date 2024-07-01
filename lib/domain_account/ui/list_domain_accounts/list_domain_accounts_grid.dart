@@ -7,6 +7,7 @@ import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/card/list_view_mode_card.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/table/data_table_paginated.dart';
+import 'package:viggo_pay_admin/components/dialogs.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
@@ -446,6 +447,49 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                                     tooltip: 'Copiar domain_id',
                                     icon: const Icon(
                                       Icons.copy,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                OnHoverButton(
+                                  child: IconButton.outlined(
+                                    onPressed: () async {
+                                      var selecteds = viewModel.selectedItemsList.where((e) => e.selected == true).toList();
+
+                                      if (selecteds.isEmpty || selecteds.length > 1) return;
+
+                                      if (selecteds.length == 1 &&
+                                          selecteds[0].materaId != null &&
+                                          selecteds[0].numTentativasCadastro != null &&
+                                          selecteds[0].numTentativasCadastro! >= 2) {
+                                        var result = await Dialogs(context: context).showConfirmDialog({
+                                          'title_text': 'Restauração de tentativas',
+                                          'title_icon': Icons.restore_outlined,
+                                          'message':
+                                              'Confirma a restauração do número de tentativas atuais ${selecteds[0].numTentativasCadastro} desta conta para 0?'
+                                        });
+                                        if (result != null && result == true) {
+                                          var response = await viewModel.resetarTentativasMatera(selecteds[0].id);
+                                          if (response != null && response == true) {
+                                            showInfoMessage(
+                                              context,
+                                              2,
+                                              Colors.green,
+                                              'Tentativas resetadas com sucesso!',
+                                              'X',
+                                              () {},
+                                              Colors.white,
+                                            );
+                                            onReload();
+                                          }
+                                        }
+                                      }
+                                    },
+                                    tooltip: 'Resetar tentativas',
+                                    icon: const Icon(
+                                      Icons.restore_outlined,
                                     ),
                                   ),
                                 ),
