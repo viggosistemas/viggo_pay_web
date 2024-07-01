@@ -461,7 +461,6 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
                                       if (selecteds.isEmpty || selecteds.length > 1) return;
 
                                       if (selecteds.length == 1 &&
-                                          selecteds[0].materaId != null &&
                                           selecteds[0].numTentativasCadastro != null &&
                                           selecteds[0].numTentativasCadastro! >= 2) {
                                         var result = await Dialogs(context: context).showConfirmDialog({
