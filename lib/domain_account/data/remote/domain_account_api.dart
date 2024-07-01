@@ -14,6 +14,7 @@ class DomainAccountApi extends BaseApi {
   static const ENDPOINT = '/domain_accounts';
   static const PASSWORD_ENDPOINT = '/update_password';
   static const EXTRATO_ENDPOINT = '/extrato_pdf';
+  static const RESET_NUM_ENDPOINT = '/reset_num_tentativas';
 
   Future<DomainAccountsResponse> getEntitiesByParams(
     Map<String, dynamic> params,
@@ -135,6 +136,27 @@ class DomainAccountApi extends BaseApi {
     switch (response.statusCode) {
       case 200:
         return BytesResponse(bytes: response.bodyBytes);
+      default:
+        throw NetworkException(
+          message: response.body,
+          isRetryAble: false,
+          code: response.statusCode,
+        );
+    }
+  }
+
+  Future<NoContentResponse> resetarNumTentativas(
+    Map<String, dynamic> params,
+  ) async {
+    String id = params['id'];
+    Map<String, dynamic> body = params['body'];
+
+    String url = '$ENDPOINT/$id$RESET_NUM_ENDPOINT';
+
+    var response = await put(url, body: body);
+    switch (response.statusCode) {
+      case 204:
+        return NoContentResponse(noContent: NoContentApiDto());
       default:
         throw NetworkException(
           message: response.body,
