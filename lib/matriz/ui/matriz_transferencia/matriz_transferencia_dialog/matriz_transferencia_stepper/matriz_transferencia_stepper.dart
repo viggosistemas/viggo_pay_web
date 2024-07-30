@@ -190,7 +190,7 @@ class PageIndicator extends StatelessWidget {
           ),
           TabPageSelector(
             controller: tabController,
-            color: colorScheme.background,
+            color: colorScheme.onPrimary,
             selectedColor: colorScheme.primary,
           ),
           OnHoverButton(

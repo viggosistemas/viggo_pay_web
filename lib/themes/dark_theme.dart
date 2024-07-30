@@ -13,10 +13,10 @@ class DarkTheme {
   ThemeData get theme {
     return ThemeData.dark().copyWith(
       checkboxTheme: const CheckboxThemeData().copyWith(
-        checkColor: const MaterialStatePropertyAll(Colors.white),
-        // fillColor: const MaterialStatePropertyAll(Colors.black),
-        mouseCursor: const MaterialStatePropertyAll(MouseCursor.defer),
-        overlayColor: MaterialStatePropertyAll(Colors.grey.withOpacity(0.8)),
+        checkColor: const WidgetStatePropertyAll(Colors.white),
+        // fillColor: const WidgetStatePropertyAll(Colors.black),
+        mouseCursor: const WidgetStatePropertyAll(MouseCursor.defer),
+        overlayColor: WidgetStatePropertyAll(Colors.grey.withOpacity(0.8)),
         side: BorderSide(color: kColorSchemeDark.primary),
       ),
       disabledColor: Colors.grey,
@@ -63,10 +63,10 @@ class DarkTheme {
         elevation: 10,
       ),
       dataTableTheme: DataTableThemeData(
-        dataRowColor: MaterialStatePropertyAll(
+        dataRowColor: WidgetStatePropertyAll(
           Colors.white.withOpacity(0.8),
         ),
-        headingRowColor: MaterialStatePropertyAll(
+        headingRowColor: WidgetStatePropertyAll(
           Colors.white.withOpacity(0.8),
         ),
       ),
@@ -80,13 +80,13 @@ class DarkTheme {
       ),
       dropdownMenuTheme: DropdownMenuThemeData(
         menuStyle: MenuStyle(
-          backgroundColor: MaterialStatePropertyAll(
+          backgroundColor: WidgetStatePropertyAll(
             kColorSchemeDark.onPrimary,
           ),
-          surfaceTintColor: MaterialStatePropertyAll(
+          surfaceTintColor: WidgetStatePropertyAll(
             kColorSchemeDark.onPrimary,
           ),
-          shadowColor: MaterialStatePropertyAll(
+          shadowColor: WidgetStatePropertyAll(
             kColorSchemeDark.onPrimary,
           ),
         ),
@@ -102,7 +102,7 @@ class DarkTheme {
         iconTheme: const IconThemeData().copyWith(
           color: kColorSchemeDark.onPrimary,
         ),
-        color: MaterialStatePropertyAll(
+        color: WidgetStatePropertyAll(
           kColorSchemeDark.onPrimary,
         ),
       ),

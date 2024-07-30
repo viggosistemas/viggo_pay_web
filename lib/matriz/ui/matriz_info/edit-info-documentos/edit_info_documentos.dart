@@ -88,15 +88,15 @@ class EditInfoDocumentos extends StatelessWidget {
                                       }
                                     },
                                     style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                                         const RoundedRectangleBorder(
                                           borderRadius: BorderRadius.all(
                                             Radius.circular(10),
                                           ),
                                         ),
                                       ),
-                                      backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.primary),
-                                      minimumSize: MaterialStateProperty.all<Size>(
+                                      backgroundColor: WidgetStateProperty.all<Color>(Theme.of(context).colorScheme.primary),
+                                      minimumSize: WidgetStateProperty.all<Size>(
                                         const Size(50, 50),
                                       ),
                                     ),
@@ -178,15 +178,15 @@ class EditInfoDocumentos extends StatelessWidget {
                                       }
                                     },
                                     style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                                         const RoundedRectangleBorder(
                                           borderRadius: BorderRadius.all(
                                             Radius.circular(10),
                                           ),
                                         ),
                                       ),
-                                      backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.primary),
-                                      minimumSize: MaterialStateProperty.all<Size>(
+                                      backgroundColor: WidgetStateProperty.all<Color>(Theme.of(context).colorScheme.primary),
+                                      minimumSize: WidgetStateProperty.all<Size>(
                                         const Size(50, 50),
                                       ),
                                     ),

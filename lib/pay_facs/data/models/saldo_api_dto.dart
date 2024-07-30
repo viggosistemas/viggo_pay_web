@@ -3,11 +3,11 @@ class SaldoApiDto {
   late String date;
   late double real;
   late double available;
-  late double overdraft;
-  late double blocked;
-  late double autoInvest;
-  late double emergencyAidBalance;
-  late double availableBalanceForTransactions;
+  late double? overdraft;
+  late double? blocked;
+  late double? autoInvest;
+  late double? emergencyAidBalance;
+  late double? availableBalanceForTransactions;
   bool selected = false;
 
   SaldoApiDto.fromJson(Map<String, dynamic> json) {
@@ -28,11 +28,11 @@ class SaldoApiDto {
     result['date'] = date;
     result['real'] = real;
     result['available'] = available;
-    result['overdraft'] = overdraft;
-    result['blocked'] = blocked;
-    result['autoInvest'] = autoInvest;
-    result['emergencyAidBalance'] = emergencyAidBalance;
-    result['availableBalanceForTransactions'] = availableBalanceForTransactions;
+    if (overdraft != null) result['overdraft'] = overdraft;
+    if (blocked != null) result['blocked'] = blocked;
+    if (autoInvest != null) result['autoInvest'] = autoInvest;
+    if (emergencyAidBalance != null) result['emergencyAidBalance'] = emergencyAidBalance;
+    if (availableBalanceForTransactions != null) result['availableBalanceForTransactions'] = availableBalanceForTransactions;
 
     return result;
   }

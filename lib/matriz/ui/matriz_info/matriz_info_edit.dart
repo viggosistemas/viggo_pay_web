@@ -187,7 +187,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                             child: TextButton(
                                               onPressed: details.onStepCancel,
                                               style: ButtonStyle(
-                                                foregroundColor: MaterialStateColor.resolveWith(
+                                                foregroundColor: WidgetStateColor.resolveWith(
                                                     (states) => details.stepIndex == 0 ? Colors.grey : Theme.of(context).colorScheme.primary),
                                               ),
                                               child: const Text('Anterior'),
@@ -204,7 +204,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                                       child: TextButton(
                                                         onPressed: snapshot.data == true && snapshot.data != null ? details.onStepContinue : () {},
                                                         style: ButtonStyle(
-                                                          foregroundColor: MaterialStateColor.resolveWith((states) =>
+                                                          foregroundColor: WidgetStateColor.resolveWith((states) =>
                                                               snapshot.data == true && snapshot.data != null
                                                                   ? Theme.of(context).colorScheme.primary
                                                                   : Colors.grey),
@@ -221,7 +221,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                                           child: TextButton(
                                                             onPressed: snapshot.data == true ? details.onStepContinue : () {},
                                                             style: ButtonStyle(
-                                                              foregroundColor: MaterialStateColor.resolveWith(
+                                                              foregroundColor: WidgetStateColor.resolveWith(
                                                                 (states) =>
                                                                     snapshot.data == true ? Theme.of(context).colorScheme.primary : Colors.grey,
                                                               ),
@@ -238,7 +238,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                                             onPressed:
                                                                 snapshot.data == true && snapshot.data != null ? details.onStepContinue : () {},
                                                             style: ButtonStyle(
-                                                              foregroundColor: MaterialStateColor.resolveWith((states) =>
+                                                              foregroundColor: WidgetStateColor.resolveWith((states) =>
                                                                   snapshot.data == true && snapshot.data != null
                                                                       ? Theme.of(context).colorScheme.primary
                                                                       : Colors.grey),
@@ -267,7 +267,7 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                         ],
                                 );
                               },
-                              connectorColor: MaterialStateColor.resolveWith(
+                              connectorColor: WidgetStateColor.resolveWith(
                                 (states) => Theme.of(context).colorScheme.primary,
                               ),
                               stepIconBuilder: (stepIndex, stepState) {

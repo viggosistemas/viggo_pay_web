@@ -28,10 +28,10 @@ class LightTheme {
         elevation: 10,
       ),
       dataTableTheme: const DataTableThemeData(
-        dataRowColor: MaterialStatePropertyAll(
+        dataRowColor: WidgetStatePropertyAll(
           Colors.white,
         ),
-        headingRowColor: MaterialStatePropertyAll(
+        headingRowColor: WidgetStatePropertyAll(
           Colors.white,
         ),
       ),

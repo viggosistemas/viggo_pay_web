@@ -57,7 +57,7 @@ class _DomainAccountStepperState extends State<DomainAccountStepper> {
           });
         }
       },
-      connectorColor: MaterialStateColor.resolveWith(
+      connectorColor: WidgetStateColor.resolveWith(
         (states) => Theme.of(context).colorScheme.primary,
       ),
       stepIconBuilder: (stepIndex, stepState) {
@@ -95,7 +95,7 @@ class _DomainAccountStepperState extends State<DomainAccountStepper> {
                     child: TextButton(
                       onPressed: details.onStepCancel,
                       style: ButtonStyle(
-                        foregroundColor: MaterialStateColor.resolveWith(
+                        foregroundColor: WidgetStateColor.resolveWith(
                             (states) => details.stepIndex == 0
                                 ? Colors.grey
                                 : Theme.of(context).colorScheme.primary),
@@ -117,7 +117,7 @@ class _DomainAccountStepperState extends State<DomainAccountStepper> {
                                         ? details.onStepContinue
                                         : () {},
                                 style: ButtonStyle(
-                                  foregroundColor: MaterialStateColor.resolveWith(
+                                  foregroundColor: WidgetStateColor.resolveWith(
                                       (states) => snapshot.data == true &&
                                               snapshot.data != null
                                           ? Theme.of(context).colorScheme.primary
@@ -139,7 +139,7 @@ class _DomainAccountStepperState extends State<DomainAccountStepper> {
                                         : () {},
                                     style: ButtonStyle(
                                       foregroundColor:
-                                          MaterialStateColor.resolveWith(
+                                          WidgetStateColor.resolveWith(
                                               (states) => snapshot.data != null &&
                                                       snapshot.data!.isNotEmpty
                                                   ? Theme.of(context)
@@ -162,7 +162,7 @@ class _DomainAccountStepperState extends State<DomainAccountStepper> {
                                         : () {},
                                     style: ButtonStyle(
                                       foregroundColor:
-                                          MaterialStateColor.resolveWith(
+                                          WidgetStateColor.resolveWith(
                                               (states) => snapshot.data == true &&
                                                       snapshot.data != null
                                                   ? Theme.of(context)
@@ -189,7 +189,7 @@ class _DomainAccountStepperState extends State<DomainAccountStepper> {
                     child: TextButton(
                       onPressed: () => !widget.readOnly ? widget.onSubmit() : {},
                       style: ButtonStyle(
-                        foregroundColor: MaterialStateColor.resolveWith(
+                        foregroundColor: WidgetStateColor.resolveWith(
                             (states) => !widget.readOnly
                                 ? Theme.of(context).colorScheme.primary
                                 : Colors.grey),
