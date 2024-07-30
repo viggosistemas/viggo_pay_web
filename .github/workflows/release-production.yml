@@ -7,6 +7,10 @@ name: release-production
 #       - develop
 on:
   workflow_dispatch:
+    inputs:
+      versao:
+        description: 'Versão da imagem de produção'
+        required: true
 
 jobs:
   # Push image to GitHub Packages.
