@@ -1,5 +1,5 @@
 # GITHUB ACTIONS
-name: release-homolog
+name: release-production
 
 # on:
 #   push:
@@ -81,10 +81,10 @@ jobs:
           echo ${{ secrets.DEPLOY_TOKEN }} | docker login ghcr.io -u $ --password-stdin
           echo "${{ secrets.NGINX_DEFAULT_CONF }}" > "$(pwd)/nginx.default.conf"
 
-      - name: Release homolog
+      - name: Release production
         run: docker build --build-arg DIST_PATH=$build --build-arg NGINX_FILE=./nginx.default.conf --tag ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA --tag ghcr.io/$GITHUB_REPOSITORY:${{ github.event.inputs.versao }} .
 
-      - name: Publish release homolog
+      - name: Publish release production
         run: |
           docker push ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
           docker push ghcr.io/$GITHUB_REPOSITORY:${{ github.event.inputs.versao }}
