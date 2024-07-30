@@ -1,0 +1,90 @@
+# GITHUB ACTIONS
+name: release-homolog
+
+# on:
+#   push:
+#     branches:
+#       - develop
+on:
+  workflow_dispatch:
+
+jobs:
+  # Push image to GitHub Packages.
+  # See also https://docs.docker.com/docker-hub/builds/
+  build-project:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.3'
+
+      - name: Flutter check doctor
+        run: flutter doctor -v
+
+      - name: Flutter change channel master
+        run: flutter channel master
+
+      - name: Flutter upgrade
+        run: flutter upgrade
+
+      - name: Flutter enable to web
+        run: flutter config --enable-web
+
+      - name: Flutter clean
+        run: flutter clean
+
+      - name: Install dependencies
+        run: flutter pub get
+      
+      # - name: Analyze
+      #   run: flutter analyze
+      
+      # - name: Format code
+      #   run: dart format --fix .
+      
+      - name: Build
+        run: flutter build web
+
+      - name: Artifacts upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build/web
+          retention-days: 1
+
+  publish-image-docker:
+    runs-on: ubuntu-latest
+    container: docker:stable
+    needs: [build-project]
+
+    services:
+      docker:dind:
+        image: docker:dind
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Download artifact build
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+
+      - name: Log in to registry
+        # This is where you will update the personal access token to GITHUB_TOKEN
+        run: |
+          echo ${{ secrets.DEPLOY_TOKEN }} | docker login ghcr.io -u $ --password-stdin
+          echo "${{ secrets.NGINX_DEFAULT_CONF }}" > "$(pwd)/nginx.default.conf"
+
+      - name: Release homolog
+        run: docker build --build-arg DIST_PATH=$build --build-arg NGINX_FILE=./nginx.default.conf --tag ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA --tag ghcr.io/$GITHUB_REPOSITORY:${{ github.event.inputs.versao }} .
+
+      - name: Publish release homolog
+        run: |
+          docker push ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
+          docker push ghcr.io/$GITHUB_REPOSITORY:${{ github.event.inputs.versao }}

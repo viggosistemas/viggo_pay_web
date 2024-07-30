@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_items/alterar_senha/form_fields.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/pop_menu/ui/pop_menu_view_model.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
@@ -32,6 +33,7 @@ class AlterarSenha {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,
@@ -75,6 +77,7 @@ class AlterarSenha {
                 ],
               ),
               content: SizedBox(
+                width: 300,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -93,48 +96,51 @@ class AlterarSenha {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        size: 20,
-                      ),
-                      label: const Text('Cancelar'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
-                      ),
-                    ),
-                    Directionality(
-                      textDirection: TextDirection.rtl,
+                    OnHoverButton(
                       child: TextButton.icon(
                         icon: const Icon(
-                          Icons.save_alt_outlined,
+                          Icons.cancel_outlined,
                           size: 20,
                         ),
-                        label: const Text('Salvar'),
+                        label: const Text('Cancelar'),
                         onPressed: () {
-                          var formFields = viewModel.formSenha.getValues();
-                          var novaSenha = formFields?['novaSenha'] ?? '';
-                          var confirmarSenha =
-                              formFields?['confirmarSenha'] ?? '';
-                          if (novaSenha == confirmarSenha) {
-                            onSubmit();
-                          } else {
-                            showInfoMessage(
-                              context,
-                              2,
-                              Colors.red,
-                              'Senhas não coincidem!',
-                              'X',
-                              () {},
-                              Colors.white,
-                            );
-                          }
+                          Navigator.of(context).pop();
                         },
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.green,
+                          foregroundColor: Colors.red,
+                        ),
+                      ),
+                    ),
+                    OnHoverButton(
+                      child: Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: TextButton.icon(
+                          icon: const Icon(
+                            Icons.save_alt_outlined,
+                            size: 20,
+                          ),
+                          label: const Text('Salvar'),
+                          onPressed: () {
+                            var formFields = viewModel.formSenha.getValues();
+                            var novaSenha = formFields?['novaSenha'] ?? '';
+                            var confirmarSenha = formFields?['confirmarSenha'] ?? '';
+                            if (novaSenha == confirmarSenha) {
+                              onSubmit();
+                            } else {
+                              showInfoMessage(
+                                context,
+                                2,
+                                Colors.red,
+                                'Senhas não coincidem!',
+                                'X',
+                                () {},
+                                Colors.white,
+                              );
+                            }
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.green,
+                          ),
                         ),
                       ),
                     ),

@@ -7,6 +7,7 @@ import 'package:viggo_core_frontend/preferences/domain/usecases/update_selected_
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/consultar_alias_destinatario_use_case.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/list_chave_pix_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/pix_to_send_data_source.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/pix_to_send_repository_impl.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/remote/pix_to_send_api.dart';
@@ -86,6 +87,7 @@ class PixToSendLocator {
 
     locator.registerFactory(
       () => EditPixToSendViewModel(
+        listChavePix: locator.get<ListChavePixDomainAccountUseCase>(),
         getDomainFromSettings: locator.get<GetDomainFromSettingsUseCase>(),
         updatePixToSend: locator.get<UpdatePixToSendUseCase>(),
         createPixToSend: locator.get<CreatePixToSendUseCase>(),

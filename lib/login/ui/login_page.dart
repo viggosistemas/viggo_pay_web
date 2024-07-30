@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/login/ui/login_form.dart';
-import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
+import 'package:viggo_pay_admin/themes/theme_view_model.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.changeTheme});
-
-  final void Function(ThemeMode themeMode) changeTheme;
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  late SharedPreferences sharedPrefs = locator.get<SharedPreferences>();
+  ThemeViewModel themeViewModel = locator.get<ThemeViewModel>();
+
   var iconMode = Icons.dark_mode_outlined;
   dynamic colorIconMode = Colors.white;
   bool isActioned = false;
@@ -39,55 +37,80 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
 
-    return ChangeNotifierProvider(
-      create: (_) => locator.get<LoginViewModel>(),
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          toolbarHeight: 70,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/logo.png',
-                width: 80,
-                height: 80,
-              ),
-            ],
-          ),
-          shadowColor: Colors.black,
-          elevation: 8,
-        ),
-        body: Stack(
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        toolbarHeight: 70,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/login-bg.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            SizedBox(
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  LoginForm(onSucess: navigateWorkspace),
-                  const SizedBox(height: 10),
-                  Image.asset(
-                    'assets/images/logo-viggo.png',
-                    width: 80,
-                    height: 80,
-                  ),
-                ],
-              ),
+            Image.asset(
+              themeViewModel.logoAsset(Theme.of(context).brightness),
+              width: 80,
+              height: 80,
             ),
           ],
         ),
+        actions: [
+          OnHoverButton(
+            child: IconButton(
+              style: IconButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                  isActioned = true;
+                  if (isDarkMode) {
+                    iconMode = Icons.dark_mode_outlined;
+                    colorIconMode = Colors.white;
+                    themeViewModel.changeTheme(ThemeMode.light.name);
+                  } else {
+                    iconMode = Icons.light_mode_outlined;
+                    colorIconMode = Colors.yellow;
+                    themeViewModel.changeTheme(ThemeMode.dark.name);
+                  }
+                });
+              },
+              icon: Icon(
+                iconMode,
+                color: colorIconMode,
+              ),
+            ),
+          ),
+        ],
+        shadowColor: Colors.black,
+        elevation: 8,
+      ),
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(themeViewModel.backgroundAsset(Theme.of(context).brightness)),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          FractionallySizedBox(
+            widthFactor: 1,
+            heightFactor: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                LoginForm(onSucess: navigateWorkspace),
+                const SizedBox(height: 10),
+                Image.asset(
+                  'assets/images/logo-viggo.png',
+                  width: 80,
+                  height: 80,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

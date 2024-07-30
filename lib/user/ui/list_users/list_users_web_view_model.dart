@@ -68,14 +68,14 @@ class ListUserWebViewModel extends BaseViewModel {
 
     setLoading();
 
-    Map<String, String>? formFields = form.getValues();
+    // Map<String, String>? formFields = form.getValues();
 
-    if (formFields != null) {
-      for (var e in formFields.keys) {
-        var value = formFields[e];
-        value != null ? filters[e] = value : value;
-      }
-    }
+    // if (formFields != null) {
+    //   for (var e in formFields.keys) {
+    //     var value = formFields[e];
+    //     value != null ? filters[e] = value : value;
+    //   }
+    // }
     String? domainJson = sharedPrefs.getString(CoreUserPreferences.DOMAIN);
     DomainApiDto domain = DomainApiDto.fromJson(jsonDecode(domainJson!));
 

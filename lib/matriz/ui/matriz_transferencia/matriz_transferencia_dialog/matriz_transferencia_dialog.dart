@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_dialog/matriz_transferencia_stepper/matriz_transferencia_stepper.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/saldo_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
+import 'package:viggo_pay_admin/utils/container.dart';
 
 class MatrizTransferenciaDialog {
   MatrizTransferenciaDialog({required this.context});
@@ -12,8 +14,11 @@ class MatrizTransferenciaDialog {
   final viewModel = locator.get<MatrizTransferenciaViewModel>();
 
   Future transferenciaDialog({
+    required String? materaId,
     required SaldoApiDto saldo,
     required List<PixToSendApiDto> pixToSendList,
+    required BoxConstraints constraints,
+    required Map<String, dynamic>? taxa,
   }) {
     return showDialog(
       context: context,
@@ -43,10 +48,7 @@ class MatrizTransferenciaDialog {
                               children: [
                                 Text(
                                   'Transferindo saldo',
-                                  style: Theme.of(ctx)
-                                      .textTheme
-                                      .titleLarge!
-                                      .copyWith(
+                                  style: Theme.of(ctx).textTheme.titleLarge!.copyWith(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -57,30 +59,37 @@ class MatrizTransferenciaDialog {
                                 const Icon(Icons.attach_money_outlined),
                               ],
                             ),
-                            IconButton(
-                              onPressed: () => Navigator.pop(context),
-                              icon: const Icon(
-                                Icons.close,
-                                color: Colors.red,
+                            OnHoverButton(
+                              child: IconButton(
+                                onPressed: () => Navigator.pop(context),
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.red,
+                                ),
                               ),
                             ),
                           ],
                         ),
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.max,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.3,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.6,
+                                  width: ContainerClass().maxWidthContainer(
+                                    constraints,
+                                    context,
+                                    true,
+                                    percentWidth: 0.3,
+                                  ),
+                                  height: 500,
                                   child: MatrizTransferenciaStepper(
+                                    materaId: materaId,
                                     saldo: saldo,
                                     pixToSendList: pixToSendList,
+                                    taxa: taxa,
                                   ),
                                 ),
                               ],

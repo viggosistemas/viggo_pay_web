@@ -8,7 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_core_frontend/util/constants.dart';
 import 'package:viggo_pay_admin/components/dialogs.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
+import 'package:viggo_pay_admin/utils/format_mask.dart';
 
 class DataSource extends DataTableSource {
   late dynamic viewModel;
@@ -35,7 +37,7 @@ class DataSource extends DataTableSource {
     notifyListeners();
   }
 
-  DataCell cellFor(dynamic data) {
+  DataCell cellFor(dynamic data, String? key) {
     String value;
     if (data is DateTime) {
       value =
@@ -50,11 +52,20 @@ class DataSource extends DataTableSource {
       } else {
         if (data is String) {
           value = data.toString();
+          if (key == 'client_tax_identifier_tax_id') {
+            value = FormatMask().formated(value);
+          }
         } else if (data is bool) {
           value = data == true ? 'Sim' : 'Não';
-        } else {
+        } else if(data is Enum) {
+          value = data.name.replaceAll('_', ' ');
+        }else {
           var dataString = jsonEncode(data);
           value = jsonDecode(dataString)[labelInclude[counter]].toString();
+          if (labelInclude[counter] == 'cpf_cnpj') {
+            value = FormatMask().formated(
+                jsonDecode(dataString)[labelInclude[counter]].toString());
+          }
           counter++;
           if (labelInclude.length == counter) {
             counter = 0;
@@ -73,14 +84,13 @@ class DataSource extends DataTableSource {
     return DataRow(
       cells: <DataCell>[
         for (var key in fieldsData)
-          cellFor(
-            key.split('.').length == 1
-                ? row[key]
-                : row[key.split('.')[0]].toJson()[key.split('.')[1]],
-          )
+          key.split('.').length == 1
+              ? cellFor(row[key], key)
+              : cellFor(
+                  row[key.split('.')[0]].toJson()[key.split('.')[1]], null)
       ],
       selected: row['selected'],
-      color: MaterialStateColor.resolveWith(
+      color: WidgetStateColor.resolveWith(
         (states) =>
             row['active'] == false ? Colors.red.withOpacity(0.7) : Colors.white,
       ),
@@ -236,23 +246,29 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
           v['backendUrl']!.contains(rota['url']) &&
           v['method']!.contains(rota['method']));
       if (itemIndex >= 0 && actions[itemIndex]['method'] == 'POST') {
-        actionsBtn.add(IconButton.outlined(
-          onPressed: () => onAddEntity(),
-          tooltip: 'Adicionar',
-          icon: const Icon(
-            Icons.add,
+        actionsBtn.add(
+          OnHoverButton(
+            child: IconButton.outlined(
+              onPressed: () => onAddEntity(),
+              tooltip: 'Adicionar',
+              icon: const Icon(
+                Icons.add,
+              ),
+            ),
           ),
-        ));
+        );
         actionsBtn.add(const SizedBox(
           width: 10,
         ));
       } else if (itemIndex >= 0 && actions[itemIndex]['method'] == 'PUT') {
         actionsBtn.add(
-          IconButton.outlined(
-            onPressed: () => onEditEntity(),
-            tooltip: 'Editar',
-            icon: const Icon(
-              Icons.edit,
+          OnHoverButton(
+            child: IconButton.outlined(
+              onPressed: () => onEditEntity(),
+              tooltip: 'Editar',
+              icon: const Icon(
+                Icons.edit,
+              ),
             ),
           ),
         );
@@ -260,24 +276,32 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
           width: 10,
         ));
       } else if (itemIndex >= 0 && actions[itemIndex]['method'] == 'DELETE') {
-        actionsBtn.add(IconButton.outlined(
-          onPressed: () => onChangeActive(),
-          tooltip: 'Alterar status',
-          icon: const Icon(
-            Icons.change_circle,
+        actionsBtn.add(
+          OnHoverButton(
+            child: IconButton.outlined(
+              onPressed: () => onChangeActive(),
+              tooltip: 'Alterar status',
+              icon: const Icon(
+                Icons.change_circle,
+              ),
+            ),
           ),
-        ));
+        );
         actionsBtn.add(const SizedBox(
           width: 10,
         ));
       } else if (itemIndex >= 0 && actions[itemIndex]['method'] == 'GET') {
-        actionsBtn.add(IconButton.outlined(
-          onPressed: () => onSeeInfoData(),
-          tooltip: 'Visualizar informações',
-          icon: const Icon(
-            Icons.remove_red_eye_outlined,
+        actionsBtn.add(
+          OnHoverButton(
+            child: IconButton.outlined(
+              onPressed: () => onSeeInfoData(),
+              tooltip: 'Visualizar informações',
+              icon: const Icon(
+                Icons.remove_red_eye_outlined,
+              ),
+            ),
           ),
-        ));
+        );
         actionsBtn.add(const SizedBox(
           width: 10,
         ));
@@ -303,13 +327,17 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
       );
       actionsDefault.addAll(widget.actions);
       if (widget.addReloadButton) {
-        actionsDefault.add(IconButton.outlined(
-          onPressed: () => onReloadData(),
-          tooltip: 'Recarregar',
-          icon: const Icon(
-            Icons.replay,
+        actionsDefault.add(
+          OnHoverButton(
+            child: IconButton.outlined(
+              onPressed: () => onReloadData(),
+              tooltip: 'Recarregar',
+              icon: const Icon(
+                Icons.replay,
+              ),
+            ),
           ),
-        ));
+        );
       }
       widget.actions = actionsDefault;
     }
@@ -452,6 +480,7 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
       // sortColumnIndex: _columnIndex,
       // sortAscending: _columnAscending,
       availableRowsPerPage: const [5, 10, 25, 50],
+      showEmptyRows: false,
       onRowsPerPageChanged: (value) {
         setState(() {
           _pageSize = value!;
@@ -463,7 +492,7 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
           // });
         });
       },
-      headingRowColor: MaterialStateColor.resolveWith(
+      headingRowColor: WidgetStateColor.resolveWith(
         (states) => Colors.grey.withOpacity(0.7),
       ),
       header: Row(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/funcionario/data/models/funcionario_api_dto.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario_stepper/edit_contato_form/edit_contato_form.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario_stepper/edit_endereco_form/edit_endereco_form.dart';
@@ -34,7 +35,7 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
 
   initFormEndereco() {
     var formEnderecoValues = widget.viewModel.formEndereco.getValues();
-    if (formEnderecoValues == null) {
+    if (widget.entity == null && formEnderecoValues == null) {
       return ParceiroEndereco.fromJson({
         'logradouro': '',
         'numero': '',
@@ -50,7 +51,7 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
         return widget.entity!.parceiro!.enderecos[0];
       } else {
         return ParceiroEndereco.fromJson({
-          'logradouro': formEnderecoValues['logradouro'],
+          'logradouro': formEnderecoValues!['logradouro'],
           'numero': formEnderecoValues['numero'],
           'complemento': formEnderecoValues['complemento'],
           'bairro': formEnderecoValues['bairro'],
@@ -72,29 +73,33 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
 
   backStep(int index, Function()? onCancel) {
     if (index == 0) {
-      return TextButton.icon(
-        icon: const Icon(
-          Icons.cancel_outlined,
-          size: 20,
-        ),
-        label: const Text('Cancelar'),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-        style: TextButton.styleFrom(
-          foregroundColor: Colors.red,
+      return OnHoverButton(
+        child: TextButton.icon(
+          icon: const Icon(
+            Icons.cancel_outlined,
+            size: 20,
+          ),
+          label: const Text('Cancelar'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.red,
+          ),
         ),
       );
     } else {
-      return TextButton.icon(
-        icon: const Icon(
-          Icons.arrow_back_outlined,
-          size: 20,
-        ),
-        label: const Text('Anterior'),
-        onPressed: onCancel,
-        style: TextButton.styleFrom(
-          foregroundColor: Colors.red,
+      return OnHoverButton(
+        child: TextButton.icon(
+          icon: const Icon(
+            Icons.arrow_back_outlined,
+            size: 20,
+          ),
+          label: const Text('Anterior'),
+          onPressed: onCancel,
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.red,
+          ),
         ),
       );
     }
@@ -102,17 +107,19 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
 
   nextStep(int index, Function()? onContinue) {
     if (index == 2) {
-      return Directionality(
-        textDirection: TextDirection.rtl,
-        child: TextButton.icon(
-          icon: const Icon(
-            Icons.save_alt_outlined,
-            size: 20,
-          ),
-          label: const Text('Salvar'),
-          onPressed: () => widget.onSubmit(),
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.green,
+      return OnHoverButton(
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: TextButton.icon(
+            icon: const Icon(
+              Icons.save_alt_outlined,
+              size: 20,
+            ),
+            label: const Text('Salvar'),
+            onPressed: () => widget.onSubmit(),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.green,
+            ),
           ),
         ),
       );
@@ -121,23 +128,26 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
         return StreamBuilder<bool>(
             stream: widget.viewModel.formDados.isValid,
             builder: (context, snapshot) {
-              return Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextButton.icon(
-                  onPressed: snapshot.data == true && snapshot.data != null
-                      ? onContinue
-                      : () {},
-                  style: ButtonStyle(
-                    foregroundColor: MaterialStateColor.resolveWith((states) =>
-                        snapshot.data == true && snapshot.data != null
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey),
+              return OnHoverButton(
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: TextButton.icon(
+                    onPressed: snapshot.data == true && snapshot.data != null
+                        ? onContinue
+                        : () {},
+                    style: ButtonStyle(
+                      foregroundColor: WidgetStateColor.resolveWith(
+                          (states) =>
+                              snapshot.data == true && snapshot.data != null
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Colors.grey),
+                    ),
+                    icon: const Icon(
+                      Icons.arrow_back_outlined,
+                      size: 20,
+                    ),
+                    label: const Text('Próximo'),
                   ),
-                  icon: const Icon(
-                    Icons.arrow_back_outlined,
-                    size: 20,
-                  ),
-                  label: const Text('Próximo'),
                 ),
               );
             });
@@ -145,23 +155,26 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
         return StreamBuilder<bool>(
             stream: widget.viewModel.formEndereco.isValid,
             builder: (context, snapshot) {
-              return Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextButton.icon(
-                  onPressed: snapshot.data == true && snapshot.data != null
-                      ? onContinue
-                      : () {},
-                  style: ButtonStyle(
-                    foregroundColor: MaterialStateColor.resolveWith((states) =>
-                        snapshot.data == true && snapshot.data != null
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey),
+              return OnHoverButton(
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: TextButton.icon(
+                    onPressed: snapshot.data == true && snapshot.data != null
+                        ? onContinue
+                        : () {},
+                    style: ButtonStyle(
+                      foregroundColor: WidgetStateColor.resolveWith(
+                          (states) =>
+                              snapshot.data == true && snapshot.data != null
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Colors.grey),
+                    ),
+                    icon: const Icon(
+                      Icons.arrow_back_outlined,
+                      size: 20,
+                    ),
+                    label: const Text('Próximo'),
                   ),
-                  icon: const Icon(
-                    Icons.arrow_back_outlined,
-                    size: 20,
-                  ),
-                  label: const Text('Próximo'),
                 ),
               );
             });
@@ -174,96 +187,103 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
     return SizedBox(
       width: 700,
       height: 600,
-      child: Stepper(
-        currentStep: _index,
-        type: StepperType.horizontal,
-        onStepCancel: () {
-          if (_index != 0) {
-            setState(() {
-              _index -= 1;
-            });
-          }
-        },
-        onStepContinue: () {
-          if (_index != 2) {
-            setState(() {
-              _index += 1;
-            });
-          }
-        },
-        connectorColor: MaterialStateColor.resolveWith(
-          (states) => Theme.of(context).colorScheme.primary,
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: Theme.of(context).colorScheme,
+          hoverColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+          canvasColor: Colors.white,
         ),
-        // onStepTapped: (int index) {
-        //   setState(() {
-        //     _index = index;
-        //   });
-        // },
-        stepIconBuilder: (stepIndex, stepState) {
-          if (stepIndex == 0) {
-            return Icon(
-              Icons.person_outline,
-              color: Theme.of(context).colorScheme.onPrimary,
-            );
-          }
-          if (stepIndex == 1) {
-            return Icon(
-              Icons.location_on_outlined,
-              color: Theme.of(context).colorScheme.onPrimary,
-            );
-          }
-          if (stepIndex == 2) {
-            return Icon(
-              Icons.phone_outlined,
-              color: Theme.of(context).colorScheme.onPrimary,
-            );
-          }
-          return const Icon(Icons.edit_outlined);
-        },
-        controlsBuilder: (context, details) {
-          return Padding(
-            padding: const EdgeInsets.only(
-              top: 20,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                backStep(details.stepIndex, details.onStepCancel),
-                nextStep(details.stepIndex, details.onStepContinue)
-              ],
-            ),
-          );
-        },
-        steps: [
-          Step(
-            isActive: _index == 0,
-            title: const Visibility(child: Text('')),
-            label: const Text('Dados'),
-            content: EditFuncionarioForm(
-              viewModel: widget.viewModel,
-              entity: widget.entity,
-            ),
+        child: Stepper(
+          currentStep: _index,
+          type: StepperType.horizontal,
+          onStepCancel: () {
+            if (_index != 0) {
+              setState(() {
+                _index -= 1;
+              });
+            }
+          },
+          onStepContinue: () {
+            if (_index != 2) {
+              setState(() {
+                _index += 1;
+              });
+            }
+          },
+          connectorColor: WidgetStateColor.resolveWith(
+            (states) => Theme.of(context).colorScheme.primary,
           ),
-          Step(
-            isActive: _index == 1,
-            label: const Text('Endereço'),
-            title: const Visibility(child: Text('')),
-            content: EditEnderecoForm(
-              viewModel: widget.viewModel,
-              entity: initFormEndereco(),
+          // onStepTapped: (int index) {
+          //   setState(() {
+          //     _index = index;
+          //   });
+          // },
+          stepIconBuilder: (stepIndex, stepState) {
+            if (stepIndex == 0) {
+              return Icon(
+                Icons.person_outline,
+                color: Theme.of(context).colorScheme.onPrimary,
+              );
+            }
+            if (stepIndex == 1) {
+              return Icon(
+                Icons.location_on_outlined,
+                color: Theme.of(context).colorScheme.onPrimary,
+              );
+            }
+            if (stepIndex == 2) {
+              return Icon(
+                Icons.phone_outlined,
+                color: Theme.of(context).colorScheme.onPrimary,
+              );
+            }
+            return const Icon(Icons.edit_outlined);
+          },
+          controlsBuilder: (context, details) {
+            return Padding(
+              padding: const EdgeInsets.only(
+                top: 20,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  backStep(details.stepIndex, details.onStepCancel),
+                  nextStep(details.stepIndex, details.onStepContinue)
+                ],
+              ),
+            );
+          },
+          steps: [
+            Step(
+              isActive: _index == 0,
+              title: const Visibility(child: Text('')),
+              label: const Text('Dados'),
+              content: EditFuncionarioForm(
+                viewModel: widget.viewModel,
+                entity: widget.entity,
+              ),
             ),
-          ),
-          Step(
-            isActive: _index == 2,
-            label: const Text('Contatos'),
-            title: const Visibility(child: Text('')),
-            content: EditContatoForm(
-              viewModel: widget.viewModel,
-              entity: initFormContato(),
+            Step(
+              isActive: _index == 1,
+              label: const Text('Endereço'),
+              title: const Visibility(child: Text('')),
+              content: EditEnderecoForm(
+                viewModel: widget.viewModel,
+                entity: initFormEndereco(),
+              ),
             ),
-          ),
-        ],
+            Step(
+              isActive: _index == 2,
+              label: const Text('Contatos'),
+              title: const Visibility(child: Text('')),
+              content: EditContatoForm(
+                viewModel: widget.viewModel,
+                entity: initFormContato(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

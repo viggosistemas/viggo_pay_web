@@ -32,18 +32,19 @@ class ListApplicationWebViewModel extends BaseViewModel {
     required this.getSelectedItems,
   });
 
-  final StreamController<List<ApplicationApiDto>> applicationsController =
-      StreamController.broadcast();
-  Stream<List<ApplicationApiDto>> get applications =>
-      applicationsController.stream;
+  final StreamController<List<ApplicationApiDto>> applicationsController = StreamController.broadcast();
+  Stream<List<ApplicationApiDto>> get applications => applicationsController.stream;
 
   List<ApplicationApiDto> _items = List.empty(growable: true);
+  List<ApplicationApiDto> selectedItems = List.empty(growable: true);
 
   List<ApplicationApiDto> _mapSelected(
     List<ApplicationApiDto> applications,
     List<String> selected,
-  ) =>
-      applications..forEach((e) => e.selected = selected.contains(e.id));
+  ) {
+    selectedItems = applications..forEach((e) => e.selected = selected.contains(e.id));
+    return selectedItems;
+  }
 
   void _updateApplicationsList(List<ApplicationApiDto> items) {
     if (!applicationsController.isClosed) {
@@ -66,9 +67,7 @@ class ListApplicationWebViewModel extends BaseViewModel {
       }
     }
 
-    var listOptions = ListOptions.values
-        .where((element) => element.name == filters['list_options'])
-        .first;
+    var listOptions = ListOptions.values.where((element) => element.name == filters['list_options']).first;
 
     var result = await getApplications.invoke(
       filters: filters,

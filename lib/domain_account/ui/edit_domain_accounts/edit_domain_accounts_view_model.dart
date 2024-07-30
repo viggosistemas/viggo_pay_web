@@ -18,8 +18,7 @@ import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/config_do
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/domain_accounts_stepper/edit_domain_account_address/edit_form_fields.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/domain_accounts_stepper/edit_domain_account_info/edit_form_fields.dart';
 
-class EditDomainAccountViewModel extends BaseViewModel
-    with RegisterDomainAccountDocumentsTransformer {
+class EditDomainAccountViewModel extends BaseViewModel with RegisterDomainAccountDocumentsTransformer {
   late String estadoAddress = '';
 
   final UpdateDomainAccountUseCase updateDomainAccount;
@@ -32,11 +31,9 @@ class EditDomainAccountViewModel extends BaseViewModel
   final EditInfoFormFields form = EditInfoFormFields();
   final EditAddressFormFields formAddress = EditAddressFormFields();
 
-  final ConfigDomainAccountFormFields formConfig =
-      ConfigDomainAccountFormFields();
+  final ConfigDomainAccountFormFields formConfig = ConfigDomainAccountFormFields();
 
-  final StreamController<bool> _streamControllerSuccess =
-      StreamController<bool>.broadcast();
+  final StreamController<bool> _streamControllerSuccess = StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
   EditDomainAccountViewModel({
@@ -58,10 +55,7 @@ class EditDomainAccountViewModel extends BaseViewModel
     setLoading();
     var formFields = form.getValues();
 
-    Map<String, dynamic> data = {
-      'id': id,
-      'client_name': formFields!['client_name']
-    };
+    Map<String, dynamic> data = {'id': id, 'client_name': formFields!['client_name']};
 
     var result = await updateDomainAccount.invoke(id: id!, body: data);
     setLoading();
@@ -85,6 +79,7 @@ class EditDomainAccountViewModel extends BaseViewModel
     setLoading();
     dynamic result;
     var form = formConfig.getValues();
+    //TODO: ATE O MOMENTO DIA 25/04/2024 A PARTE DE PORCENTAGEM NAO ESTA HABILITADA
     var taxa = form!['taxa'] ?? entity.taxa;
 
     Map<String, dynamic> data = entity.id.isNotEmpty
@@ -92,12 +87,12 @@ class EditDomainAccountViewModel extends BaseViewModel
             'id': entity.id,
             "domain_account_id": entity.domainAccountId,
             "taxa": double.parse(taxa.toString()),
-            "porcentagem": form['porcentagem'].toString().parseBool(),
+            "porcentagem": false //form['porcentagem'].toString().parseBool(),
           }
         : {
             "domain_account_id": entity.domainAccountId,
             "taxa": double.parse(taxa.toString()),
-            "porcentagem": form['porcentagem'].toString().parseBool(),
+            "porcentagem": false //form['porcentagem'].toString().parseBool(),
           };
 
     if (entity.id.isNotEmpty) {
@@ -151,15 +146,12 @@ class EditDomainAccountViewModel extends BaseViewModel
   Stream<List<Map<String, dynamic>>> get fileList => _fileList.stream;
   Stream<int> get fileListSize => _fileList.stream.transform(fileListMaxFiles);
 
-  Future<void> onLoadDomainAccount(
-      Function onError, DomainAccountApiDto? domainAccount) async {
-    _fileList.sink
-        .add(domainAccount?.documents.map((e) => e.toJson()).toList() ?? []);
+  Future<void> onLoadDomainAccount(Function onError, DomainAccountApiDto? domainAccount) async {
+    _fileList.sink.add(domainAccount?.documents.map((e) => e.toJson()).toList() ?? []);
   }
 
   Future<void> onSelectedFile(PlatformFile file, Function onError) async {
-    var kb = (file.bytes!.lengthInBytes * 0.001 * 100).round() /
-        100; // TAMANHO EM KBYTES
+    var kb = (file.bytes!.lengthInBytes * 0.001 * 100).round() / 100; // TAMANHO EM KBYTES
     var mb = (kb * 0.001 * 100).round() / 100; // TAMANHO EM MEGABYTES
     // var gb = (mb * 0.001 * 100).round() / 100; // TAMANHO EM GYGABYTES
     if (file.extension != 'pdf') {
@@ -207,8 +199,7 @@ class EditDomainAccountViewModel extends BaseViewModel
       return;
     }
 
-    var result = await addDomainAccountDocuments
-        .invoke(domainAccountId, {'documents': itens});
+    var result = await addDomainAccountDocuments.invoke(domainAccountId, {'documents': itens});
     if (result.isLeft) {
       postError(result.left.message);
       return;
@@ -223,8 +214,7 @@ extension BoolParsing on String {
 }
 
 mixin RegisterDomainAccountDocumentsTransformer {
-  final fileListMaxFiles =
-      StreamTransformer<List<Map<String, dynamic>>, int>.fromHandlers(
+  final fileListMaxFiles = StreamTransformer<List<Map<String, dynamic>>, int>.fromHandlers(
     handleData: (value, sink) {
       sink.add(value.length);
     },

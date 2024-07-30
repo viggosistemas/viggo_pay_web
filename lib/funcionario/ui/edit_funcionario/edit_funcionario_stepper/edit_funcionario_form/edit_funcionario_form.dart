@@ -1,9 +1,10 @@
-import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:pinput/pinput.dart';
 import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/funcionario/data/models/funcionario_api_dto.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/funcionario_view_model.dart';
 
@@ -28,6 +29,16 @@ class EditFuncionarioForm extends StatefulWidget {
 }
 
 class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
+  static const defaultMask = '########################################';
+  final nomeRazaoSocialFieldControll = TextEditingController();
+  final cpfCnpjFieldControll = MaskedTextController(
+    mask: defaultMask,
+    translator: {'#': RegExp(r'[0-9a-zA-Z@\.\-_]')},
+  );
+  final apelidoNomeFantasiaControll = TextEditingController();
+  final rgInscEstControll = TextEditingController();
+  final userFieldControll = TextEditingController();
+
   bool jaPreencheu = false;
 
   getInitialValue() {
@@ -52,6 +63,9 @@ class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
       if (widget.entity != null) {
         widget.viewModel.formDados.cpfCnpj
             .onValueChange(widget.entity!.parceiro!.cpfCnpj);
+        cpfCnpjFieldControll.value = cpfCnpjFieldControll.value
+            .copyWith(text: widget.entity!.parceiro!.cpfCnpj);
+        updateMask();
       }
       if (widget.entity != null) {
         widget.viewModel.formDados.apelidoNomeFantasia
@@ -70,14 +84,22 @@ class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
     }
   }
 
+  void updateMask() {
+    var type = cpfCnpjFieldControll.value.text
+        .replaceAll('.', '')
+        .replaceAll('-', '')
+        .replaceAll('/', '');
+    if (type.length <= 11) {
+      cpfCnpjFieldControll.updateMask('###.###.###-###');
+    } else if (type.length > 11) {
+      cpfCnpjFieldControll.updateMask('##.###.###/####-##');
+    } else {
+      cpfCnpjFieldControll.updateMask(defaultMask);
+    }
+  }
+
   @override
   Widget build(context) {
-    final nomeRazaoSocialFieldControll = TextEditingController();
-    final cpfCnpjFieldControll = TextEditingController();
-    final apelidoNomeFantasiaControll = TextEditingController();
-    final rgInscEstControll = TextEditingController();
-    final userFieldControll = TextEditingController();
-
     initFormValues();
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -89,24 +111,40 @@ class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
           builder: (context, snapshot) {
             cpfCnpjFieldControll.value =
                 cpfCnpjFieldControll.value.copyWith(text: snapshot.data);
-            return TextFormField(
-                // onChanged: (value) {
-                //   _txtAmountValue = value;
-                // },
-                controller: cpfCnpjFieldControll,
-                decoration: InputDecoration(
-                  labelText: 'CPF/CNPJ',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  CpfOuCnpjFormatter(),
-                  // MaskTextInputFormatter(mask: "###.###.###-##")
-                ],
-                onChanged: (value) {
-                  widget.viewModel.formDados.cpfCnpj.onValueChange(value);
-                });
+            updateMask();
+            return Focus(
+              onFocusChange: (hasFocus) async {
+                if (!hasFocus && cpfCnpjFieldControll.text.isNotEmpty) {
+                  var result = await widget.viewModel.checkParceiro(
+                      cpfCnpjFieldControll.text
+                          .replaceAll('.', '')
+                          .replaceAll('-', '')
+                          .replaceAll('/', ''));
+                  if (result != null && result == true) {
+                    nomeRazaoSocialFieldControll.setText('');
+                    cpfCnpjFieldControll.setText('');
+                  }
+                }
+              },
+              child: TextFormField(
+                  // onChanged: (value) {
+                  //   _txtAmountValue = value;
+                  // },
+                  controller: cpfCnpjFieldControll,
+                  readOnly: widget.entity?.id != null,
+                  decoration: InputDecoration(
+                    labelText: 'CPF/CNPJ',
+                    border: const OutlineInputBorder(),
+                    errorText: snapshot.error?.toString(),
+                  ),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: (value) {
+                    widget.viewModel.formDados.cpfCnpj.onValueChange(value
+                        .replaceAll('.', '')
+                        .replaceAll('-', '')
+                        .replaceAll('/', ''));
+                  }),
+            );
           },
         ),
         const SizedBox(
@@ -250,16 +288,18 @@ class _EditFuncionarioFormState extends State<EditFuncionarioForm> {
                     border: const OutlineInputBorder(),
                     errorText: snapshot.error?.toString(),
                     suffix: snapshot.data != null && snapshot.data!.isNotEmpty
-                        ? IconButton(
-                            onPressed: () {
-                              widget.viewModel.formDados.userId
-                                  .onValueChange('');
-                              controller.setText('');
-                            },
-                            icon: const Icon(
-                              Icons.cancel_outlined,
-                              size: 18,
-                              color: Colors.red,
+                        ? OnHoverButton(
+                            child: IconButton(
+                              onPressed: () {
+                                widget.viewModel.formDados.userId
+                                    .onValueChange('');
+                                controller.setText('');
+                              },
+                              icon: const Icon(
+                                Icons.cancel_outlined,
+                                size: 18,
+                                color: Colors.red,
+                              ),
                             ),
                           )
                         : const Text(''),

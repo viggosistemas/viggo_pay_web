@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
 import 'package:viggo_core_frontend/base/base_api.dart';
 import 'package:viggo_core_frontend/network/network_exceptions.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/response.dart';
@@ -15,14 +14,9 @@ class PixToSendApi extends BaseApi {
   Future<PixToSendsResponse> getEntitiesByParams(
     Map<String, dynamic> params,
   ) async {
-    String url = '$baseUrl$ENDPOINT';
-    Map<String, String> headers = getHeaders();
+    String url = handleFilters(ENDPOINT, params);
 
-    // Monta os filtros da entidade baseado nos parâmetros solicitados
-    url = handleFilters(url, params);
-
-    // Envia requisição e trata retorno
-    var response = await http.get(Uri.parse(url), headers: headers);
+    var response = await get(url);
     switch (response.statusCode) {
       case 200:
         Map<String, dynamic> json = jsonDecode(response.body);
@@ -41,11 +35,11 @@ class PixToSendApi extends BaseApi {
   ) async {
     String id = params['id'];
     String? include = params['include'];
-    Map<String, String> headers = getHeaders();
+    String url = '$ENDPOINT/$id';
 
-    String url = '$baseUrl$ENDPOINT/$id';
     if (include != null) url = '$url?include=$include';
-    var response = await http.get(Uri.parse(url), headers: headers);
+
+    var response = await get(url);
     switch (response.statusCode) {
       case 200:
         Map<String, dynamic> json = jsonDecode(response.body);
@@ -62,16 +56,10 @@ class PixToSendApi extends BaseApi {
   Future<PixToSendResponse> updateEntity(Map<String, dynamic> params) async {
     String id = params['id'];
     Map<String, dynamic> body = params['body'];
-    Map<String, String> headers = getHeaders();
 
-    body = cleanEntity(body);
-    String url = '$baseUrl$ENDPOINT/$id';
+    String url = '$ENDPOINT/$id';
 
-    var response = await http.put(
-      Uri.parse(url),
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    var response = await put(url, body: body);
     switch (response.statusCode) {
       case 200:
         Map<String, dynamic> json = jsonDecode(response.body);
@@ -87,16 +75,8 @@ class PixToSendApi extends BaseApi {
 
   Future<PixToSendResponse> createEntity(Map<String, dynamic> params) async {
     Map<String, dynamic> body = params['body'];
-    Map<String, String> headers = getHeaders();
 
-    body = cleanEntity(body);
-    String url = '$baseUrl$ENDPOINT';
-
-    var response = await http.post(
-      Uri.parse(url),
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    var response = await post(ENDPOINT,body: body);
     switch (response.statusCode) {
       case 201:
         Map<String, dynamic> json = jsonDecode(response.body);

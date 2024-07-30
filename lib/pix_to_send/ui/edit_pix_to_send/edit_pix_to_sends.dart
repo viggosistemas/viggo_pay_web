@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/pay_facs/data/models/destinatario_api_dto.dart';
 import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart';
@@ -9,7 +10,7 @@ import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 class EditPixToSends {
   EditPixToSends({required this.context});
 
-  final BuildContext context;
+  late BuildContext context;
   final viewModel = locator.get<EditPixToSendViewModel>();
 
   clearFields(String? alias) {
@@ -51,55 +52,45 @@ class EditPixToSends {
   Future addDialog(String? alias) {
     viewModel.catchDomainAccount();
     clearFields(alias);
-    onSubmit() {
-      viewModel.submit(null, showInfoMessage, context);
-      // Navigator.of(context).pop();
-    }
-
-    viewModel.pixToSendSuccess.listen((value) {
-      showInfoMessage(
-        context,
-        2,
-        Colors.green,
-        'Chave pix criada com sucesso!',
-        'X',
-        () {},
-        Colors.white,
-      );
-      Navigator.pop(context, value);
-    });
-
-    // viewModel.isSuccess.listen((value) {
-    //   showInfoMessage(
-    //     context,
-    //     2,
-    //     Colors.green,
-    //     'Chave pix criada com sucesso!',
-    //     'X',
-    //     () {},
-    //     Colors.white,
-    //   );
-    //   Navigator.pop(context, true);
-    // });
-
-    viewModel.errorMessage.listen(
-      (value) {
-        if (value.isNotEmpty && context.mounted) {
-          showInfoMessage(
-            context,
-            2,
-            Colors.red,
-            value,
-            'X',
-            () {},
-            Colors.white,
-          );
-        }
-      },
-    );
     return showDialog(
         context: context,
         builder: (BuildContext ctx) {
+          onSubmit() {
+            viewModel.submit(null, showInfoMessage, ctx);
+          }
+
+          viewModel.pixToSendSuccess.listen((value) {
+            if (ctx.mounted) {
+              showInfoMessage(
+                context,
+                2,
+                Colors.green,
+                'Chave pix criada com sucesso!',
+                'X',
+                () {},
+                Colors.white,
+              );
+              Navigator.pop(ctx, value);
+            }
+          });
+
+          viewModel.errorMessage.listen(
+            (value) {
+              if (value.isNotEmpty && context.mounted) {
+                viewModel.clearError();
+                showInfoMessage(
+                  context,
+                  2,
+                  Colors.red,
+                  value,
+                  'X',
+                  () {},
+                  Colors.white,
+                );
+                Navigator.pop(ctx, null);
+              }
+            },
+          );
           return PopScope(
             canPop: false,
             onPopInvoked: (bool didPop) {
@@ -136,17 +127,19 @@ class EditPixToSends {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        size: 20,
-                      ),
-                      label: const Text('Cancelar'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
+                    OnHoverButton(
+                      child: TextButton.icon(
+                        icon: const Icon(
+                          Icons.cancel_outlined,
+                          size: 20,
+                        ),
+                        label: const Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
                       ),
                     ),
                     StreamBuilder<DestinatarioApiDto?>(
@@ -156,49 +149,43 @@ class EditPixToSends {
                             return StreamBuilder<bool>(
                                 stream: viewModel.form.isValid,
                                 builder: (context, snapshot) {
-                                  return Directionality(
-                                    textDirection: TextDirection.rtl,
-                                    child: TextButton.icon(
-                                      icon: const Icon(
-                                        Icons.search_outlined,
-                                        size: 20,
-                                      ),
-                                      label: const Text('Consultar'),
-                                      onPressed: () => snapshot.data != null &&
-                                              snapshot.data == true
-                                          ? viewModel.loadInfoDestinatario(
-                                              'BR',
-                                              viewModel.form
-                                                  .getValues()!['alias']!,
-                                            )
-                                          : {},
-                                      style: TextButton.styleFrom(
-                                        foregroundColor:
-                                            snapshot.data != null &&
-                                                    snapshot.data == true
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .primary
-                                                : Colors.grey,
+                                  return OnHoverButton(
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: TextButton.icon(
+                                        icon: const Icon(
+                                          Icons.search_outlined,
+                                          size: 20,
+                                        ),
+                                        label: const Text('Consultar'),
+                                        onPressed: () => snapshot.data != null && snapshot.data == true
+                                            ? viewModel.loadInfoDestinatario(
+                                                'BR',
+                                                viewModel.form.getValues()!['alias']!,
+                                              )
+                                            : {},
+                                        style: TextButton.styleFrom(
+                                          foregroundColor:
+                                              snapshot.data != null && snapshot.data == true ? Theme.of(context).colorScheme.primary : Colors.grey,
+                                        ),
                                       ),
                                     ),
                                   );
                                 });
                           } else {
-                            return Directionality(
-                              textDirection: TextDirection.rtl,
-                              child: TextButton.icon(
-                                icon: const Icon(
-                                  Icons.save_alt_outlined,
-                                  size: 20,
-                                ),
-                                label: const Text('Salvar'),
-                                onPressed: () =>
-                                    snapshot.data != null ? onSubmit() : {},
-                                style: TextButton.styleFrom(
-                                  foregroundColor: snapshot.data != null
-                                      ? Colors.green
-                                      : Colors.grey,
+                            return OnHoverButton(
+                              child: Directionality(
+                                textDirection: TextDirection.rtl,
+                                child: TextButton.icon(
+                                  icon: const Icon(
+                                    Icons.save_alt_outlined,
+                                    size: 20,
+                                  ),
+                                  label: const Text('Salvar'),
+                                  onPressed: () => snapshot.data != null ? onSubmit() : {},
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: snapshot.data != null ? Colors.green : Colors.grey,
+                                  ),
                                 ),
                               ),
                             );
@@ -238,6 +225,7 @@ class EditPixToSends {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,
@@ -291,17 +279,19 @@ class EditPixToSends {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        size: 20,
-                      ),
-                      label: const Text('Cancelar'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
+                    OnHoverButton(
+                      child: TextButton.icon(
+                        icon: const Icon(
+                          Icons.cancel_outlined,
+                          size: 20,
+                        ),
+                        label: const Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
                       ),
                     ),
                     StreamBuilder<DestinatarioApiDto?>(
@@ -315,49 +305,43 @@ class EditPixToSends {
                             return StreamBuilder<bool>(
                                 stream: viewModel.form.isValid,
                                 builder: (context, snapshot) {
-                                  return Directionality(
-                                    textDirection: TextDirection.rtl,
-                                    child: TextButton.icon(
-                                      icon: const Icon(
-                                        Icons.search_outlined,
-                                        size: 20,
-                                      ),
-                                      label: const Text('Consultar'),
-                                      onPressed: () => snapshot.data != null &&
-                                              snapshot.data == true
-                                          ? viewModel.loadInfoDestinatario(
-                                              'BR',
-                                              viewModel.form
-                                                  .getValues()!['alias']!,
-                                            )
-                                          : {},
-                                      style: TextButton.styleFrom(
-                                        foregroundColor:
-                                            snapshot.data != null &&
-                                                    snapshot.data == true
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .primary
-                                                : Colors.grey,
+                                  return OnHoverButton(
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: TextButton.icon(
+                                        icon: const Icon(
+                                          Icons.search_outlined,
+                                          size: 20,
+                                        ),
+                                        label: const Text('Consultar'),
+                                        onPressed: () => snapshot.data != null && snapshot.data == true
+                                            ? viewModel.loadInfoDestinatario(
+                                                'BR',
+                                                viewModel.form.getValues()!['alias']!,
+                                              )
+                                            : {},
+                                        style: TextButton.styleFrom(
+                                          foregroundColor:
+                                              snapshot.data != null && snapshot.data == true ? Theme.of(context).colorScheme.primary : Colors.grey,
+                                        ),
                                       ),
                                     ),
                                   );
                                 });
                           } else {
-                            return Directionality(
-                              textDirection: TextDirection.rtl,
-                              child: TextButton.icon(
-                                icon: const Icon(
-                                  Icons.save_alt_outlined,
-                                  size: 20,
-                                ),
-                                label: const Text('Salvar'),
-                                onPressed: () =>
-                                    snapshot.data != null ? onSubmit() : {},
-                                style: TextButton.styleFrom(
-                                  foregroundColor: snapshot.data != null
-                                      ? Colors.green
-                                      : Colors.grey,
+                            return OnHoverButton(
+                              child: Directionality(
+                                textDirection: TextDirection.rtl,
+                                child: TextButton.icon(
+                                  icon: const Icon(
+                                    Icons.save_alt_outlined,
+                                    size: 20,
+                                  ),
+                                  label: const Text('Salvar'),
+                                  onPressed: () => snapshot.data != null ? onSubmit() : {},
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: snapshot.data != null ? Colors.green : Colors.grey,
+                                  ),
                                 ),
                               ),
                             );
@@ -405,11 +389,13 @@ class EditPixToSends {
                       const Icon(Icons.key_outlined),
                     ],
                   ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(
-                      Icons.close_outlined,
-                      color: Colors.red,
+                  OnHoverButton(
+                    child: IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(
+                        Icons.close_outlined,
+                        color: Colors.red,
+                      ),
                     ),
                   ),
                 ],

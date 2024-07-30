@@ -33,14 +33,11 @@ class EditUsersViewModel extends BaseViewModel {
 
   final EditUsersFormField form = EditUsersFormField();
 
-  final StreamController<bool> _streamControllerSuccess =
-      StreamController<bool>.broadcast();
+  final StreamController<bool> _streamControllerSuccess = StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
-  final StreamController<List<RoleApiDto>> _streamControllerApplicationRoles =
-      StreamController<List<RoleApiDto>>.broadcast();
-  Stream<List<RoleApiDto>> get listRolesApplication =>
-      _streamControllerApplicationRoles.stream;
+  final StreamController<List<RoleApiDto>> _streamControllerApplicationRoles = StreamController<List<RoleApiDto>>.broadcast();
+  Stream<List<RoleApiDto>> get listRolesApplication => _streamControllerApplicationRoles.stream;
 
   EditUsersViewModel({
     required this.sharedPrefs,
@@ -57,9 +54,7 @@ class EditUsersViewModel extends BaseViewModel {
     if (isLoading) return;
 
     setLoading();
-    var listOptions = ListOptions.values
-        .where((element) => element.name == filters['list_options'])
-        .first;
+    var listOptions = ListOptions.values.where((element) => element.name == filters['list_options']).first;
 
     var result = await getDomains.invoke(
       filters: filters,
@@ -80,8 +75,7 @@ class EditUsersViewModel extends BaseViewModel {
     var result = await getRolesApplication.invoke(id: domain.applicationId);
     if (result.isRight) {
       for (var gr in grants) {
-        var index =
-            result.right.indexWhere((element) => element.id == gr.roleId);
+        var index = result.right.indexWhere((element) => element.id == gr.roleId);
         if (index >= 0) {
           result.right[index].selected = true;
         }
@@ -114,8 +108,7 @@ class EditUsersViewModel extends BaseViewModel {
     var idsRolesToRemove = rolesToRemove.map((role) => role.id).toList();
 
     var removeRoles = grants.where((grant) {
-      return (grant.role?.name.toLowerCase() != 'user' &&
-          idsRolesToRemove.contains(grant.roleId));
+      return (grant.role?.name.toLowerCase() != 'user' && idsRolesToRemove.contains(grant.roleId));
     }).toList();
 
     var idsGrantsToRemove = removeRoles.map((e) => e.id).toList();
@@ -163,6 +156,7 @@ class EditUsersViewModel extends BaseViewModel {
     setLoading();
     var formFields = form.getValues();
     dynamic result;
+    var domain = jsonDecode(sharedPrefs.getString('DOMAIN')!);
 
     Map<String, dynamic> data = id != null && id.isNotEmpty
         ? {
@@ -174,7 +168,7 @@ class EditUsersViewModel extends BaseViewModel {
         : {
             'name': formFields!['name'],
             'email': formFields['email'],
-            'domain_id': formFields['domain_id'],
+            'domain_id': domain['name'] == 'default' ? formFields['domain_id'] : domain['id'],
             'natureza': 'MOBILE'
           };
 

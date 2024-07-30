@@ -22,6 +22,7 @@ import 'package:viggo_pay_admin/domain_account/domain/usecases/get_config_domain
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_accounts_by_params_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_extrato_pdf_domain_account_use_case.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/resetar_tentativas_matera_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/update_config_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/update_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/update_password_pix_matera_use_case.dart';
@@ -104,6 +105,11 @@ class DomainAccountLocator {
         repository: locator.get(),
       ),
     );
+    locator.registerFactory(
+      () => ResetarTentativasMateraUseCase(
+        repository: locator.get<DomainAccountRepository>(),
+      ),
+    );
 
     //domain_account_taxa
 
@@ -134,6 +140,7 @@ class DomainAccountLocator {
         updateSelected: locator.get<UpdateSelectedItemUsecase>(),
         clearSelectedItems: locator.get<ClearSelectedItemsUseCase>(),
         getSelectedItems: locator.get<GetSelectedItemsUseCase>(),
+        resetarTentativas: locator.get<ResetarTentativasMateraUseCase>()
       ),
     );
     locator.registerFactory(

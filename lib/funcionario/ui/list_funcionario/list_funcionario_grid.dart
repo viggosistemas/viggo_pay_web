@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
-import 'package:viggo_pay_admin/app_builder/ui/app_components/data_table_paginated.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/card/list_view_mode_card.dart';
+import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/table/data_table_paginated.dart';
+import 'package:viggo_pay_admin/components/progress_loading.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/funcionario/data/models/funcionario_api_dto.dart';
 import 'package:viggo_pay_admin/funcionario/ui/edit_funcionario/edit_funcionario.dart';
@@ -35,11 +37,7 @@ class _ListFuncionarioGridState extends State<ListFuncionarioGrid> {
 
   static const funcionariosRowsValues = ['parceiro', 'parceiro', 'user'];
 
-  static const funcionariosListLabelInclude = [
-    'nome_razao_social',
-    'cpf_cnpj',
-    'name'
-  ];
+  static const funcionariosListLabelInclude = ['nome_razao_social', 'cpf_cnpj', 'name'];
 
   List<Map<String, dynamic>> searchFields = [
     {
@@ -47,6 +45,12 @@ class _ListFuncionarioGridState extends State<ListFuncionarioGrid> {
       'search_field': 'parceiro.nome_razao_social',
       'type': 'text',
       'icon': Icons.person_outline,
+    },
+    {
+      'label': 'CPF/CNPJ',
+      'search_field': 'parceiro.cpf_cnpj',
+      'type': 'cpf_cnpj',
+      'icon': Icons.numbers_outlined,
     },
   ];
 
@@ -66,16 +70,20 @@ class _ListFuncionarioGridState extends State<ListFuncionarioGrid> {
         .toList();
 
     for (var element in newParams) {
-      var fieldValue = '';
+      if (element['value'].toString().isNotEmpty) {
+        var fieldValue = '';
 
-      if (element['type'] == 'text') {
-        fieldValue = '%${element['value']}%';
-      } else {
-        fieldValue = element['value'];
+        if (element['type'] == 'text') {
+          fieldValue = '%${element['value']}%';
+        } else if (element['type'] == 'cpf_cnpj') {
+          fieldValue = element['value'].replaceAll('.', '').replaceAll('-', '').replaceAll('/', '');
+        } else {
+          fieldValue = element['value'];
+        }
+        filters.addEntries(
+          <String, String>{element['search_field']: fieldValue}.entries,
+        );
       }
-      filters.addEntries(
-        <String, String>{element['search_field']: fieldValue}.entries,
-      );
     }
 
     filters.addEntries(
@@ -97,6 +105,7 @@ class _ListFuncionarioGridState extends State<ListFuncionarioGrid> {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,
@@ -109,96 +118,105 @@ class _ListFuncionarioGridState extends State<ListFuncionarioGrid> {
         }
       },
     );
-    return StreamBuilder<Object>(
+    return StreamBuilder<List<FuncionarioApiDto>>(
       stream: viewModel.funcionarios,
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           onReload();
-          return const Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Carregando...'),
-              SizedBox(
-                height: 10,
-              ),
-              CircularProgressIndicator(),
-            ],
+          return ProgressLoading(
+            color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary,
           );
         } else {
-          List<FuncionarioApiDto> items =
-              (snapshot.data as List<FuncionarioApiDto>);
-          return SizedBox(
-            height: double.maxFinite,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  HeaderSearchMain(
-                    onSearch: onSearch,
-                    onReload: onReload,
-                    searchFields: searchFields,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: DataTablePaginated(
-                      viewModel: viewModel,
-                      streamList: viewModel.funcionarios,
-                      initialFilters: filters,
-                      columnsDef: const [
-                        DataColumn(
-                          label: Center(
-                            child: Text(
-                              'Nome razão social',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Center(
-                            child: Text(
-                              'CPF/CNPJ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Center(
-                            child: Text(
-                              'Usuário',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                      labelInclude: funcionariosListLabelInclude,
-                      fieldsData: funcionariosRowsValues,
-                      validActionsList: funcionariosValidActions,
-                      dialogs: dialogs,
-                      items: items.map((e) {
-                        return e.toJson();
-                      }).toList(),
+          List<FuncionarioApiDto> items = (snapshot.data as List<FuncionarioApiDto>);
+          return LayoutBuilder(builder: (context, constraints) {
+            return SizedBox(
+              height: double.maxFinite,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
-                  // DataTableNotPaginated(
-                  //   viewModel: viewModel,
-                  //   items: items,
-                  // ),
-                ],
+                    HeaderSearchMain(
+                      onSearch: onSearch,
+                      onReload: onReload,
+                      searchFields: searchFields,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: constraints.maxWidth <= 960
+                          ? Padding(
+                              padding: const EdgeInsets.all(50.0),
+                              child: ListViewCard(
+                                onReloadData: onReload,
+                                viewModel: viewModel,
+                                dialogs: dialogs,
+                                fieldsData: 'parceiro.nome_razao_social',
+                                fieldsSubtitleData: 'parceiro.cpf_cnpj',
+                                iconCard: Icons.engineering_outlined,
+                                validActionsList: funcionariosValidActions,
+                                items: items.map((e) {
+                                  return e.toJson();
+                                }).toList(),
+                              ),
+                            )
+                          : DataTablePaginated(
+                              viewModel: viewModel,
+                              streamList: viewModel.funcionarios,
+                              initialFilters: filters,
+                              columnsDef: const [
+                                DataColumn(
+                                  label: Center(
+                                    child: Text(
+                                      'Nome razão social',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Center(
+                                    child: Text(
+                                      'CPF/CNPJ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Center(
+                                    child: Text(
+                                      'Usuário',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              labelInclude: funcionariosListLabelInclude,
+                              fieldsData: funcionariosRowsValues,
+                              validActionsList: funcionariosValidActions,
+                              dialogs: dialogs,
+                              items: items.map((e) {
+                                return e.toJson();
+                              }).toList(),
+                            ),
+                    ),
+                    // DataTableNotPaginated(
+                    //   viewModel: viewModel,
+                    //   items: items,
+                    // ),
+                  ],
+                ),
               ),
-            ),
-          );
+            );
+          });
         }
       },
     );

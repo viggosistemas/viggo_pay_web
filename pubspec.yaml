@@ -44,8 +44,12 @@ dependencies:
   file_picker: ^6.1.1
   decimal: ^2.3.3
   flutter_masked_text2: ^0.9.1
+  dio: ^5.4.2+1
 
-  viggo_core_frontend: ^1.0.2
+  viggo_core_frontend: ^1.0.4
+
+  # viggo_core_frontend:
+  #   path: ../viggo_pay_core_frontend
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -66,6 +70,7 @@ dependencies:
   pdfx: ^2.6.0
   url_launcher_web: ^2.3.0
   flutter_localization: ^0.2.0
+  get: ^4.6.6
 
 dependency_overrides:
   intl: ^0.18.1
@@ -95,7 +100,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/util/
     - assets/images/login-bg.png
+    - assets/images/login-bg-dark.png
     - assets/images/icone.png
     - assets/images/avatar.png
     - assets/images/default-logo-login.png

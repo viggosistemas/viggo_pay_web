@@ -1,19 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_alterar_senha_pix/form_fields.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 class DialogAlterarSenha {
-  DialogAlterarSenha({required this.context});
+  DialogAlterarSenha({required this.context, String domainAccountId = ''}) {
+    if (domainAccountId.isNotEmpty) {
+      this.domainAccountId = domainAccountId;
+    }
+  }
 
   final BuildContext context;
   final viewModel = locator.get<MatrizTransferenciaViewModel>();
+  late String domainAccountId = '';
 
   Future<void> showFormDialog(bool jaTemSenha) {
+    viewModel.formSenha.senhaAntiga.onValueChange('');
+    viewModel.formSenha.novaSenha.onValueChange('');
+    viewModel.formSenha.confirmarSenha.onValueChange('');
+
     onSubmit() {
-      viewModel.onSubmitSenha(showInfoMessage, context);
-      // Navigator.of(context).pop();
+      if (domainAccountId.isNotEmpty) {
+        viewModel.onSubmitSenha(
+          showInfoMessage,
+          context,
+          domainAccountIdExtra: domainAccountId,
+        );
+      } else {
+        viewModel.onSubmitSenha(showInfoMessage, context);
+      }
+      Navigator.of(context).pop();
     }
 
     validarForm(bool isValid) {
@@ -45,7 +63,7 @@ class DialogAlterarSenha {
         () {},
         Colors.white,
       );
-      Navigator.pop(context, true);
+      // Navigator.pop(context, true);
     });
 
     viewModel.errorMessage.listen(
@@ -115,38 +133,37 @@ class DialogAlterarSenha {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        size: 20,
-                      ),
-                      label: const Text('Cancelar'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
+                    OnHoverButton(
+                      child: TextButton.icon(
+                        icon: const Icon(
+                          Icons.cancel_outlined,
+                          size: 20,
+                        ),
+                        label: const Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
                       ),
                     ),
                     StreamBuilder<bool>(
                         stream: viewModel.formSenha.isValid,
                         builder: (context, snapshot) {
-                          return Directionality(
-                            textDirection: TextDirection.rtl,
-                            child: TextButton.icon(
-                              icon: const Icon(
-                                Icons.save_alt_outlined,
-                                size: 20,
-                              ),
-                              label: const Text('Salvar'),
-                              onPressed: () => validarForm(
-                                  snapshot.data != null &&
-                                      snapshot.data == true),
-                              style: TextButton.styleFrom(
-                                foregroundColor: snapshot.data != null &&
-                                        snapshot.data == true
-                                    ? Colors.green
-                                    : Colors.grey,
+                          return OnHoverButton(
+                            child: Directionality(
+                              textDirection: TextDirection.rtl,
+                              child: TextButton.icon(
+                                icon: const Icon(
+                                  Icons.save_alt_outlined,
+                                  size: 20,
+                                ),
+                                label: const Text('Salvar'),
+                                onPressed: () => validarForm(snapshot.data != null && snapshot.data == true),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: snapshot.data != null && snapshot.data == true ? Colors.green : Colors.grey,
+                                ),
                               ),
                             ),
                           );

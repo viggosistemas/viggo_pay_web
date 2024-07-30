@@ -37,14 +37,14 @@ class EditInfoFormFields extends BaseForm {
     ],
   );
   final countryPhone = StringField(
-    isRequired: true,
+    // isRequired: true,
     validators: [
       Validator().isEmptyValue,
       FieldLengthValidator().maiorQ3,
     ],
   );
   final countryTax = StringField(
-    isRequired: true,
+    // isRequired: true,
     validators: [
       Validator().isEmptyValue,
       FieldLengthValidator().maiorQ3,

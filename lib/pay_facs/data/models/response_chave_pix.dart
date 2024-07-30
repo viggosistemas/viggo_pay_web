@@ -9,3 +9,11 @@ class ChavesPixResponse {
         json['aliases'].map((val) => ChavePixApiDto.fromJson(val)).toList());
   }
 }
+
+class ChavePixGeradaResponse{
+  late ChavePixGeradaApiDto chavePix;
+
+  ChavePixGeradaResponse.fromJson(Map<String, dynamic> json) {
+    chavePix = ChavePixGeradaApiDto.fromJson(json);
+  }
+}

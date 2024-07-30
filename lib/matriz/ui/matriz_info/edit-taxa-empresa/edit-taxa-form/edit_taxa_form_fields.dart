@@ -7,12 +7,13 @@ import 'package:viggo_core_frontend/form/validator.dart';
 class ConfigMatrizTaxaFormFields extends BaseForm {
   final porcentagem = DoubleField(
     isRequired: true,
-    validators: [
-      Validator().isEmptyValue,
-    ],
   );
   final taxa = StringField(
     isRequired: true,
+    validators: [
+      Validator().isEmptyValue,
+      isBiggerThenZero,
+    ],
   );
   @override
   List<Field> getFields() => [taxa];

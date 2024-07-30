@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
+import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/login/ui/fields_form/actions_remember.dart';
 import 'package:viggo_pay_admin/login/ui/fields_form/fields_form.dart';
 import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
 import 'package:viggo_pay_admin/utils/constants.dart';
+import 'package:viggo_pay_admin/utils/container.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 class LoginForm extends StatefulWidget {
@@ -18,7 +20,7 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final _formKey = GlobalKey<FormState>();
+  LoginViewModel viewModel = locator.get<LoginViewModel>();
 
   onForgetPassword() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -32,64 +34,69 @@ class _LoginFormState extends State<LoginForm> {
     String? logoId,
     LoginViewModel? viewModel,
   }) {
-    var url = viewModel?.parseImage.invoke(logoId!);
-    if (url == null) {
-      return showImageDefault(
-        placeholder,
-        domainName,
-        viewModel: viewModel,
-      );
-    } else {
-      return Stack(
-        children: [
-          Tooltip(
-            message: domainName,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.7),
-                    blurRadius: 8,
-                    spreadRadius: 6,
-                    offset: const Offset(0, 0),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SizedBox(
-                  width: 150,
-                  height: 100,
-                  child: FadeInImage(
-                    image: NetworkImage(url),
-                    placeholder: AssetImage(placeholder),
-                    imageErrorBuilder: (context, error, stackTrace) {
-                      return Image.asset(placeholder, fit: BoxFit.contain);
-                    },
-                    fit: BoxFit.fitWidth,
+    return FutureBuilder(
+        future: viewModel?.getImageUrl(logoId!),
+        builder: (context, imgSnp) {
+          if (imgSnp.data == null) {
+            return showImageDefault(
+              placeholder,
+              domainName,
+              viewModel: viewModel,
+            );
+          } else {
+            return Stack(
+              children: [
+                Tooltip(
+                  message: domainName,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.7),
+                          blurRadius: 8,
+                          spreadRadius: 6,
+                          offset: const Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: SizedBox(
+                        width: 150,
+                        height: 100,
+                        child: FadeInImage(
+                          image: NetworkImage(imgSnp.data!),
+                          placeholder: AssetImage(placeholder),
+                          imageErrorBuilder: (context, error, stackTrace) {
+                            return Image.asset(placeholder, fit: BoxFit.contain);
+                          },
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: IconButton(
-              onPressed: () {
-                viewModel?.onClearRememberCredential();
-              },
-              icon: const Icon(
-                Icons.cancel,
-                color: Colors.red,
-              ),
-            ),
-          ),
-        ],
-      );
-    }
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: OnHoverButton(
+                    child: IconButton(
+                      onPressed: () {
+                        viewModel?.onClearRememberCredential();
+                      },
+                      icon: const Icon(
+                        Icons.cancel,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+        });
   }
 
   Widget showImageDefault(
@@ -126,13 +133,15 @@ class _LoginFormState extends State<LoginForm> {
         Positioned(
           top: 0,
           right: 0,
-          child: IconButton(
-            onPressed: () {
-              viewModel?.onClearRememberCredential();
-            },
-            icon: const Icon(
-              Icons.cancel,
-              color: Colors.red,
+          child: OnHoverButton(
+            child: IconButton(
+              onPressed: () {
+                viewModel?.onClearRememberCredential();
+              },
+              icon: const Icon(
+                Icons.cancel,
+                color: Colors.red,
+              ),
             ),
           ),
         ),
@@ -162,9 +171,6 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    final deviceSize = MediaQuery.of(context).size;
-    final viewModel = Provider.of<LoginViewModel>(context);
-
     viewModel.isError.listen(
       (value) {
         showInfoMessage(
@@ -195,78 +201,78 @@ class _LoginFormState extends State<LoginForm> {
             const SizedBox(
               height: 10,
             ),
-            Card(
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                width: deviceSize.width * 0.2,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      FieldsForm(
-                        viewModel: viewModel,
-                        showImage: showImage,
-                      ),
-                      ActionsRememberForget(
-                        viewModel: viewModel,
-                        onForgetPassword: onForgetPassword,
-                      ),
-                      const SizedBox(height: 20),
-                      if (viewModel.isLoading)
-                        const CircularProgressIndicator()
-                      else
-                        StreamBuilder<bool>(
-                            stream: viewModel.form.isValid,
-                            builder: (context, snapshot) {
-                              return Directionality(
-                                textDirection: TextDirection.ltr,
-                                child: ElevatedButton.icon(
-                                  icon: const Icon(
-                                    Icons.person_2_outlined,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () async {
-                                    if (snapshot.data == true) {
-                                      viewModel.onSubmit(
-                                        showInfoMessage,
-                                        context,
-                                      );
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    fixedSize: const Size(double.maxFinite, 40),
-                                    alignment: Alignment.center,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 30,
-                                      vertical: 8,
-                                    ),
-                                    backgroundColor: snapshot.data == true
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Colors.grey,
-                                    enabledMouseCursor: snapshot.data == true
-                                        ? SystemMouseCursors.click
-                                        : SystemMouseCursors.basic,
-                                  ),
-                                  label: const Text(
-                                    'Acessar',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }),
-                    ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return Card(
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ),
-              ),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    constraints: constraints,
+                    width: constraints.maxWidth >= 600 ? 450 : ContainerClass().maxWidthContainer(constraints, context, false),
+                    child: Column(
+                      children: [
+                        FieldsForm(
+                          viewModel: viewModel,
+                          showImage: showImage,
+                        ),
+                        ActionsRememberForget(
+                          viewModel: viewModel,
+                          onForgetPassword: onForgetPassword,
+                        ),
+                        const SizedBox(height: 20),
+                        if (viewModel.isLoading)
+                          const CircularProgressIndicator()
+                        else
+                          StreamBuilder<bool>(
+                              stream: viewModel.form.isValid,
+                              builder: (context, snapshot) {
+                                return OnHoverButton(
+                                  child: Directionality(
+                                    textDirection: TextDirection.ltr,
+                                    child: ElevatedButton.icon(
+                                      icon: const Icon(
+                                        Icons.person_2_outlined,
+                                        color: Colors.white,
+                                      ),
+                                      onPressed: () async {
+                                        if (snapshot.data == true) {
+                                          viewModel.onSubmit(
+                                            showInfoMessage,
+                                            context,
+                                          );
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        fixedSize: const Size(double.maxFinite, 40),
+                                        alignment: Alignment.center,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 30,
+                                          vertical: 8,
+                                        ),
+                                        backgroundColor: snapshot.data == true ? Theme.of(context).colorScheme.primary : Colors.grey,
+                                        enabledMouseCursor: snapshot.data == true ? SystemMouseCursors.click : SystemMouseCursors.basic,
+                                      ),
+                                      label: const Text(
+                                        'Acessar',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         );

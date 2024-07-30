@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia/matriz_transferencia_dialog/matriz_transferencia_stepper/step_conferir_transferencia/detalhes_transferencia.dart';
@@ -13,20 +14,22 @@ import 'package:viggo_pay_admin/pix_to_send/data/models/pix_to_send_api_dto.dart
 class MatrizTransferenciaStepper extends StatefulWidget {
   const MatrizTransferenciaStepper({
     super.key,
+    required this.materaId,
     required this.saldo,
     required this.pixToSendList,
+    required this.taxa,
   });
 
+  final String? materaId;
   final SaldoApiDto saldo;
   final List<PixToSendApiDto> pixToSendList;
+  final Map<String, dynamic>? taxa;
 
   @override
-  State<MatrizTransferenciaStepper> createState() =>
-      _MatrizTransferenciaStepperState();
+  State<MatrizTransferenciaStepper> createState() => _MatrizTransferenciaStepperState();
 }
 
-class _MatrizTransferenciaStepperState extends State<MatrizTransferenciaStepper>
-    with TickerProviderStateMixin {
+class _MatrizTransferenciaStepperState extends State<MatrizTransferenciaStepper> with TickerProviderStateMixin {
   late PageController pageViewController;
   late TabController tabController;
   int currentPageIndex = 0;
@@ -121,10 +124,14 @@ class _MatrizTransferenciaStepperState extends State<MatrizTransferenciaStepper>
               changePage: updateCurrentPageIndex,
               currentPage: currentPageIndex,
               saldo: widget.saldo,
+              materaId: widget.materaId,
+              taxa: widget.taxa,
             ),
             StepInformarSenha(
               changePage: updateCurrentPageIndex,
               currentPage: currentPageIndex,
+              materaId: widget.materaId,
+              taxa: widget.taxa,
             ),
           ],
         ),
@@ -165,37 +172,41 @@ class PageIndicator extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          IconButton(
-            splashRadius: 16.0,
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              if (currentPageIndex == 0) {
-                return;
-              }
-              onUpdateCurrentPageIndex(currentPageIndex - 1);
-            },
-            icon: const Icon(
-              Icons.arrow_left_rounded,
-              size: 32.0,
+          OnHoverButton(
+            child: IconButton(
+              splashRadius: 16.0,
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                if (currentPageIndex == 0) {
+                  return;
+                }
+                onUpdateCurrentPageIndex(currentPageIndex - 1);
+              },
+              icon: const Icon(
+                Icons.arrow_left_rounded,
+                size: 32.0,
+              ),
             ),
           ),
           TabPageSelector(
             controller: tabController,
-            color: colorScheme.background,
+            color: colorScheme.onPrimary,
             selectedColor: colorScheme.primary,
           ),
-          IconButton(
-            splashRadius: 16.0,
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              if (currentPageIndex == 2) {
-                return;
-              }
-              onUpdateCurrentPageIndex(currentPageIndex + 1);
-            },
-            icon: const Icon(
-              Icons.arrow_right_rounded,
-              size: 32.0,
+          OnHoverButton(
+            child: IconButton(
+              splashRadius: 16.0,
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                if (currentPageIndex == 2) {
+                  return;
+                }
+                onUpdateCurrentPageIndex(currentPageIndex + 1);
+              },
+              icon: const Icon(
+                Icons.arrow_right_rounded,
+                size: 32.0,
+              ),
             ),
           ),
         ],

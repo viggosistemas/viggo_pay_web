@@ -12,12 +12,12 @@ class DomainAccountApiDto extends EntityDto {
   late String clientTaxIdentifierTaxId;
   late String? clientTaxIdentifierCountry;
   late String clientMobilePhone;
-  late String clientMobilePhoneCountry;
+  late String? clientMobilePhoneCountry;
   late String clientEmail;
   late String billingAddressLogradouro;
   late String billingAddressNumero;
-  late String billingAddressComplemento;
-  late String billingAddressBairro;
+  late String? billingAddressComplemento;
+  late String? billingAddressBairro;
   late String billingAddressCidade;
   late String billingAddressEstado;
   late String billingAddressCep;
@@ -30,6 +30,9 @@ class DomainAccountApiDto extends EntityDto {
   late String? password;
   late bool? temChavePix;
   late bool? usoLiberado;
+  late bool? temTaxa;
+  late DomainAccountStatus status;
+  late int? numTentativasCadastro;
   bool selected = false;
 
   DomainAccountApiDto.fromJson(Map<String, dynamic> json) {
@@ -59,14 +62,15 @@ class DomainAccountApiDto extends EntityDto {
     ).toList();
 
     macMaquina = json['mac_maquina'];
-    aceitacaoTermoDh = json['aceitacao_termo_dh'] != null
-        ? DateConverter().deserializeDateTime(json['aceitacao_termo_dh'])
-        : null;
+    aceitacaoTermoDh = json['aceitacao_termo_dh'] != null ? DateConverter().deserializeDateTime(json['aceitacao_termo_dh']) : null;
     lat = json['lat'];
     lon = json['lon'];
     password = json['password'];
     temChavePix = json['tem_chave_pix'];
     usoLiberado = json['uso_liberado'];
+    status = DomainAccountStatus.values.firstWhere((element) => element.name == json['status']);
+    temTaxa = json['tem_taxa'];
+    numTentativasCadastro = json['num_tentativas_cadastro'];
   }
 
   @override
@@ -102,14 +106,16 @@ class DomainAccountApiDto extends EntityDto {
 
     if (macMaquina != null) result['mac_maquina'] = macMaquina;
     if (aceitacaoTermoDh != null) {
-      result['aceitacao_termo_dh'] =
-          DateConverter().serializeDateTime(aceitacaoTermoDh!);
+      result['aceitacao_termo_dh'] = DateConverter().serializeDateTime(aceitacaoTermoDh!);
     }
     if (lat != null) result['lat'] = lat;
     if (lon != null) result['lon'] = lon;
+    if (numTentativasCadastro != null) result['num_tentativas_cadastro'] = numTentativasCadastro;
     if (password != null) result['password'] = password;
     result['tem_chave_pix'] = temChavePix;
     result['uso_liberado'] = usoLiberado;
+    result['status'] = status.name;
+    result['tem_taxa'] = temTaxa;
 
     return result;
   }
@@ -126,8 +132,7 @@ enum DomainAccountStatus {
 }
 
 extension DomainAccountStatusMapper on String {
-  DomainAccountStatus toDomainAccountStatus() =>
-      DomainAccountStatus.values.firstWhere(
+  DomainAccountStatus toDomainAccountStatus() => DomainAccountStatus.values.firstWhere(
         (element) => element.name == this,
         orElse: () => DomainAccountStatus.UNKNOWN,
       );

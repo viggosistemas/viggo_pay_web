@@ -54,6 +54,7 @@ class EditFuncionario {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,
@@ -125,6 +126,7 @@ class EditFuncionario {
     viewModel.errorMessage.listen(
       (value) {
         if (value.isNotEmpty && context.mounted) {
+          viewModel.clearError();
           showInfoMessage(
             context,
             2,
@@ -145,7 +147,9 @@ class EditFuncionario {
             canPop: false,
             onPopInvoked: (bool didPop) {
               if (didPop) return;
-              Navigator.pop(context, true);
+              if (context.mounted) {
+                Navigator.pop(context, true);
+              }
             },
             child: SimpleDialog(
               insetPadding: const EdgeInsets.all(10),

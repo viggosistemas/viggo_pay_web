@@ -42,10 +42,10 @@ class EditDomainAccountAddress extends StatelessWidget {
     }
     if (entity != null) {
       viewModel.formAddress.complemento
-          .onValueChange(entity!.billingAddressComplemento);
+          .onValueChange(entity?.billingAddressComplemento ?? '');
     }
     if (entity != null) {
-      viewModel.formAddress.bairro.onValueChange(entity!.billingAddressBairro);
+      viewModel.formAddress.bairro.onValueChange(entity?.billingAddressBairro ?? '');
     }
     if (entity != null) {
       viewModel.formAddress.cidade.onValueChange(entity!.billingAddressCidade);

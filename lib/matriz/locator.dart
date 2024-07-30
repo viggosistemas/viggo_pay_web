@@ -1,6 +1,7 @@
 import 'package:viggo_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
 import 'package:viggo_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
 import 'package:viggo_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
+import 'package:viggo_core_frontend/route/domain/usecases/get_routes_use_case.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/add_config_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/add_domain_account_documents_use_case.dart';
@@ -11,18 +12,26 @@ import 'package:viggo_pay_admin/domain_account/domain/usecases/update_domain_acc
 import 'package:viggo_pay_admin/domain_account/domain/usecases/update_password_pix_matera_use_case.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_transferencia_view_model.dart';
 import 'package:viggo_pay_admin/matriz/ui/matriz_view_model.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/add_nova_chave_pix_domain_account.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/cashout_via_pix_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/consultar_alias_destinatario_use_case.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/deletar_chave_pix_domain_account.dart';
+import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_extrato_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_saldo_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_transacoes_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/get_ultima_transacao_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pay_facs/domain/usecases/list_chave_pix_domain_account_use_case.dart';
 import 'package:viggo_pay_admin/pix_to_send/domain/usecases/get_pix_to_send_by_params_use_case.dart';
+import 'package:viggo_pay_admin/pix_to_send/domain/usecases/update_pix_to_send_use_case.dart';
 
 class MatrizAccountLocator {
   void setup() {
     locator.registerFactory(
       () => MatrizViewModel(
+        getRoutesFromSettings: locator.get<GetRoutesUseCase>(),
+        addChavePixDomainAccount: locator.get<AddChavePixDomainAccountUseCase>(),
+        deletarChavePixDomainAccount: locator.get<DeletarChavePixDomainAccountUseCase>(),
+        getChavePixDomainAccount: locator.get<ListChavePixDomainAccountUseCase>(),
         getMunicipio: locator.get<GetMunicipioByParamsUseCase>(),
         searchCep: locator.get<SearchCepUseCase>(),
         getDomainAccountTaxa: locator.get<GetDomainAccountConfigByIdUseCase>(),
@@ -38,6 +47,8 @@ class MatrizAccountLocator {
 
     locator.registerLazySingleton(
       () => MatrizTransferenciaViewModel(
+        getExtrato: locator.get<GetExtratoDomainAccountUseCase>(),
+        updatePixToSendSelect: locator.get<UpdatePixToSendUseCase>(),
         getTransacoes: locator.get<GetTransacoesDomainAccountUseCase>(),
         getConfigDomainAccount:
             locator.get<GetDomainAccountConfigByIdUseCase>(),
@@ -46,7 +57,8 @@ class MatrizAccountLocator {
         getDomainAccount: locator.get<GetDomainAccountByIdUseCase>(),
         getDomainFromSettings: locator.get<GetDomainFromSettingsUseCase>(),
         getSaldo: locator.get<GetSaldoDomainAccountUseCase>(),
-        getUltimaTransacao: locator.get<GetUltimaTransacaoDomainAccountUseCase>(),
+        getUltimaTransacao:
+            locator.get<GetUltimaTransacaoDomainAccountUseCase>(),
         listChavePix: locator.get<ListChavePixDomainAccountUseCase>(),
         listChavePixToSends: locator.get<GetPixToSendsByParamsUseCase>(),
         consultarDestinatario: locator.get<ConsultarAliasDestinatarioUseCase>(),

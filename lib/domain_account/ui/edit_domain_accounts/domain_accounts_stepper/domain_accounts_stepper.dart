@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/domain_account/data/models/domain_account_api_dto.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/domain_accounts_stepper/edit_domain_account_address/edit_address_form.dart';
 import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/domain_accounts_stepper/edit_domain_account_documents/edit_documents.dart';
@@ -56,7 +57,7 @@ class _DomainAccountStepperState extends State<DomainAccountStepper> {
           });
         }
       },
-      connectorColor: MaterialStateColor.resolveWith(
+      connectorColor: WidgetStateColor.resolveWith(
         (states) => Theme.of(context).colorScheme.primary,
       ),
       stepIconBuilder: (stepIndex, stepState) {
@@ -90,15 +91,17 @@ class _DomainAccountStepperState extends State<DomainAccountStepper> {
         return Row(
           children: details.stepIndex != 2
               ? <Widget>[
-                  TextButton(
-                    onPressed: details.onStepCancel,
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStateColor.resolveWith(
-                          (states) => details.stepIndex == 0
-                              ? Colors.grey
-                              : Theme.of(context).colorScheme.primary),
+                  OnHoverButton(
+                    child: TextButton(
+                      onPressed: details.onStepCancel,
+                      style: ButtonStyle(
+                        foregroundColor: WidgetStateColor.resolveWith(
+                            (states) => details.stepIndex == 0
+                                ? Colors.grey
+                                : Theme.of(context).colorScheme.primary),
+                      ),
+                      child: const Text('Anterior'),
                     ),
-                    child: const Text('Anterior'),
                   ),
                   const SizedBox(
                     width: 20,
@@ -107,82 +110,92 @@ class _DomainAccountStepperState extends State<DomainAccountStepper> {
                       ? StreamBuilder<bool>(
                           stream: widget.viewModel.form.isValid,
                           builder: (context, snapshot) {
-                            return TextButton(
-                              onPressed:
-                                  snapshot.data == true && snapshot.data != null
-                                      ? details.onStepContinue
-                                      : () {},
-                              style: ButtonStyle(
-                                foregroundColor: MaterialStateColor.resolveWith(
-                                    (states) => snapshot.data == true &&
-                                            snapshot.data != null
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Colors.grey),
+                            return OnHoverButton(
+                              child: TextButton(
+                                onPressed:
+                                    snapshot.data == true && snapshot.data != null
+                                        ? details.onStepContinue
+                                        : () {},
+                                style: ButtonStyle(
+                                  foregroundColor: WidgetStateColor.resolveWith(
+                                      (states) => snapshot.data == true &&
+                                              snapshot.data != null
+                                          ? Theme.of(context).colorScheme.primary
+                                          : Colors.grey),
+                                ),
+                                child: const Text('Próximo'),
                               ),
-                              child: const Text('Próximo'),
                             );
                           })
                       : details.stepIndex == 2
                           ? StreamBuilder<List<Map<String, dynamic>>>(
                               stream: widget.viewModel.fileList,
                               builder: (context, snapshot) {
-                                return TextButton(
-                                  onPressed: snapshot.data != null &&
-                                          snapshot.data!.isNotEmpty
-                                      ? details.onStepContinue
-                                      : () {},
-                                  style: ButtonStyle(
-                                    foregroundColor:
-                                        MaterialStateColor.resolveWith(
-                                            (states) => snapshot.data != null &&
-                                                    snapshot.data!.isNotEmpty
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .primary
-                                                : Colors.grey),
+                                return OnHoverButton(
+                                  child: TextButton(
+                                    onPressed: snapshot.data != null &&
+                                            snapshot.data!.isNotEmpty
+                                        ? details.onStepContinue
+                                        : () {},
+                                    style: ButtonStyle(
+                                      foregroundColor:
+                                          WidgetStateColor.resolveWith(
+                                              (states) => snapshot.data != null &&
+                                                      snapshot.data!.isNotEmpty
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : Colors.grey),
+                                    ),
+                                    child: const Text('Próximo'),
                                   ),
-                                  child: const Text('Próximo'),
                                 );
                               })
                           : StreamBuilder<bool>(
                               stream: widget.viewModel.formAddress.isValid,
                               builder: (context, snapshot) {
-                                return TextButton(
-                                  onPressed: snapshot.data == true &&
-                                          snapshot.data != null
-                                      ? details.onStepContinue
-                                      : () {},
-                                  style: ButtonStyle(
-                                    foregroundColor:
-                                        MaterialStateColor.resolveWith(
-                                            (states) => snapshot.data == true &&
-                                                    snapshot.data != null
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .primary
-                                                : Colors.grey),
+                                return OnHoverButton(
+                                  child: TextButton(
+                                    onPressed: snapshot.data == true &&
+                                            snapshot.data != null
+                                        ? details.onStepContinue
+                                        : () {},
+                                    style: ButtonStyle(
+                                      foregroundColor:
+                                          WidgetStateColor.resolveWith(
+                                              (states) => snapshot.data == true &&
+                                                      snapshot.data != null
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : Colors.grey),
+                                    ),
+                                    child: const Text('Próximo'),
                                   ),
-                                  child: const Text('Próximo'),
                                 );
                               })
                 ]
               : <Widget>[
-                  TextButton(
-                    onPressed: details.onStepCancel,
-                    child: const Text('Anterior'),
+                  OnHoverButton(
+                    child: TextButton(
+                      onPressed: details.onStepCancel,
+                      child: const Text('Anterior'),
+                    ),
                   ),
                   const SizedBox(
                     width: 20,
                   ),
-                  TextButton(
-                    onPressed: () => !widget.readOnly ? widget.onSubmit() : {},
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStateColor.resolveWith(
-                          (states) => !widget.readOnly
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey),
+                  OnHoverButton(
+                    child: TextButton(
+                      onPressed: () => !widget.readOnly ? widget.onSubmit() : {},
+                      style: ButtonStyle(
+                        foregroundColor: WidgetStateColor.resolveWith(
+                            (states) => !widget.readOnly
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.grey),
+                      ),
+                      child: const Text('Salvar'),
                     ),
-                    child: const Text('Salvar'),
                   ),
                 ],
         );

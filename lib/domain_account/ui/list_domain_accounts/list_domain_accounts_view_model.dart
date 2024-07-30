@@ -11,6 +11,7 @@ import 'package:viggo_pay_admin/domain_account/domain/usecases/change_active_dom
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_config_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_account_by_id_use_case.dart';
 import 'package:viggo_pay_admin/domain_account/domain/usecases/get_domain_accounts_by_params_use_case.dart';
+import 'package:viggo_pay_admin/domain_account/domain/usecases/resetar_tentativas_matera_use_case.dart';
 
 class ListDomainAccountViewModel extends BaseViewModel {
   final GetDomainAccountByIdUseCase getDomainAccount;
@@ -20,6 +21,7 @@ class ListDomainAccountViewModel extends BaseViewModel {
   final GetSelectedItemsUseCase getSelectedItems;
   final ClearSelectedItemsUseCase clearSelectedItems;
   final ChangeActiveDomainAccountUseCase changeActive;
+  final ResetarTentativasMateraUseCase resetarTentativas;
 
   final ListDomainFormFields form = ListDomainFormFields();
 
@@ -33,17 +35,14 @@ class ListDomainAccountViewModel extends BaseViewModel {
     required this.updateSelected,
     required this.clearSelectedItems,
     required this.getSelectedItems,
+    required this.resetarTentativas,
   });
 
-  final StreamController<List<DomainAccountApiDto>> domainsController =
-      StreamController.broadcast();
-  Stream<List<DomainAccountApiDto>> get domainAccounts =>
-      domainsController.stream;
+  final StreamController<List<DomainAccountApiDto>> domainsController = StreamController.broadcast();
+  Stream<List<DomainAccountApiDto>> get domainAccounts => domainsController.stream;
 
-  final StreamController<DomainAccountConfigApiDto?> configDomainController =
-      StreamController.broadcast();
-  Stream<DomainAccountConfigApiDto?> get configDomainAccount =>
-      configDomainController.stream;
+  final StreamController<DomainAccountConfigApiDto?> configDomainController = StreamController.broadcast();
+  Stream<DomainAccountConfigApiDto?> get configDomainAccount => configDomainController.stream;
 
   List<DomainAccountApiDto> _items = List.empty(growable: true);
 
@@ -87,8 +86,8 @@ class ListDomainAccountViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> getConfigInfo(String id) async {
-    if (isLoading) return;
+  Future<DomainAccountConfigApiDto?> getConfigInfo(String id) async {
+    if (isLoading) return null;
 
     setLoading();
     Map<String, String> filters = {'domain_account_id': id};
@@ -97,9 +96,12 @@ class ListDomainAccountViewModel extends BaseViewModel {
     setLoading();
     if (result.isRight && result.right.domainAccountTaxas.isNotEmpty) {
       configDomainController.sink.add(result.right.domainAccountTaxas[0]);
+      return result.right.domainAccountTaxas[0];
     } else if (result.isLeft) {
       postError(result.left.message);
+      return null;
     }
+    return null;
   }
 
   getEmptyConfigInfo(String id) {
@@ -135,5 +137,20 @@ class ListDomainAccountViewModel extends BaseViewModel {
       postError(result.left.message);
     }
     return null;
+  }
+
+  Future<bool?> resetarTentativasMatera(String id) async {
+    if (isLoading) return null;
+
+    setLoading();
+    var result = await resetarTentativas.invoke(id: id, body: {});
+
+    setLoading();
+    if (result.isRight) {
+      return true;
+    } else if (result.isLeft) {
+      postError(result.left.message);
+    }
+    return false;
   }
 }

@@ -12,6 +12,7 @@ class ConfigDomainAccountFormFields extends BaseForm {
     isRequired: true,
     validators: [
       Validator().isEmptyValue,
+      isBiggerThenZero,
     ],
   );
 
