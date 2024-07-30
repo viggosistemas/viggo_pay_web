@@ -82,9 +82,8 @@ jobs:
           echo "${{ secrets.NGINX_DEFAULT_CONF }}" > "$(pwd)/nginx.default.conf"
 
       - name: Release production
-        run: docker build --build-arg DIST_PATH=$build --build-arg NGINX_FILE=./nginx.default.conf --tag ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA --tag ghcr.io/$GITHUB_REPOSITORY:${{ github.event.inputs.versao }} .
+        run: docker build --build-arg DIST_PATH=$build --build-arg NGINX_FILE=./nginx.default.conf --tag ghcr.io/$GITHUB_REPOSITORY:${{ github.event.inputs.versao }} .
 
       - name: Publish release production
         run: |
-          docker push ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
           docker push ghcr.io/$GITHUB_REPOSITORY:${{ github.event.inputs.versao }}
