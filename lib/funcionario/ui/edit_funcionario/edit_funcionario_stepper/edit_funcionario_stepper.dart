@@ -136,7 +136,7 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
                         ? onContinue
                         : () {},
                     style: ButtonStyle(
-                      foregroundColor: MaterialStateColor.resolveWith(
+                      foregroundColor: WidgetStateColor.resolveWith(
                           (states) =>
                               snapshot.data == true && snapshot.data != null
                                   ? Theme.of(context).colorScheme.primary
@@ -163,7 +163,7 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
                         ? onContinue
                         : () {},
                     style: ButtonStyle(
-                      foregroundColor: MaterialStateColor.resolveWith(
+                      foregroundColor: WidgetStateColor.resolveWith(
                           (states) =>
                               snapshot.data == true && snapshot.data != null
                                   ? Theme.of(context).colorScheme.primary
@@ -210,7 +210,7 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
               });
             }
           },
-          connectorColor: MaterialStateColor.resolveWith(
+          connectorColor: WidgetStateColor.resolveWith(
             (states) => Theme.of(context).colorScheme.primary,
           ),
           // onStepTapped: (int index) {

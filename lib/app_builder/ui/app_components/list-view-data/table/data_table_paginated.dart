@@ -90,7 +90,7 @@ class DataSource extends DataTableSource {
                   row[key.split('.')[0]].toJson()[key.split('.')[1]], null)
       ],
       selected: row['selected'],
-      color: MaterialStateColor.resolveWith(
+      color: WidgetStateColor.resolveWith(
         (states) =>
             row['active'] == false ? Colors.red.withOpacity(0.7) : Colors.white,
       ),
@@ -492,7 +492,7 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
           // });
         });
       },
-      headingRowColor: MaterialStateColor.resolveWith(
+      headingRowColor: WidgetStateColor.resolveWith(
         (states) => Colors.grey.withOpacity(0.7),
       ),
       header: Row(
