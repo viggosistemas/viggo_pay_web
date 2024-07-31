@@ -1,0 +1,21 @@
+name: deploy-production
+
+on:
+  workflow_dispatch:
+    inputs:
+      versao:
+        description: 'Versão para o deploy'
+        required: true
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy in production
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_PROD }}
+          username: ${{ secrets.USERNAME_PROD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_LOCAL_SERVER }}
+          port: ${{ secrets.PORT_PROD }}
+          script: ${{ secrets.SCRIPT_DEPLOY_PROD }} ${{ github.event.inputs.versao }}
