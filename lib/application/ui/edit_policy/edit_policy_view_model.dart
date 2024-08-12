@@ -207,6 +207,13 @@ class EditPolicyViewModel extends BaseViewModel {
   //Adicona ou remove da lista de politicas disponiveis como selecionadas
   addOrRemove(dynamic value) {
     value['route'] = jsonDecode(jsonEncode(value['route']));
+    value['policies'] = value['policies'].map((val) {
+      if (val.runtimeType == PolicyApiDto) {
+        return val.toJson();
+      } else {
+        return PolicyApiDto.fromJson(val).toJson();
+      }
+    }).toList();
     value = CapabilityApiDto.fromJson(value);
     var list = policiesSelectedController.valueOrNull ?? [];
     if (list.isNotEmpty) {
