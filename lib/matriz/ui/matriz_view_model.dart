@@ -68,8 +68,8 @@ class MatrizViewModel extends BaseViewModel with RegisterDomainAccountDocumentsT
   final StreamController<DomainAccountConfigApiDto> _streamMatrizTaxaController = StreamController<DomainAccountConfigApiDto>.broadcast();
   Stream<DomainAccountConfigApiDto> get matrizTaxa => _streamMatrizTaxaController.stream;
 
-  final StreamController<ChavePixApiDto> _streamChavePixController = StreamController<ChavePixApiDto>.broadcast();
-  Stream<ChavePixApiDto> get chavePix => _streamChavePixController.stream;
+  final StreamController<List<ChavePixApiDto>> _streamChavePixController = StreamController<List<ChavePixApiDto>>.broadcast();
+  Stream<List<ChavePixApiDto>> get chavePix => _streamChavePixController.stream;
 
   final AlterarSenhaPixFormFields formSenha = AlterarSenhaPixFormFields();
 
@@ -278,11 +278,11 @@ class MatrizViewModel extends BaseViewModel with RegisterDomainAccountDocumentsT
           if (result.right[0].status != 'ACTIVE') {
             loadChavePix(materaId);
           } else {
-            _streamChavePixController.sink.add(result.right[0]);
+            _streamChavePixController.sink.add(result.right);
           }
         } else {
-          List<ChavePixApiDto> empytList = List.empty(growable: true);
-          _streamChavePixController.sink.add(empytList[0]);
+          List<ChavePixApiDto> emptyList = List.empty(growable: true);
+          _streamChavePixController.sink.add(emptyList);
         }
       }
     }

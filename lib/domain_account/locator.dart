@@ -1,3 +1,4 @@
+import 'package:viggo_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
 import 'package:viggo_core_frontend/localidades/domain/usecases/get_municipio_by_params_use_case.dart';
 import 'package:viggo_core_frontend/localidades/domain/usecases/search_cep_use_case.dart';
 import 'package:viggo_core_frontend/preferences/domain/preferences_settings.dart';
@@ -140,7 +141,8 @@ class DomainAccountLocator {
         updateSelected: locator.get<UpdateSelectedItemUsecase>(),
         clearSelectedItems: locator.get<ClearSelectedItemsUseCase>(),
         getSelectedItems: locator.get<GetSelectedItemsUseCase>(),
-        resetarTentativas: locator.get<ResetarTentativasMateraUseCase>()
+        resetarTentativas: locator.get<ResetarTentativasMateraUseCase>(),
+        getDomainFromSettingsUseCase: locator.get<GetDomainFromSettingsUseCase>()
       ),
     );
     locator.registerFactory(

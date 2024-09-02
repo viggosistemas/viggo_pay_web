@@ -317,29 +317,44 @@ class _MatrizInfoEditState extends State<MatrizInfoEdit> {
                                 Step(
                                   isActive: currentStep == 0,
                                   title: const Text('Editando informações'),
-                                  content: EditInfoEmpresa(viewModel: viewModel),
+                                  content: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: EditInfoEmpresa(viewModel: viewModel),
+                                  ),
                                 ),
                                 Step(
                                   isActive: currentStep == 1,
                                   title: const Text('Editando endereço'),
-                                  content: EditInfoEndereco(viewModel: viewModel),
+                                  content: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: EditInfoEndereco(viewModel: viewModel),
+                                  ),
                                 ),
                                 Step(
                                   isActive: currentStep == 2,
                                   title: const Text('Editando documentos'),
-                                  content: EditInfoDocumentos(viewModel: viewModel, constraints: constraints),
+                                  content: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: EditInfoDocumentos(viewModel: viewModel, constraints: constraints),
+                                  ),
                                 ),
                                 Step(
                                   isActive: currentStep == 3,
                                   title: const Text('Editando taxa'),
-                                  content: EditTaxaEmpresa(viewModel: viewModel),
+                                  content: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: EditTaxaEmpresa(viewModel: viewModel),
+                                  ),
                                 ),
                                 Step(
                                   isActive: currentStep == 4,
                                   title: const Text('Chave pix'),
-                                  content: EditChavePix(
-                                    viewModel: viewModel,
-                                    materaId: snapshot.data!.materaId!,
+                                  content: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: EditChavePix(
+                                      viewModel: viewModel,
+                                      materaId: snapshot.data!.materaId!,
+                                    ),
                                   ),
                                 ),
                               ],

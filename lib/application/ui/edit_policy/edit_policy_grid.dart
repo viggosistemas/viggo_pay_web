@@ -325,10 +325,10 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    selectedPolicies.isEmpty
+                    roleSelected == null
                         ? Center(
                             child: Text(
-                              roleSelected == null ? 'Selecione um papel' : 'Nenhum resultado encontrado pro papel - ${roleSelected!.name}',
+                              'Selecione um papel',
                               style: Theme.of(context).textTheme.titleLarge!,
                             ),
                           )

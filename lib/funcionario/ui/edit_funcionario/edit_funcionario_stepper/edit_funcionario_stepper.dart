@@ -259,27 +259,36 @@ class _FuncionarioStepperState extends State<FuncionarioStepper> {
               isActive: _index == 0,
               title: const Visibility(child: Text('')),
               label: const Text('Dados'),
-              content: EditFuncionarioForm(
-                viewModel: widget.viewModel,
-                entity: widget.entity,
+              content: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: EditFuncionarioForm(
+                  viewModel: widget.viewModel,
+                  entity: widget.entity,
+                ),
               ),
             ),
             Step(
               isActive: _index == 1,
               label: const Text('Endereço'),
               title: const Visibility(child: Text('')),
-              content: EditEnderecoForm(
-                viewModel: widget.viewModel,
-                entity: initFormEndereco(),
+              content: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: EditEnderecoForm(
+                  viewModel: widget.viewModel,
+                  entity: initFormEndereco(),
+                ),
               ),
             ),
             Step(
               isActive: _index == 2,
               label: const Text('Contatos'),
               title: const Visibility(child: Text('')),
-              content: EditContatoForm(
-                viewModel: widget.viewModel,
-                entity: initFormContato(),
+              content: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: EditContatoForm(
+                  viewModel: widget.viewModel,
+                  entity: initFormContato(),
+                ),
               ),
             ),
           ],
