@@ -46,13 +46,67 @@ class _EditChavePixState extends State<EditChavePix> {
               width: double.infinity,
               child: Row(
                 children: [
-                  StreamBuilder<ChavePixApiDto>(
+                  StreamBuilder<List<ChavePixApiDto>>(
                       stream: widget.viewModel.chavePix,
                       builder: (context, chavePixData) {
                         if (chavePixData.data == null) {
                           // widget.viewModel.onCreateChavePix(context, widget.materaId);
                           widget.viewModel.loadChavePix(widget.materaId);
                           return const Text('');
+                        } else if (chavePixData.data!.isEmpty) {
+                          return Row(
+                            children: [
+                              const Icon(
+                                Icons.key,
+                                color: Colors.yellow,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Tooltip(
+                                message: constraints.maxWidth < 960 ? 'Chave PIX: ${chavePixData.data![0].name}' : '',
+                                child: Text(
+                                  'Sem chave PIX cadastrada!',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.lato(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ),
+                              widget.viewModel.validarPelasRotas('POST', '/pay_facs/add_chave_pix')
+                                  ? OnHoverButton(
+                                      child: IconButton(
+                                        onPressed: () async {
+                                          var result = await Dialogs(context: context).showConfirmDialog(
+                                            {
+                                              'title_text': 'Adicionar chave pix',
+                                              'title_icon': Icons.pix,
+                                              'message':
+                                                  'Ao confirmar a adição de uma chave PIX será necessário aguardar uns instantes para a validação da nova chave registrada para sua conta. Deseja prosseguir?'
+                                            },
+                                            width: 500,
+                                          );
+                                          if (result && context.mounted) {
+                                            var result2 = await widget.viewModel.onCreateChavePix(
+                                              context,
+                                              widget.materaId,
+                                            );
+                                            if (result2) {
+                                              widget.viewModel.loadChavePix(widget.materaId);
+                                            }
+                                          }
+                                        },
+                                        icon: Icon(
+                                          Icons.add_box_outlined,
+                                          color: Theme.of(context).colorScheme.primary,
+                                        ),
+                                        tooltip: 'Adicionar nova chave PIX',
+                                      ),
+                                    )
+                                  : const Text(''),
+                            ],
+                          );
                         } else {
                           return Row(
                             children: [
@@ -64,11 +118,11 @@ class _EditChavePixState extends State<EditChavePix> {
                                 width: 5,
                               ),
                               Tooltip(
-                                message: constraints.maxWidth < 960 ? 'Chave PIX: ${chavePixData.data!.name}' : '',
+                                message: constraints.maxWidth < 960 ? 'Chave PIX: ${chavePixData.data![0].name}' : '',
                                 child: Text(
                                   constraints.maxWidth < 960
-                                      ? 'Chave PIX: ${chavePixData.data!.name.substring(0, 20)}...'
-                                      : 'Chave PIX: ${chavePixData.data!.name}',
+                                      ? 'Chave PIX: ${chavePixData.data![0].name.substring(0, 20)}...'
+                                      : 'Chave PIX: ${chavePixData.data![0].name}',
                                   overflow: TextOverflow.ellipsis,
                                   style: GoogleFonts.lato(
                                     fontSize: 16,
@@ -78,7 +132,7 @@ class _EditChavePixState extends State<EditChavePix> {
                               ),
                               widget.viewModel.validarPelasRotas('PUT', '/domain_accounts/<id>/update_password')
                                   ? OnHoverButton(
-                                      child: chavePixData.data!.status != 'ACTIVE'
+                                      child: chavePixData.data![0].status != 'ACTIVE'
                                           ? IconButton(
                                               onPressed: () => {},
                                               icon: const Icon(
@@ -110,7 +164,7 @@ class _EditChavePixState extends State<EditChavePix> {
                                   : const Text(''),
                               widget.viewModel.validarPelasRotas('POST', '/pay_facs/deletar_chave_pix') &&
                                       widget.viewModel.validarPelasRotas('POST', '/pay_facs/add_chave_pix') &&
-                                      chavePixData.data!.status == 'ACTIVE'
+                                      chavePixData.data![0].status == 'ACTIVE'
                                   ? OnHoverButton(
                                       child: IconButton(
                                         onPressed: () async {
@@ -126,7 +180,7 @@ class _EditChavePixState extends State<EditChavePix> {
                                           if (result && context.mounted) {
                                             var result2 = await widget.viewModel.onRemoveChavePix(
                                               context,
-                                              chavePixData.data!.name,
+                                              chavePixData.data![0].name,
                                               widget.materaId,
                                             );
                                             if (result2) {

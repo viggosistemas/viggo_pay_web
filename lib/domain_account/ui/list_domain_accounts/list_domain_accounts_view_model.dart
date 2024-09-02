@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:viggo_core_frontend/base/base_view_model.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
+import 'package:viggo_core_frontend/domain/domain/usecases/get_domain_from_settings_use_case.dart';
 import 'package:viggo_core_frontend/domain/ui/list_domain_form_fields.dart';
 import 'package:viggo_core_frontend/preferences/domain/usecases/clear_selected_items_use_case.dart';
 import 'package:viggo_core_frontend/preferences/domain/usecases/get_selected_items_use_case.dart';
@@ -22,6 +24,7 @@ class ListDomainAccountViewModel extends BaseViewModel {
   final ClearSelectedItemsUseCase clearSelectedItems;
   final ChangeActiveDomainAccountUseCase changeActive;
   final ResetarTentativasMateraUseCase resetarTentativas;
+  final GetDomainFromSettingsUseCase getDomainFromSettingsUseCase;
 
   final ListDomainFormFields form = ListDomainFormFields();
 
@@ -36,6 +39,7 @@ class ListDomainAccountViewModel extends BaseViewModel {
     required this.clearSelectedItems,
     required this.getSelectedItems,
     required this.resetarTentativas,
+    required this.getDomainFromSettingsUseCase,
   });
 
   final StreamController<List<DomainAccountApiDto>> domainsController = StreamController.broadcast();
@@ -76,6 +80,7 @@ class ListDomainAccountViewModel extends BaseViewModel {
         value != null ? filters[e] = value : value;
       }
     }
+    filters['domain.parent_id'] = DomainApiDto.fromJson(getDomainFromSettingsUseCase.invoke()!.toJson()).id;
 
     var result = await getDomainAccounts.invoke(filters: filters);
     setLoading();

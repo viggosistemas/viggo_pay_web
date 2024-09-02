@@ -20,7 +20,7 @@ class EditInfoEnderecoFormFields extends BaseForm {
     ],
   );
   final complemento = StringField(
-    isRequired: true,
+    // isRequired: true,
     validators: [
       Validator().isEmptyValue,
       FieldLengthValidator().maiorQ500,
