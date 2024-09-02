@@ -204,28 +204,37 @@ class _DomainAccountStepperState extends State<DomainAccountStepper> {
         Step(
           isActive: currentStep == 0,
           title: const Text('Dados da empresa'),
-          content: EditDomainAccountInfo(
-            entity: widget.entity,
-            viewModel: widget.viewModel,
-            readOnly: widget.readOnly,
+          content: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: EditDomainAccountInfo(
+              entity: widget.entity,
+              viewModel: widget.viewModel,
+              readOnly: widget.readOnly,
+            ),
           ),
         ),
         Step(
           isActive: currentStep == 1,
           title: const Text('Endereço da empresa'),
-          content: EditDomainAccountAddress(
-            readOnly: widget.readOnly,
-            entity: widget.entity,
-            viewModel: widget.viewModel,
+          content: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: EditDomainAccountAddress(
+              readOnly: widget.readOnly,
+              entity: widget.entity,
+              viewModel: widget.viewModel,
+            ),
           ),
         ),
         Step(
           isActive: currentStep == 2,
           title: const Text('Documentos da empresa'),
-          content: EditDomainAccountDocuments(
-            readOnly: widget.readOnly,
-            viewModel: widget.viewModel,
-            entity: widget.entity,
+          content: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: EditDomainAccountDocuments(
+              readOnly: widget.readOnly,
+              viewModel: widget.viewModel,
+              entity: widget.entity,
+            ),
           ),
         ),
       ],
