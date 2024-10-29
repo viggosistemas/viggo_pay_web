@@ -20,6 +20,7 @@ import 'package:viggo_core_frontend/token/data/models/login_command.dart';
 import 'package:viggo_core_frontend/token/domain/usecases/login_use_case.dart';
 import 'package:viggo_core_frontend/token/domain/usecases/set_token_use_case.dart';
 import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/get_roles_from_user_by_id_use_case.dart';
 import 'package:viggo_core_frontend/user/domain/usecases/get_routes_from_user_use_case.dart';
 import 'package:viggo_core_frontend/user/domain/usecases/get_user_by_id_use_case.dart';
 import 'package:viggo_core_frontend/user/domain/usecases/get_user_use_case.dart';
@@ -38,6 +39,7 @@ class LoginViewModel extends BaseViewModel {
   final GetRememberCredentialUseCase getRememberCredential;
   final GetUserByIdUseCase getUserById;
   final GetRoutesFromUserUseCase getRoutesFromUser;
+  final GetRolesFromUserIdUseCase getRolesFromUserById;
 
   final ClearRememberCredentialUseCase clearRememberCredential;
 
@@ -54,20 +56,15 @@ class LoginViewModel extends BaseViewModel {
 
   final LoginFormFields form = LoginFormFields();
 
-  final StreamController<DomainApiDto?> _streamControllerDomain =
-      StreamController<DomainApiDto?>.broadcast();
+  final StreamController<DomainApiDto?> _streamControllerDomain = StreamController<DomainApiDto?>.broadcast();
 
-  final StreamController<UserApiDto?> _streamControllerUser =
-      StreamController<UserApiDto?>.broadcast();
+  final StreamController<UserApiDto?> _streamControllerUser = StreamController<UserApiDto?>.broadcast();
 
-  final StreamController<List<RouteApiDto>?> _streamControllerRoutes =
-      StreamController<List<RouteApiDto>?>.broadcast();
+  final StreamController<List<RouteApiDto>?> _streamControllerRoutes = StreamController<List<RouteApiDto>?>.broadcast();
 
-  final StreamController<bool> _streamController =
-      StreamController<bool>.broadcast();
+  final StreamController<bool> _streamController = StreamController<bool>.broadcast();
 
-  final StreamController<String> _streamControllerError =
-      StreamController<String>.broadcast();
+  final StreamController<String> _streamControllerError = StreamController<String>.broadcast();
 
   Stream<bool> get isLogged => _streamController.stream;
   Stream<String> get isError => _streamControllerError.stream;
@@ -75,25 +72,26 @@ class LoginViewModel extends BaseViewModel {
   Stream<UserApiDto?> get userDto => _streamControllerUser.stream;
   Stream<List<RouteApiDto>?> get routesDto => _streamControllerRoutes.stream;
 
-  LoginViewModel({
-    required this.sharedPrefs,
-    required this.login,
-    required this.parseImage,
-    required this.clearRememberCredential,
-    required this.getAppState,
-    required this.getDomainFromSettings,
-    required this.getUserFromSettings,
-    required this.getRoutesFromSettings,
-    required this.getRoutesFromUser,
-    required this.getDomainByName,
-    required this.getRememberCredential,
-    required this.getUserById,
-    required this.setUser,
-    required this.setToken,
-    required this.setRoutes,
-    required this.setDomain,
-    required this.setRememberCredential,
-  }) {
+  LoginViewModel(
+      {required this.sharedPrefs,
+      required this.login,
+      required this.parseImage,
+      required this.clearRememberCredential,
+      required this.getAppState,
+      required this.getDomainFromSettings,
+      required this.getUserFromSettings,
+      required this.getRoutesFromSettings,
+      required this.getRoutesFromUser,
+      required this.getDomainByName,
+      required this.getRememberCredential,
+      required this.getUserById,
+      required this.getRolesFromUserById,
+      required this.setUser,
+      required this.setToken,
+      required this.setRoutes,
+      required this.setDomain,
+      required this.setRememberCredential
+    }) {
     getCredentials();
     getAppState.invoke().forEach((element) {
       if (!_streamController.isClosed) {
@@ -168,14 +166,26 @@ class LoginViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> funGetUserById(String userId) async {
-    var result = await getUserById.invoke(id: userId);
+  Future<void> funGetRolesFromUser(UserApiDto user) async {
+    var result = await getRolesFromUserById.invoke(id: user.id);
     if (result.isLeft) {
       if (!_streamControllerError.isClosed) {
         _streamControllerError.sink.add(result.left.message);
       }
     } else {
-      setUser.invoke(result.right);
+      user.roles = result.right;
+      setUser.invoke(user);
+    }
+  }
+
+  Future<void> funGetUserById(String userId) async {
+    var result = await getUserById.invoke(id: userId, include: 'domain.application,domain.addresses.municipio,domain.addresses.pais');
+    if (result.isLeft) {
+      if (!_streamControllerError.isClosed) {
+        _streamControllerError.sink.add(result.left.message);
+      }
+    } else {
+      await funGetRolesFromUser(result.right);
     }
   }
 
@@ -183,9 +193,9 @@ class LoginViewModel extends BaseViewModel {
     Function showMsg,
     BuildContext context,
   ) async {
-    if(isLoading) return;
+    if (isLoading) return;
     setLoading();
-    
+
     var formFields = form.getValues();
 
     LoginCommand loginCommand = LoginCommand();

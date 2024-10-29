@@ -4,20 +4,20 @@ import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
-import 'package:viggo_pay_admin/user/ui/list_users/list_users_grid.dart';
-import 'package:viggo_pay_admin/usuarios_por_dominio/ui/list_users_domain_view_model.dart';
+import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_grid.dart';
+import 'package:viggo_pay_admin/dominios_por_matriz/ui/list_domains_matriz_view_model.dart';
 
 // ignore: must_be_immutable
-class ListUsersDomainGrid extends StatefulWidget {
-  ListUsersDomainGrid({super.key});
+class ListDomainsMatrizGrid extends StatefulWidget {
+  ListDomainsMatrizGrid({super.key});
 
-  ListUsersDomainViewModel viewModel = locator.get<ListUsersDomainViewModel>();
+  ListDomainsMatrizViewModel viewModel = locator.get<ListDomainsMatrizViewModel>();
 
   @override
-  State<ListUsersDomainGrid> createState() => _ListUsersDomainGridState();
+  State<ListDomainsMatrizGrid> createState() => _ListDomainsMatrizGridState();
 }
 
-class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
+class _ListDomainsMatrizGridState extends State<ListDomainsMatrizGrid> {
   bool selected = false;
   final domainFieldControll = TextEditingController();
 
@@ -43,12 +43,14 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
                     optionsBuilder: (TextEditingValue textEditingValue) async {
                       if (textEditingValue.text.isEmpty) {
                         var options = await widget.viewModel.loadDomains({
+                          'parent_id': 'null',
                           'list_options': ListOptions.ACTIVE_ONLY.name,
                           'order_by': 'name'
                         });
                         return options!.where((element) => true);
                       } else {
                         var options = await widget.viewModel.loadDomains({
+                          'parent_id': 'null',
                           'list_options': ListOptions.ACTIVE_ONLY.name,
                           'order_by': 'name',
                           'name': '%${textEditingValue.text}%'
@@ -94,7 +96,7 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
                     ) {
                       return TextFormField(
                         decoration: InputDecoration(
-                          labelText: 'Domínio',
+                          labelText: 'Matriz',
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           floatingLabelAlignment: FloatingLabelAlignment.start,
                           border: const OutlineInputBorder(),
@@ -152,13 +154,13 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
                       !selected) {
                     return Center(
                       child: Text(
-                        'Selecione um domínio!',
+                        'Selecione uma matriz!',
                         style: Theme.of(context).textTheme.titleMedium!,
                       ),
                     );
                   } else {
-                    return ListUsersGrid(
-                      domainId: snapshot.data!,
+                    return ListDomainAccountsGrid(
+                      parentId: snapshot.data!,
                     );
                   }
                 },
