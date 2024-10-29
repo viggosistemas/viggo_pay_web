@@ -39,12 +39,14 @@ class MenuViewModel {
     ));
 
     List<Destination> dymamicsMenus = buildMenu(routes, menuItems);
+    var isSysadmin = userDto!.roles!.where((e) => e.name.toUpperCase() == 'SYSADMIN').toList().isNotEmpty;
+    var isSuporte = userDto.roles!.where((e) => e.name.toUpperCase() == 'SUPORTE').toList().isNotEmpty;
 
-    if (userDto != null && userDto.name == 'sysadmin') {
+    if (isSysadmin || isSuporte) {
       menu.addAll(createSysadminMenu(routes));
+    } else {
+      menu.addAll(createAdminMenu(routes));
     }
-
-    menu.addAll(createAdminMenu(routes));
 
     if (dymamicsMenus.isNotEmpty) {
       dymamicsMenus.sort((a, b) => a.index.compareTo(b.index));
@@ -90,8 +92,7 @@ class MenuViewModel {
     } else {
       for (var route in routes) {
         for (var urlCompare in urls) {
-          if (urlCompare.contains(route.url) &&
-              !grantURLs.contains(route.url)) {
+          if (urlCompare.contains(route.url) && !grantURLs.contains(route.url)) {
             grantURLs.add(route.url);
           }
         }
@@ -151,6 +152,16 @@ class MenuViewModel {
         ['/domains/<id>/settings'],
         ['/DELETE'],
         Icons.engineering_outlined,
+      ),
+      Destination(
+        'Domínios por matriz',
+        const Icon(Icons.account_tree_outlined),
+        7,
+        const Icon(Icons.account_tree_outlined),
+        Routes.MATRIZ_DOMAIN,
+        ['/domain_account_taxas/<id>'],
+        ['/DELETE'],
+        Icons.account_tree_outlined,
       ),
     ]);
     return submenu;

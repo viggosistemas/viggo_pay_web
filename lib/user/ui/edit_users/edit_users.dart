@@ -15,7 +15,7 @@ class EditUsers {
   Future addDialog() {
     onSubmit() {
       viewModel.submit(null, showInfoMessage, context);
-      Navigator.of(context).pop(true);
+      // Navigator.of(context).pop(true);
     }
 
     viewModel.isSuccess.listen((value) {
@@ -28,7 +28,7 @@ class EditUsers {
         () {},
         Colors.white,
       );
-      // Navigator.pop(context, true);
+      Navigator.pop(context, true);
     });
 
     viewModel.errorMessage.listen(

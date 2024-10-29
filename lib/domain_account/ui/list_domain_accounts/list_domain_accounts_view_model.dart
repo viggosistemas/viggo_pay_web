@@ -68,7 +68,7 @@ class ListDomainAccountViewModel extends BaseViewModel {
     return DomainAccountApiDto.fromJson(entity);
   }
 
-  Future<void> loadData(Map<String, String> filters) async {
+  Future<void> loadData(Map<String, String> filters, bool filteredByLoggedMatriz) async {
     if (isLoading) return;
 
     setLoading();
@@ -80,7 +80,7 @@ class ListDomainAccountViewModel extends BaseViewModel {
         value != null ? filters[e] = value : value;
       }
     }
-    filters['domain.parent_id'] = DomainApiDto.fromJson(getDomainFromSettingsUseCase.invoke()!.toJson()).id;
+    if(filteredByLoggedMatriz) filters['domain.parent_id'] = DomainApiDto.fromJson(getDomainFromSettingsUseCase.invoke()!.toJson()).id;
 
     var result = await getDomainAccounts.invoke(filters: filters);
     setLoading();

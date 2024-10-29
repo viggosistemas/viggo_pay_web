@@ -37,41 +37,46 @@ class DataSource extends DataTableSource {
     notifyListeners();
   }
 
-  DataCell cellFor(dynamic data, String? key) {
-    String value;
-    if (data is DateTime) {
-      value =
-          '${data.day.toString().padLeft(2, '0')}/${data.month.toString().padLeft(2, '0')}/${data.year}';
+  String seeRowDatas(dynamic data, String value, String? key) {
+    if (data == null) {
+      value = '-';
+      counter++;
+      if (labelInclude.length == counter) {
+        counter = 0;
+      }
     } else {
-      if (data == null) {
-        value = '-';
+      if (data is String) {
+        value = data.toString();
+        if (key == 'client_tax_identifier_tax_id') {
+          value = FormatMask().formated(value);
+        }
+      } else if (data is bool) {
+        value = data == true ? 'Sim' : 'Não';
+      } else if (data is Enum) {
+        value = data.name.replaceAll('_', ' ');
+      } else {
+        var dataString = jsonEncode(data);
+        value = jsonDecode(dataString)[labelInclude[counter]].toString();
+        if (labelInclude[counter] == 'cpf_cnpj') {
+          value = FormatMask().formated(jsonDecode(dataString)[labelInclude[counter]].toString());
+        } else {
+          value = seeRowDatas(jsonDecode(dataString)[labelInclude[counter]], value, key);
+        }
         counter++;
         if (labelInclude.length == counter) {
           counter = 0;
         }
-      } else {
-        if (data is String) {
-          value = data.toString();
-          if (key == 'client_tax_identifier_tax_id') {
-            value = FormatMask().formated(value);
-          }
-        } else if (data is bool) {
-          value = data == true ? 'Sim' : 'Não';
-        } else if(data is Enum) {
-          value = data.name.replaceAll('_', ' ');
-        }else {
-          var dataString = jsonEncode(data);
-          value = jsonDecode(dataString)[labelInclude[counter]].toString();
-          if (labelInclude[counter] == 'cpf_cnpj') {
-            value = FormatMask().formated(
-                jsonDecode(dataString)[labelInclude[counter]].toString());
-          }
-          counter++;
-          if (labelInclude.length == counter) {
-            counter = 0;
-          }
-        }
       }
+    }
+    return value;
+  }
+
+  DataCell cellFor(dynamic data, String? key) {
+    String value = '';
+    if (data is DateTime) {
+      value = '${data.day.toString().padLeft(2, '0')}/${data.month.toString().padLeft(2, '0')}/${data.year}';
+    } else {
+      value = seeRowDatas(data, value, key);
     }
     return DataCell(Text(value));
   }
@@ -84,15 +89,11 @@ class DataSource extends DataTableSource {
     return DataRow(
       cells: <DataCell>[
         for (var key in fieldsData)
-          key.split('.').length == 1
-              ? cellFor(row[key], key)
-              : cellFor(
-                  row[key.split('.')[0]].toJson()[key.split('.')[1]], null)
+          key.split('.').length == 1 ? cellFor(row[key], key) : cellFor(row[key.split('.')[0]].toJson()[key.split('.')[1]], null)
       ],
       selected: row['selected'],
       color: WidgetStateColor.resolveWith(
-        (states) =>
-            row['active'] == false ? Colors.red.withOpacity(0.7) : Colors.white,
+        (states) => row['active'] == false ? Colors.red.withOpacity(0.7) : Colors.white,
       ),
       onSelectChanged: (value) {
         // if (row['selected'] != value) {
@@ -201,18 +202,14 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
     List<Map<String, dynamic>> grantURLs = [];
     if (checkRoutes) {
       for (var urlCompare in urls) {
-        var index = routes.indexWhere((route) =>
-            urlCompare['url'].contains(route.url) &&
-            urlCompare['method'].contains(route.method.name));
+        var index = routes.indexWhere((route) => urlCompare['url'].contains(route.url) && urlCompare['method'].contains(route.method.name));
         if (index >= 0) {
-          grantURLs.add(
-              {'url': routes[index].url, 'method': routes[index].method.name});
+          grantURLs.add({'url': routes[index].url, 'method': routes[index].method.name});
         }
       }
     } else {
       for (var urlCompare in urls) {
-        var index =
-            routes.indexWhere((route) => urlCompare['url'].contains(route.url));
+        var index = routes.indexWhere((route) => urlCompare['url'].contains(route.url));
         if (index >= 0) {
           grantURLs.add({
             'url': routes[index].url,
@@ -242,9 +239,7 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
       true,
     );
     for (var rota in grantURLs) {
-      int itemIndex = actions.indexWhere((v) =>
-          v['backendUrl']!.contains(rota['url']) &&
-          v['method']!.contains(rota['method']));
+      int itemIndex = actions.indexWhere((v) => v['backendUrl']!.contains(rota['url']) && v['method']!.contains(rota['method']));
       if (itemIndex >= 0 && actions[itemIndex]['method'] == 'POST') {
         actionsBtn.add(
           OnHoverButton(
@@ -314,14 +309,10 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
     if (widget.actions.isEmpty || widget.appendActions) {
       widget.appendActions = false;
       List<Widget> actionsDefault = [];
-      List<String>? routesJson =
-          widget.sharedPrefres.getStringList(CoreUserPreferences.ROUTES)!;
+      List<String>? routesJson = widget.sharedPrefres.getStringList(CoreUserPreferences.ROUTES)!;
       actionsDefault.addAll(
         validAction(
-          routesJson
-              .map<RouteApiDto>(
-                  (element) => RouteApiDto.fromJson(jsonDecode(element)))
-              .toList(),
+          routesJson.map<RouteApiDto>((element) => RouteApiDto.fromJson(jsonDecode(element))).toList(),
           widget.validActionsList,
         ),
       );
@@ -363,11 +354,9 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
   }
 
   void onEditEntity() {
-    var len =
-        dataSource.sortedData.where((element) => element['selected']).length;
+    var len = dataSource.sortedData.where((element) => element['selected']).length;
     if (len == 1) {
-      var entity =
-          dataSource.sortedData.firstWhere((element) => element['selected']);
+      var entity = dataSource.sortedData.firstWhere((element) => element['selected']);
       var catchEntity = widget.viewModel.catchEntity(entity['id']) as Future;
       catchEntity.then((value) async {
         var result = await widget.dialogs.editDialog(value);
@@ -380,12 +369,9 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
 
   void onChangeActive() async {
     List<Map<String, dynamic>> entities = [];
-    var selecteds =
-        dataSource.sortedData.where((element) => element['selected']);
-    var isActiveOnly =
-        selecteds.where((element) => element['active'] == true).toList();
-    var isInactiveOnly =
-        selecteds.where((element) => element['active'] == false).toList();
+    var selecteds = dataSource.sortedData.where((element) => element['selected']);
+    var isActiveOnly = selecteds.where((element) => element['active'] == true).toList();
+    var isInactiveOnly = selecteds.where((element) => element['active'] == false).toList();
 
     if (isActiveOnly.isNotEmpty && isInactiveOnly.isEmpty) {
       for (var e in isActiveOnly) {
@@ -400,12 +386,10 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
       var result = await Dialogs(context: context).showConfirmDialog({
         'title_text': 'Inativando itens',
         'title_icon': Icons.person_add_disabled_outlined,
-        'message':
-            'Você tem certeza que deseja executar essa ação?\n${entities.length.toString() + ' itens'.toUpperCase()} serão inativados.'
+        'message': 'Você tem certeza que deseja executar essa ação?\n${entities.length.toString() + ' itens'.toUpperCase()} serão inativados.'
       });
       if (result != null && result == true) {
-        var resultChange =
-            await widget.viewModel.changeActive.invoke(entities: entities);
+        var resultChange = await widget.viewModel.changeActive.invoke(entities: entities);
         Timer(const Duration(milliseconds: 500), () {
           if (resultChange != null && resultChange == true) {
             onReloadData();
@@ -425,12 +409,10 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
       var result = await Dialogs(context: context).showConfirmDialog({
         'title_text': 'Ativando itens',
         'title_icon': Icons.person_add_outlined,
-        'message':
-            'Você tem certeza que deseja executar essa ação?\n${entities.length.toString() + ' itens'.toUpperCase()} serão ativados.'
+        'message': 'Você tem certeza que deseja executar essa ação?\n${entities.length.toString() + ' itens'.toUpperCase()} serão ativados.'
       });
       if (result != null && result == true) {
-        var resultChange =
-            await widget.viewModel.changeActive.invoke(entities: entities);
+        var resultChange = await widget.viewModel.changeActive.invoke(entities: entities);
         Timer(const Duration(milliseconds: 500), () {
           if (resultChange != null && resultChange == true) {
             onReloadData();
@@ -441,11 +423,9 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
   }
 
   void onSeeInfoData() {
-    var len =
-        dataSource.sortedData.where((element) => element['selected']).length;
+    var len = dataSource.sortedData.where((element) => element['selected']).length;
     if (len == 1) {
-      var entity =
-          dataSource.sortedData.firstWhere((element) => element['selected']);
+      var entity = dataSource.sortedData.firstWhere((element) => element['selected']);
       var catchEntity = widget.viewModel.catchEntity(entity['id']) as Future;
       catchEntity.then((value) async {
         var result = await widget.dialogs.infoDataDialog(value);
@@ -475,80 +455,80 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
   Widget build(BuildContext context) {
     initializeTable();
 
-    return //widget.items.isNotEmpty ?
-        PaginatedDataTable(
-      // sortColumnIndex: _columnIndex,
-      // sortAscending: _columnAscending,
-      availableRowsPerPage: const [5, 10, 25, 50],
-      showEmptyRows: false,
-      onRowsPerPageChanged: (value) {
-        setState(() {
-          _pageSize = value!;
-          // widget.viewModel.loadData(_currentPage, _pageSize, true);
-          // widget.viewModel.domains.listen((value) {
-          //   dataSource.setData(value.map((e) {
-          //     return e.toJson();
-          //   }).toList());
-          // });
-        });
-      },
-      headingRowColor: WidgetStateColor.resolveWith(
-        (states) => Colors.grey.withOpacity(0.7),
-      ),
-      header: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Text(widget.titleTable),
-          Row(
-            children: [
-              ...widget.actions.toList(),
-            ],
+    return widget.items.isNotEmpty
+        ? PaginatedDataTable(
+            // sortColumnIndex: _columnIndex,
+            // sortAscending: _columnAscending,
+            availableRowsPerPage: const [5, 10, 25, 50],
+            showEmptyRows: false,
+            onRowsPerPageChanged: (value) {
+              setState(() {
+                _pageSize = value!;
+                // widget.viewModel.loadData(_currentPage, _pageSize, true);
+                // widget.viewModel.domains.listen((value) {
+                //   dataSource.setData(value.map((e) {
+                //     return e.toJson();
+                //   }).toList());
+                // });
+              });
+            },
+            headingRowColor: WidgetStateColor.resolveWith(
+              (states) => Colors.grey.withOpacity(0.7),
+            ),
+            header: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(widget.titleTable),
+                Row(
+                  children: [
+                    ...widget.actions.toList(),
+                  ],
+                )
+              ],
+            ),
+            rowsPerPage: _pageSize,
+            arrowHeadColor: Theme.of(context).colorScheme.primary,
+            onPageChanged: (value) {
+              setState(() {
+                //COMPARA OS INDEX DA PRIMEIRA LINHA SE FOREM IGUAIS SOMO UMA PAGINA
+                var last = dataSource.sortedData.last;
+                var lastIndex = dataSource.sortedData.lastIndexOf(last);
+                if (value == lastIndex) {
+                  _currentPage++;
+                } else {
+                  _currentPage--;
+                }
+                // widget.viewModel.loadData(_currentPage, _pageSize, true);
+                // widget.viewModel.domains.listen((value) {
+                //   dataSource.setData(value.map((e) {
+                //     return e.toJson();
+                //   }).toList());
+                // });
+              });
+            },
+            initialFirstRowIndex: _currentPage,
+            showFirstLastButtons: true,
+            showCheckboxColumn: true,
+            columns: widget.columnsDef,
+            source: dataSource,
           )
-        ],
-      ),
-      rowsPerPage: _pageSize,
-      arrowHeadColor: Theme.of(context).colorScheme.primary,
-      onPageChanged: (value) {
-        setState(() {
-          //COMPARA OS INDEX DA PRIMEIRA LINHA SE FOREM IGUAIS SOMO UMA PAGINA
-          var last = dataSource.sortedData.last;
-          var lastIndex = dataSource.sortedData.lastIndexOf(last);
-          if (value == lastIndex) {
-            _currentPage++;
-          } else {
-            _currentPage--;
-          }
-          // widget.viewModel.loadData(_currentPage, _pageSize, true);
-          // widget.viewModel.domains.listen((value) {
-          //   dataSource.setData(value.map((e) {
-          //     return e.toJson();
-          //   }).toList());
-          // });
-        });
-      },
-      initialFirstRowIndex: _currentPage,
-      showFirstLastButtons: true,
-      showCheckboxColumn: true,
-      columns: widget.columnsDef,
-      source: dataSource,
-    );
-    // : SizedBox(
-    //     height: MediaQuery.of(context).size.height * 0.5,
-    //     child: const Column(
-    //       mainAxisAlignment: MainAxisAlignment.center,
-    //       crossAxisAlignment: CrossAxisAlignment.center,
-    //       children: [
-    //         Icon(
-    //           Icons.info_outline,
-    //           color: Colors.black,
-    //         ),
-    //         SizedBox(
-    //           height: 10,
-    //         ),
-    //         Text('Nenhum resultado encontrado!')
-    //       ],
-    //     ),
-    //   );
+        : SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  color: Colors.black,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text('Nenhum resultado encontrado!')
+              ],
+            ),
+          );
   }
 }

@@ -46,7 +46,7 @@ dependencies:
   flutter_masked_text2: ^0.9.1
   dio: ^5.4.2+1
 
-  viggo_core_frontend: ^1.0.4
+  viggo_core_frontend: ^1.0.7
 
   # viggo_core_frontend:
   #   path: ../viggo_pay_core_frontend
