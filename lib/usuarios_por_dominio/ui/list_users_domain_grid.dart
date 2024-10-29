@@ -56,7 +56,7 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
                         return options!.where((element) => true);
                       }
                     },
-                    displayStringForOption: (option) => option.name,
+                    displayStringForOption: (option) => '${option.name} - ${option.displayName}',
                     optionsViewBuilder: (context, onSelected, options) => Align(
                       alignment: Alignment.topLeft,
                       child: Material(
@@ -78,7 +78,7 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
                                 onTap: () => onSelected(option),
                                 child: Padding(
                                   padding: const EdgeInsets.all(16.0),
-                                  child: Text(option.name),
+                                  child: Text('${option.name} - ${option.displayName}'),
                                 ),
                               );
                             },
