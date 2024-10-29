@@ -17,39 +17,46 @@ class DataSourceRoutes extends DataTableSource {
     notifyListeners();
   }
 
-  DataCell cellFor(dynamic data, String? key) {
-    String value;
-    if (data is DateTime) {
-      value = '${data.day.toString().padLeft(2, '0')}/${data.month.toString().padLeft(2, '0')}/${data.year}';
+  String seeRowDatas(dynamic data, String value, String? key) {
+    if (data == null) {
+      value = '-';
+      counter++;
+      if (labelInclude.length == counter) {
+        counter = 0;
+      }
     } else {
-      if (data == null) {
-        value = '-';
+      if (data is String) {
+        value = data.toString();
+        if (key == 'client_tax_identifier_tax_id') {
+          value = FormatMask().formated(value);
+        }
+      } else if (data is bool) {
+        value = data == true ? 'Sim' : 'Não';
+      } else if (data is Enum) {
+        value = data.name.replaceAll('_', ' ');
+      } else {
+        var dataString = jsonEncode(data);
+        value = jsonDecode(dataString)[labelInclude[counter]].toString();
+        if (labelInclude[counter] == 'cpf_cnpj') {
+          value = FormatMask().formated(jsonDecode(dataString)[labelInclude[counter]].toString());
+        } else {
+          value = seeRowDatas(jsonDecode(dataString)[labelInclude[counter]], value, key);
+        }
         counter++;
         if (labelInclude.length == counter) {
           counter = 0;
         }
-      } else {
-        if (data is String) {
-          value = data.toString();
-          if (key == 'client_tax_identifier_tax_id') {
-            value = FormatMask().formated(value);
-          }
-        } else if (data is bool) {
-          value = data == true ? 'Sim' : 'Não';
-        } else if (data is Enum) {
-          value = data.name.replaceAll('_', ' ');
-        } else {
-          var dataString = jsonEncode(data);
-          value = jsonDecode(dataString)[labelInclude[counter]].toString();
-          if (labelInclude[counter] == 'cpf_cnpj') {
-            value = FormatMask().formated(jsonDecode(dataString)[labelInclude[counter]].toString());
-          }
-          counter++;
-          if (labelInclude.length == counter) {
-            counter = 0;
-          }
-        }
       }
+    }
+    return value;
+  }
+
+  DataCell cellFor(dynamic data, String? key) {
+    String value = '';
+    if (data is DateTime) {
+      value = '${data.day.toString().padLeft(2, '0')}/${data.month.toString().padLeft(2, '0')}/${data.year}';
+    } else {
+      value = seeRowDatas(data, value, key);
     }
     return DataCell(Text(value));
   }
