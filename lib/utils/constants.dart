@@ -20,6 +20,7 @@ class Routes {
   static const ROUTES = '/routes';
   static const ROLES = '/roles';
   static const USERS_FOR_DOMAIN = '/usuarios_por_dominio';
+  static const MATRIZ_DOMAIN = '/dominios_por_matriz';
   static const EDIT_CAPABILITY = '/editar_capacidades';
   static const EDIT_POLICY = '/editar_politica';
 }

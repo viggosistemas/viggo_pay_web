@@ -7,6 +7,7 @@ import 'package:viggo_pay_admin/application/locator.dart';
 import 'package:viggo_pay_admin/dashboard/locator.dart';
 import 'package:viggo_pay_admin/domain/locator.dart';
 import 'package:viggo_pay_admin/domain_account/locator.dart';
+import 'package:viggo_pay_admin/dominios_por_matriz/locator.dart';
 import 'package:viggo_pay_admin/extrato/locator.dart';
 import 'package:viggo_pay_admin/forget_password/locator.dart';
 import 'package:viggo_pay_admin/funcionario/locator.dart';
@@ -40,6 +41,7 @@ Future<void> setupLocator() async {
   RouteLocator().setup();
   ApplicationLocator().setup();
   UsersDomainLocator().setup();
+  DomainsMatrizLocator().setup();
 
   //admin
   MatrizAccountLocator().setup();
