@@ -10,6 +10,7 @@ import 'package:viggo_core_frontend/route/domain/usecases/get_routes_use_case.da
 import 'package:viggo_core_frontend/route/domain/usecases/set_routes_use_case.dart';
 import 'package:viggo_core_frontend/token/domain/usecases/login_use_case.dart';
 import 'package:viggo_core_frontend/token/domain/usecases/set_token_use_case.dart';
+import 'package:viggo_core_frontend/user/domain/usecases/get_roles_from_user_by_id_use_case.dart';
 import 'package:viggo_core_frontend/user/domain/usecases/get_routes_from_user_use_case.dart';
 import 'package:viggo_core_frontend/user/domain/usecases/get_user_by_id_use_case.dart';
 import 'package:viggo_core_frontend/user/domain/usecases/get_user_use_case.dart';
@@ -40,6 +41,7 @@ class LoginLocator {
         setRoutes: locator.get<SetRoutesUseCase>(),
         getUserFromSettings: locator.get<GetUserUseCase>(),
         getRoutesFromSettings: locator.get<GetRoutesUseCase>(),
+        getRolesFromUserById: locator.get<GetRolesFromUserIdUseCase>()
       ),
     );
   }

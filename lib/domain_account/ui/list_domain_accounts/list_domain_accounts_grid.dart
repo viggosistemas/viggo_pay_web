@@ -18,8 +18,16 @@ import 'package:viggo_pay_admin/domain_account/ui/edit_domain_accounts/edit_doma
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
+// ignore: must_be_immutable
 class ListDomainAccountsGrid extends StatefulWidget {
-  const ListDomainAccountsGrid({super.key});
+  ListDomainAccountsGrid({super.key, parentId}) {
+    if (parentId != null) {
+      this.parentId = parentId;
+    }
+  }
+
+  // ignore: avoid_init_to_null
+  late String? parentId = null;
 
   @override
   State<ListDomainAccountsGrid> createState() => _ListDomainAccountsGridState();
@@ -171,11 +179,22 @@ class _ListDomainAccountsGridState extends State<ListDomainAccountsGrid> {
       <String, String>{'order_by': 'client_name'}.entries,
     );
 
-    viewModel.loadData(filters);
+    if (widget.parentId != null) {
+      filters.addEntries(
+        <String, String>{'domain.parent_id': widget.parentId!}.entries,
+      );
+    }
+
+    viewModel.loadData(filters, widget.parentId == null);
   }
 
   onReload() {
-    viewModel.loadData(filters);
+    if (widget.parentId != null) {
+      filters.addEntries(
+        <String, String>{'domain.parent_id': widget.parentId!}.entries,
+      );
+    }
+    viewModel.loadData(filters, widget.parentId == null);
   }
 
   @override

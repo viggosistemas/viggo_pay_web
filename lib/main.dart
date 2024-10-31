@@ -9,6 +9,7 @@ import 'package:viggo_pay_admin/dashboard/ui/dashboard_page.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/domain/ui/list_domains/list_domains_page.dart';
 import 'package:viggo_pay_admin/domain_account/ui/list_domain_accounts/list_domain_accounts_page.dart';
+import 'package:viggo_pay_admin/dominios_por_matriz/ui/list_domains_matriz_page.dart';
 import 'package:viggo_pay_admin/extrato/ui/timeline_extrato_page.dart';
 import 'package:viggo_pay_admin/forget_password/ui/forget_password_page.dart';
 import 'package:viggo_pay_admin/funcionario/ui/list_funcionario/list_funcionario_page.dart';
@@ -78,6 +79,7 @@ class ViggoPayWeb extends StatelessWidget {
               Routes.DOMAINS: (ctx) => const ListDomainsPage(),
               Routes.USERS: (ctx) => const ListUsersPage(),
               Routes.USERS_FOR_DOMAIN: (ctx) => const ListUsersDomainPage(),
+              Routes.MATRIZ_DOMAIN: (ctx) => const ListDomainsMatrizPage(),
               Routes.ROLES: (ctx) => const ListRolesPage(),
               Routes.ROUTES: (ctx) => const ListRoutesPage(),
               Routes.APPLICATIONS: (ctx) => const ListApplicationsPage(),

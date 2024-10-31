@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_pay_admin/login/ui/login_view_model.dart';
+import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 // ignore: must_be_immutable
 class FieldsForm extends StatefulWidget {
@@ -38,46 +39,46 @@ class _FieldsFormState extends State<FieldsForm> {
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           widget.viewModel.getDomain();
-          return Column(
-            children: [
-              Text(
-                'Bem-Vindo',
-                style: GoogleFonts.lato(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              StreamBuilder<String>(
-                stream: widget.viewModel.form.domain.field,
-                builder: (context, snapshot) {
-                  _domainController.value =
-                      _domainController.value.copyWith(text: snapshot.data);
-                  return TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Domínio *',
-                      border: const OutlineInputBorder(),
-                      errorText: snapshot.error?.toString(),
+          return StreamBuilder<bool>(
+              stream: widget.viewModel.form.isValid,
+              builder: (context, formValidData) {
+                return Column(
+                  children: [
+                    Text(
+                      'Bem-Vindo',
+                      style: GoogleFonts.lato(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    controller: _domainController,
-                    onChanged: (value) {
-                      widget.viewModel.form.domain.onValueChange(value);
-                    },
-                    // onFieldSubmitted: (value) {
-                    //   if (_validateForm()) {
-                    //     viewModel.onSearch(
-                    //       _domainController.text,
-                    //       _userController.text,
-                    //       _passwordController.text,
-                    //       showInfoMessage,
-                    //       context,
-                    //     );
-                    //   }
-                    // },
-                  );
-                },
-              ),
-            ],
-          );
+                    StreamBuilder<String>(
+                      stream: widget.viewModel.form.domain.field,
+                      builder: (context, fieldDomainData) {
+                        _domainController.value = _domainController.value.copyWith(text: fieldDomainData.data);
+                        return TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Domínio *',
+                            border: const OutlineInputBorder(),
+                            errorText: fieldDomainData.error?.toString(),
+                          ),
+                          controller: _domainController,
+                          onChanged: (value) {
+                            widget.viewModel.form.domain.onValueChange(value);
+                          },
+                          onFieldSubmitted: (value) {
+                            if (formValidData.data == true) {
+                              widget.viewModel.onSubmit(
+                                showInfoMessage,
+                                context,
+                              );
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                );
+              });
         } else {
           return Column(
             children: [
@@ -103,83 +104,79 @@ class _FieldsFormState extends State<FieldsForm> {
       },
     );
 
-    return Column(
-      children: [
-        domainContent,
-        const SizedBox(height: 10),
-        StreamBuilder<String>(
-            stream: widget.viewModel.form.username.field,
-            builder: (context, snapshot) {
-              _userController.value =
-                  _userController.value.copyWith(text: snapshot.data ?? '');
-              return TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Usuário ou Email *',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                ),
-                controller: _userController,
-                onChanged: (value) {
-                  widget.viewModel.form.username.onValueChange(value);
-                },
-                // onFieldSubmitted: (value) {
-                //   if (_validateForm()) {
-                //     viewModel.onSearch(
-                //         _domainController.text,
-                //         _userController.text,
-                //         _passwordController.text,
-                //         showInfoMessage,
-                //         context);
-                //   }
-                // },
-              );
-            }),
-        const SizedBox(height: 10),
-        StreamBuilder<String>(
-            stream: widget.viewModel.form.password.field,
-            builder: (context, snapshot) {
-              _passwordController.value =
-                  _passwordController.value.copyWith(text: snapshot.data);
-              return TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Senha *',
-                  border: const OutlineInputBorder(),
-                  errorText: snapshot.error?.toString(),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _passwordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _passwordVisible = !_passwordVisible;
-                      });
-                    },
-                  ),
-                ),
-                controller: _passwordController,
-                onChanged: (value) {
-                  widget.viewModel.form.password.onValueChange(value);
-                },
-                // onFieldSubmitted: (value) {
-                //   if (_validateForm()) {
-                //     viewModel.onSearch(
-                //         _domainController.text,
-                //         _userController.text,
-                //         _passwordController.text,
-                //         showInfoMessage,
-                //         context);
-                //   }
-                // },
-                obscureText: !_passwordVisible,
-                autocorrect: false,
-                enableSuggestions: false,
-              );
-            }),
-        const SizedBox(height: 20),
-      ],
-    );
+    return StreamBuilder<bool>(
+        stream: widget.viewModel.form.isValid,
+        builder: (context, formValidData) {
+          return Column(
+            children: [
+              domainContent,
+              const SizedBox(height: 10),
+              StreamBuilder<String>(
+                  stream: widget.viewModel.form.username.field,
+                  builder: (context, fieldUserValid) {
+                    _userController.value = _userController.value.copyWith(text: fieldUserValid.data ?? '');
+                    return TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Usuário ou Email *',
+                        border: const OutlineInputBorder(),
+                        errorText: fieldUserValid.error?.toString(),
+                      ),
+                      controller: _userController,
+                      onChanged: (value) {
+                        widget.viewModel.form.username.onValueChange(value);
+                      },
+                      onFieldSubmitted: (value) {
+                        if (formValidData.data == true) {
+                          widget.viewModel.onSubmit(
+                            showInfoMessage,
+                            context,
+                          );
+                        }
+                      },
+                    );
+                  }),
+              const SizedBox(height: 10),
+              StreamBuilder<String>(
+                  stream: widget.viewModel.form.password.field,
+                  builder: (context, fieldPassValid) {
+                    _passwordController.value = _passwordController.value.copyWith(text: fieldPassValid.data);
+                    return TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Senha *',
+                        border: const OutlineInputBorder(),
+                        errorText: fieldPassValid.error?.toString(),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                            color: Colors.black,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _passwordVisible = !_passwordVisible;
+                            });
+                          },
+                        ),
+                      ),
+                      controller: _passwordController,
+                      onChanged: (value) {
+                        widget.viewModel.form.password.onValueChange(value);
+                      },
+                      onFieldSubmitted: (value) {
+                        if (formValidData.data == true) {
+                          widget.viewModel.onSubmit(
+                            showInfoMessage,
+                            context,
+                          );
+                        }
+                      },
+                      obscureText: !_passwordVisible,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                    );
+                  }),
+              const SizedBox(height: 20),
+            ],
+          );
+        });
   }
 }
