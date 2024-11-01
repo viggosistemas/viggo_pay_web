@@ -10,3 +10,7 @@
 * Colocando função recursiva que monta as tuplas das tabelas
 * Criando menu de domínios por matriz para usuarios suporte
 * viggo-core - v1.0.7
+
+## 1.0.2+1
+
+* Correção no componente de TablePaginated para não exibir mensagem vazia por enquanto
