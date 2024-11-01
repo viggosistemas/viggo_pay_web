@@ -455,80 +455,80 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
   Widget build(BuildContext context) {
     initializeTable();
 
-    return widget.items.isNotEmpty
-        ? PaginatedDataTable(
-            // sortColumnIndex: _columnIndex,
-            // sortAscending: _columnAscending,
-            availableRowsPerPage: const [5, 10, 25, 50],
-            showEmptyRows: false,
-            onRowsPerPageChanged: (value) {
-              setState(() {
-                _pageSize = value!;
-                // widget.viewModel.loadData(_currentPage, _pageSize, true);
-                // widget.viewModel.domains.listen((value) {
-                //   dataSource.setData(value.map((e) {
-                //     return e.toJson();
-                //   }).toList());
-                // });
-              });
-            },
-            headingRowColor: WidgetStateColor.resolveWith(
-              (states) => Colors.grey.withOpacity(0.7),
-            ),
-            header: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Text(widget.titleTable),
-                Row(
-                  children: [
-                    ...widget.actions.toList(),
-                  ],
-                )
-              ],
-            ),
-            rowsPerPage: _pageSize,
-            arrowHeadColor: Theme.of(context).colorScheme.primary,
-            onPageChanged: (value) {
-              setState(() {
-                //COMPARA OS INDEX DA PRIMEIRA LINHA SE FOREM IGUAIS SOMO UMA PAGINA
-                var last = dataSource.sortedData.last;
-                var lastIndex = dataSource.sortedData.lastIndexOf(last);
-                if (value == lastIndex) {
-                  _currentPage++;
-                } else {
-                  _currentPage--;
-                }
-                // widget.viewModel.loadData(_currentPage, _pageSize, true);
-                // widget.viewModel.domains.listen((value) {
-                //   dataSource.setData(value.map((e) {
-                //     return e.toJson();
-                //   }).toList());
-                // });
-              });
-            },
-            initialFirstRowIndex: _currentPage,
-            showFirstLastButtons: true,
-            showCheckboxColumn: true,
-            columns: widget.columnsDef,
-            source: dataSource,
+    return // widget.items.isNotEmpty ?
+        PaginatedDataTable(
+      // sortColumnIndex: _columnIndex,
+      // sortAscending: _columnAscending,
+      availableRowsPerPage: const [5, 10, 25, 50],
+      showEmptyRows: false,
+      onRowsPerPageChanged: (value) {
+        setState(() {
+          _pageSize = value!;
+          // widget.viewModel.loadData(_currentPage, _pageSize, true);
+          // widget.viewModel.domains.listen((value) {
+          //   dataSource.setData(value.map((e) {
+          //     return e.toJson();
+          //   }).toList());
+          // });
+        });
+      },
+      headingRowColor: WidgetStateColor.resolveWith(
+        (states) => Colors.grey.withOpacity(0.7),
+      ),
+      header: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Text(widget.titleTable),
+          Row(
+            children: [
+              ...widget.actions.toList(),
+            ],
           )
-        : SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,
-            child: const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  color: Colors.black,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text('Nenhum resultado encontrado!')
-              ],
-            ),
-          );
+        ],
+      ),
+      rowsPerPage: _pageSize,
+      arrowHeadColor: Theme.of(context).colorScheme.primary,
+      onPageChanged: (value) {
+        setState(() {
+          //COMPARA OS INDEX DA PRIMEIRA LINHA SE FOREM IGUAIS SOMO UMA PAGINA
+          var last = dataSource.sortedData.last;
+          var lastIndex = dataSource.sortedData.lastIndexOf(last);
+          if (value == lastIndex) {
+            _currentPage++;
+          } else {
+            _currentPage--;
+          }
+          // widget.viewModel.loadData(_currentPage, _pageSize, true);
+          // widget.viewModel.domains.listen((value) {
+          //   dataSource.setData(value.map((e) {
+          //     return e.toJson();
+          //   }).toList());
+          // });
+        });
+      },
+      initialFirstRowIndex: _currentPage,
+      showFirstLastButtons: true,
+      showCheckboxColumn: true,
+      columns: widget.columnsDef,
+      source: dataSource,
+    );
+    // : SizedBox(
+    //     height: MediaQuery.of(context).size.height * 0.5,
+    //     child: const Column(
+    //       mainAxisAlignment: MainAxisAlignment.center,
+    //       crossAxisAlignment: CrossAxisAlignment.center,
+    //       children: [
+    //         Icon(
+    //           Icons.info_outline,
+    //           color: Colors.black,
+    //         ),
+    //         SizedBox(
+    //           height: 10,
+    //         ),
+    //         Text('Nenhum resultado encontrado!')
+    //       ],
+    //     ),
+    //   );
   }
 }
