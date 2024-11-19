@@ -11,6 +11,7 @@ import 'package:viggo_pay_admin/components/dialogs.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/utils/format_mask.dart';
+import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 class DataSource extends DataTableSource {
   late dynamic viewModel;
@@ -136,6 +137,9 @@ class DataTablePaginated extends StatefulWidget {
     addFunction,
     labelInclude,
     List<Widget>? actions,
+    disabledActionFunction,
+    disabledEditFunction,
+    disabledChangeActiveFunction,
   }) {
     if (actions != null) {
       appendActions = true;
@@ -156,6 +160,15 @@ class DataTablePaginated extends StatefulWidget {
     if (addReloadButton != null) {
       this.addReloadButton = addReloadButton;
     }
+    if (disabledActionFunction != null) {
+      this.disabledActionFunction = disabledActionFunction;
+    }
+    if (disabledEditFunction != null) {
+      this.disabledEditFunction = disabledEditFunction;
+    }
+    if (disabledChangeActiveFunction != null) {
+      this.disabledChangeActiveFunction = disabledChangeActiveFunction;
+    }
   }
 
   late dynamic viewModel;
@@ -169,6 +182,9 @@ class DataTablePaginated extends StatefulWidget {
   late List<Widget> actions = [];
   late List<dynamic> validActionsList = [];
   late Function? addFunction = null;
+  late Function? disabledActionFunction = null;
+  late Function? disabledEditFunction = null;
+  late Function? disabledChangeActiveFunction = null;
   var appendActions = false;
   final sharedPrefres = locator.get<SharedPreferences>();
   late String titleTable = '';
@@ -354,8 +370,12 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
   }
 
   void onEditEntity() {
-    var len = dataSource.sortedData.where((element) => element['selected']).length;
-    if (len == 1) {
+    var listSelected = dataSource.sortedData.where((element) => element['selected']).toList();
+    var isEnableTo = true;
+    if (widget.disabledEditFunction != null) {
+      isEnableTo = widget.disabledEditFunction!(listSelected);
+    }
+    if (listSelected.length == 1 && isEnableTo) {
       var entity = dataSource.sortedData.firstWhere((element) => element['selected']);
       var catchEntity = widget.viewModel.catchEntity(entity['id']) as Future;
       catchEntity.then((value) async {
@@ -369,11 +389,15 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
 
   void onChangeActive() async {
     List<Map<String, dynamic>> entities = [];
-    var selecteds = dataSource.sortedData.where((element) => element['selected']);
+    var selecteds = dataSource.sortedData.where((element) => element['selected']).toList();
+    var isEnableTo = true;
+    if (widget.disabledChangeActiveFunction != null) {
+      isEnableTo = widget.disabledChangeActiveFunction!(selecteds);
+    }
     var isActiveOnly = selecteds.where((element) => element['active'] == true).toList();
     var isInactiveOnly = selecteds.where((element) => element['active'] == false).toList();
 
-    if (isActiveOnly.isNotEmpty && isInactiveOnly.isEmpty) {
+    if (isActiveOnly.isNotEmpty && isInactiveOnly.isEmpty && isEnableTo) {
       for (var e in isActiveOnly) {
         entities.add({
           'id': e['id'],
@@ -392,11 +416,20 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
         var resultChange = await widget.viewModel.changeActive.invoke(entities: entities);
         Timer(const Duration(milliseconds: 500), () {
           if (resultChange != null && resultChange == true) {
+            showInfoMessage(
+              context,
+              2,
+              Colors.green,
+              'Alteração realizada com sucesso!',
+              'X',
+              () {},
+              Colors.white,
+            );
             onReloadData();
           }
         });
       }
-    } else if (isActiveOnly.isEmpty && isInactiveOnly.isNotEmpty) {
+    } else if (isActiveOnly.isEmpty && isInactiveOnly.isNotEmpty && isEnableTo) {
       for (var e in isInactiveOnly) {
         entities.add({
           'id': e['id'],
@@ -415,6 +448,15 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
         var resultChange = await widget.viewModel.changeActive.invoke(entities: entities);
         Timer(const Duration(milliseconds: 500), () {
           if (resultChange != null && resultChange == true) {
+            showInfoMessage(
+              context,
+              2,
+              Colors.green,
+              'Alteração realizada com sucesso!',
+              'X',
+              () {},
+              Colors.white,
+            );
             onReloadData();
           }
         });
@@ -423,8 +465,12 @@ class _DataTablePaginatedState extends State<DataTablePaginated> {
   }
 
   void onSeeInfoData() {
-    var len = dataSource.sortedData.where((element) => element['selected']).length;
-    if (len == 1) {
+    var listSelected = dataSource.sortedData.where((element) => element['selected']).toList();
+    var isEnableTo = true;
+    if (widget.disabledActionFunction != null) {
+      isEnableTo = widget.disabledActionFunction!(listSelected);
+    }
+    if (listSelected.length == 1 && isEnableTo) {
       var entity = dataSource.sortedData.firstWhere((element) => element['selected']);
       var catchEntity = widget.viewModel.catchEntity(entity['id']) as Future;
       catchEntity.then((value) async {

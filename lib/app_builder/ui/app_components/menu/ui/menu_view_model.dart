@@ -104,6 +104,16 @@ class MenuViewModel {
   List<Destination> createSysadminMenu(List<RouteApiDto> routes) {
     List<Destination> submenu = buildMenu(routes, [
       Destination(
+        'Usuários',
+        const Icon(Icons.person_outline),
+        1,
+        const Icon(Icons.person_outline),
+        Routes.USERS,
+        ['/users'],
+        ['/GET'],
+        Icons.person_outline,
+      ),
+      Destination(
         'Aplicação',
         const Icon(Icons.domain_outlined),
         2,
