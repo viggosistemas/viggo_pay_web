@@ -10,6 +10,7 @@ class EditCapabilityDialog {
   EditCapabilityDialog({
     required this.context,
     required this.disponiveis,
+    required this.mockSelectedList,
     required this.applicationId,
   });
 
@@ -17,6 +18,7 @@ class EditCapabilityDialog {
   final viewModel = locator.get<EditCapabilityViewModel>();
   late List<RouteApiDto> disponiveis = [];
   late List<RouteApiDto> bckDisponiveis = disponiveis;
+  late List<RouteApiDto> mockSelectedList = [];
   final String applicationId;
 
   Future addDialog() {
@@ -76,6 +78,7 @@ class EditCapabilityDialog {
                   child: TableListCapability(
                     bckDisponiveis: bckDisponiveis,
                     disponiveis: disponiveis,
+                    mockSelectedList: mockSelectedList,
                     width: width,
                     viewModel: viewModel,
                   ),

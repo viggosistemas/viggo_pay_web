@@ -10,6 +10,7 @@ class EditPolicyDialog {
   EditPolicyDialog({
     required this.context,
     required this.disponiveis,
+    required this.mockSelectedList,
     required this.roleId,
   });
 
@@ -17,6 +18,7 @@ class EditPolicyDialog {
   final viewModel = locator.get<EditPolicyViewModel>();
   late List<CapabilityApiDto> disponiveis = [];
   late List<CapabilityApiDto> bckDisponiveis = disponiveis;
+  late List<CapabilityApiDto> mockSelectedList = [];
   final String roleId;
 
   Future addDialog() {
@@ -76,6 +78,7 @@ class EditPolicyDialog {
                   child: TableListPolicy(
                     bckDisponiveis: bckDisponiveis,
                     disponiveis: disponiveis,
+                    mockSelectedList: mockSelectedList,
                     width: width,
                     viewModel: viewModel,
                   ),

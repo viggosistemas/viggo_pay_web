@@ -334,10 +334,13 @@ class _EditCapabilityGridState extends State<EditCapabilityGrid> {
                                         var result = await EditCapabilityDialog(
                                           context: context,
                                           disponiveis: rotas.data!,
+                                          mockSelectedList: widget.viewModel.mockSelectedList,
                                           applicationId: application.id,
                                         ).addDialog();
                                         if (result != null && result == true) {
                                           onReload();
+                                        }else{
+                                          widget.viewModel.clearRouteSelected();
                                         }
                                       }else{
                                         widget.viewModel.listRoutes();
