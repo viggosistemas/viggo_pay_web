@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_core_frontend/base/base_view_model.dart';
 import 'package:viggo_core_frontend/capability/data/models/capability_api_dto.dart';
 import 'package:viggo_core_frontend/capability/domain/usecases/get_capabilities_by_params_use_case.dart';
@@ -18,6 +19,7 @@ import 'package:viggo_core_frontend/role/domain/usecases/get_roles_by_params_use
 import 'package:viggo_core_frontend/util/list_options.dart';
 
 class EditPolicyViewModel extends BaseViewModel {
+  final SharedPreferences sharedPrefs;
   final GetCapabilitiesByParamsUseCase getCapabilities;
   final AddPolicyUseCase addPolicies;
   final RemovePolicyUseCase removePolicies;
@@ -27,10 +29,17 @@ class EditPolicyViewModel extends BaseViewModel {
   final GetRolesByParamsUseCase getRoles;
 
   List<PolicyApiDto> selectedItemsList = [];
+  List<CapabilityApiDto> selectedCapabilityList = [];
+
   List<CapabilityApiDto> avaliableCapabilities = [];
 
   final ListDomainFormFields form = ListDomainFormFields();
   List<PolicyApiDto> _items = List.empty(growable: true);
+
+  List<CapabilityApiDto> mockSelectedList = List.empty(growable: true);
+
+  final StreamController<List<CapabilityApiDto>> capabilitiesController = StreamController.broadcast();
+  Stream<List<CapabilityApiDto>> get capabilities => capabilitiesController.stream;
 
   final StreamController<List<PolicyApiDto>> policiesController = StreamController.broadcast();
   Stream<List<PolicyApiDto>> get policies => policiesController.stream;
@@ -46,6 +55,7 @@ class EditPolicyViewModel extends BaseViewModel {
   Stream<bool> get policiesSelectedValid => policiesSelectedController.stream.transform(validar());
 
   EditPolicyViewModel({
+    required this.sharedPrefs,
     required this.getRoles,
     required this.addPolicies,
     required this.removePolicies,
@@ -76,6 +86,7 @@ class EditPolicyViewModel extends BaseViewModel {
     if (isLoading) return;
     if (role == null) {
       _updatePoliciesList([]);
+      clearRouteSelected();
     } else {
       role.policies = [];
       setLoading();
@@ -117,6 +128,7 @@ class EditPolicyViewModel extends BaseViewModel {
             avaliableCapabilities.add(capability);
           }
         }
+        mockSelectedList = avaliableCapabilities;
         _updatePoliciesList(role.policies!);
       } else if (result.isLeft) {
         postError(result.left.message);
@@ -227,6 +239,52 @@ class EditPolicyViewModel extends BaseViewModel {
       list.add(value);
     }
     policiesSelectedController.sink.add(list);
+  }
+
+  void clearRouteSelected() {
+    mockSelectedList = mockSelectedList.map((e) {
+      e.selected = false;
+      return e;
+    }).toList();
+    sharedPrefs.setStringList('ROUTES_SELECTED', List.empty(growable: true));
+  }
+
+  void checkRouteSelected(String id) {
+    updateSelectedRoute(id);
+    _updateRouteList(mockSelectedList);
+  }
+
+  List<CapabilityApiDto> _mapSelectedCapabilities(
+    List<CapabilityApiDto> capabilities,
+    List<String> selected,
+  ) =>
+      capabilities..forEach((e) => e.selected = selected.contains(e.id));
+
+  void _updateRouteList(List<CapabilityApiDto> capabilities) {
+    if (!capabilitiesController.isClosed) {
+      mockSelectedList = capabilities;
+      selectedCapabilityList = _mapSelectedCapabilities(capabilities, getSelectedRoutes());
+      capabilitiesController.sink.add(selectedCapabilityList);
+    }
+  }
+
+  List<String> getSelectedRoutes() {
+    List<String>? selected = sharedPrefs.getStringList('ROUTES_SELECTED');
+    return selected ?? List.empty();
+  }
+
+  void updateSelectedRoute(String item) {
+    List<String>? selected = sharedPrefs.getStringList('ROUTES_SELECTED') ?? List.empty(growable: true);
+    if (selected.contains(item)) {
+      selected.remove(item);
+    } else {
+      selected.add(item);
+    }
+    sharedPrefs.setStringList('ROUTES_SELECTED', selected);
+
+    // if (!_selectedItemsStreamController.isClosed) {
+    //   _selectedItemsStreamController.sink.add(selected);
+    // }
   }
 
   StreamTransformer<List<CapabilityApiDto>, bool> validar() {

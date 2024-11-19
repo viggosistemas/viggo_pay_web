@@ -12,12 +12,14 @@ class TableListCapability extends StatefulWidget {
     required this.viewModel,
     required this.disponiveis,
     required this.bckDisponiveis,
+    required this.mockSelectedList,
     required this.width,
   });
 
   final EditCapabilityViewModel viewModel;
   late List<RouteApiDto> disponiveis = [];
   late List<RouteApiDto> bckDisponiveis = disponiveis;
+  late List<RouteApiDto> mockSelectedList = [];
   final double width;
 
   final routesRowValues = ['name', 'url', 'method', 'bypass', 'sysadmin'];
@@ -60,11 +62,15 @@ class _TableListCapabilityState extends State<TableListCapability> {
           controller: searchFieldController,
           onFieldSubmitted: (value) {
             setState(() {
-              if (widget.disponiveis.isEmpty) {
+              if (value.isEmpty) {
                 widget.disponiveis = widget.bckDisponiveis;
+              } else {
+                if (widget.disponiveis.isEmpty) {
+                  widget.disponiveis = widget.bckDisponiveis;
+                }
+                var filteredEntities = widget.bckDisponiveis.where((element) => element.url.contains(value)).toList();
+                widget.disponiveis = filteredEntities;
               }
-              var filteredEntities = widget.disponiveis.where((element) => element.url.contains(value)).toList();
-              widget.disponiveis = filteredEntities;
             });
           },
         ),
@@ -87,6 +93,7 @@ class _TableListCapabilityState extends State<TableListCapability> {
                 const Icon(Icons.polyline_outlined),
               ],
             ),
+            mockSelectedList: widget.mockSelectedList,
             viewModel: widget.viewModel,
             fieldsData: widget.routesRowValues,
             items: widget.disponiveis.map((e) {

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_init_to_null
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:pinput/pinput.dart';
 import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_core_frontend/role/data/models/role_api_dto.dart';
 import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
+import 'package:viggo_core_frontend/util/constants.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users_view_model.dart';
@@ -14,16 +17,22 @@ class EditUsersForm extends StatefulWidget {
   EditUsersForm({
     super.key,
     required this.viewModel,
+    required this.onSubmit,
     entity,
+    domain,
   }) {
     if (entity != null) {
       this.entity = entity;
     }
+    if (domain != null) {
+      this.domain = domain;
+    }
   }
 
   final EditUsersViewModel viewModel;
-  // ignore: avoid_init_to_null
+  final Function() onSubmit;
   late UserApiDto? entity = null;
+  late DomainApiDto? domain = null;
 
   @override
   State<EditUsersForm> createState() => _EditUsersFormState();
@@ -45,12 +54,12 @@ class _EditUsersFormState extends State<EditUsersForm> {
     if (widget.entity != null) {
       widget.viewModel.form.name.onValueChange(widget.entity!.name);
     } else {
-      widget.viewModel.form.name.onValueChange('');
+      widget.viewModel.form.name.onValueChange(nameFieldControll.value.text.isNotEmpty ? nameFieldControll.value.text : '');
     }
     if (widget.entity != null) {
       widget.viewModel.form.email.onValueChange(widget.entity!.email);
     } else {
-      widget.viewModel.form.email.onValueChange('');
+      widget.viewModel.form.email.onValueChange(emailFieldControll.value.text.isNotEmpty ? emailFieldControll.value.text : '');
     }
 
     if (widget.entity != null) {
@@ -58,17 +67,26 @@ class _EditUsersFormState extends State<EditUsersForm> {
         widget.viewModel.form.domainId.onValueChange(widget.entity!.domainId);
       }
     } else {
-      widget.viewModel.form.domainId.onValueChange('');
+      widget.viewModel.form.domainId.onValueChange(domainFieldControll.value.text.isNotEmpty ? domainFieldControll.value.text : '');
     }
 
     isDefaultDomain() {
-      var domain = widget.viewModel.sharedPrefs.getString('DOMAIN');
+      var domain = widget.viewModel.sharedPrefs.getString(CoreUserPreferences.DOMAIN);
       if (domain != null) return jsonDecode(domain)['name'] == 'default';
       return false;
     }
 
+    isNotUserLogged() {
+      var userJson = widget.viewModel.sharedPrefs.getString(CoreUserPreferences.USER);
+      if (userJson != null && widget.entity != null) {
+        UserApiDto user = UserApiDto.fromJson(jsonDecode(userJson));
+        return user.id != widget.entity!.id;
+      }
+      return true;
+    }
+
     contentRolesSelect() {
-      if (widget.entity != null) {
+      if ((widget.entity != null || isDefaultDomain()) && isNotUserLogged()) {
         return Column(
           children: [
             const SizedBox(
@@ -95,7 +113,12 @@ class _EditUsersFormState extends State<EditUsersForm> {
                 stream: widget.viewModel.listRolesApplication,
                 builder: (context, snapshot) {
                   if (snapshot.data == null) {
-                    widget.viewModel.loadGrantsUser(widget.entity!.id);
+                    if (widget.entity != null) {
+                      widget.viewModel.loadGrantsUser(widget.entity!.id, widget.domain);
+                    } else {
+                      widget.viewModel.grants = [];
+                      widget.viewModel.loadRolesApplication(widget.domain);
+                    }
                     return CircularProgressIndicator(
                       color: Theme.of(context).colorScheme.primary,
                     );
@@ -297,8 +320,68 @@ class _EditUsersFormState extends State<EditUsersForm> {
         const SizedBox(
           height: 10,
         ),
-        if (isDefaultDomain()) contentDomainField(),
-        contentRolesSelect()
+        if (isDefaultDomain() && isNotUserLogged()) contentDomainField(),
+        contentRolesSelect(),
+        StreamBuilder<List<RoleApiDto>>(
+            stream: widget.viewModel.listRolesApplication,
+            builder: (ctx, rolesSnapshot) {
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  OnHoverButton(
+                    child: TextButton.icon(
+                      icon: const Icon(
+                        Icons.cancel_outlined,
+                        size: 20,
+                      ),
+                      label: const Text('Cancelar'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.red,
+                      ),
+                    ),
+                  ),
+                  StreamBuilder<bool>(
+                      stream: widget.viewModel.form.isValid,
+                      builder: (context, validSnapshot) {
+                        return OnHoverButton(
+                          child: Directionality(
+                            textDirection: TextDirection.rtl,
+                            child: TextButton.icon(
+                              icon: const Icon(
+                                Icons.save_alt_outlined,
+                                size: 20,
+                              ),
+                              label: Text(validSnapshot.data != null && validSnapshot.data == false
+                                  ? 'Cadastro inválido'
+                                  : rolesSnapshot.data != null && !rolesSnapshot.data!.where((e) => e.selected).toList().isNotEmpty
+                                      ? 'Selecione um papel'
+                                      : 'Salvar'),
+                              onPressed: () {
+                                var isValidForm = validSnapshot.data != null && validSnapshot.data == true;
+                                var isRoleSelected = rolesSnapshot.data != null && rolesSnapshot.data!.where((e) => e.selected).toList().isNotEmpty;
+                                if (isValidForm && isRoleSelected) {
+                                  widget.onSubmit();
+                                }
+                              },
+                              style: TextButton.styleFrom(
+                                foregroundColor: validSnapshot.data != null &&
+                                        validSnapshot.data == true &&
+                                        rolesSnapshot.data != null &&
+                                        rolesSnapshot.data!.where((e) => e.selected).toList().isNotEmpty
+                                    ? Colors.green
+                                    : Colors.grey,
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                ],
+              );
+            }),
       ],
     );
   }

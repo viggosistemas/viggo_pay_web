@@ -20,6 +20,7 @@ class ListUsersDomainGrid extends StatefulWidget {
 class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
   bool selected = false;
   final domainFieldControll = TextEditingController();
+  late DomainApiDto domainBck;
 
   @override
   Widget build(BuildContext context) {
@@ -37,22 +38,15 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
               child: StreamBuilder<String>(
                 stream: widget.viewModel.form.domainId.field,
                 builder: (context, snapshot) {
-                  domainFieldControll.value =
-                      domainFieldControll.value.copyWith(text: snapshot.data);
+                  domainFieldControll.value = domainFieldControll.value.copyWith(text: snapshot.data);
                   return Autocomplete<DomainApiDto>(
                     optionsBuilder: (TextEditingValue textEditingValue) async {
                       if (textEditingValue.text.isEmpty) {
-                        var options = await widget.viewModel.loadDomains({
-                          'list_options': ListOptions.ACTIVE_ONLY.name,
-                          'order_by': 'name'
-                        });
+                        var options = await widget.viewModel.loadDomains({'list_options': ListOptions.ACTIVE_ONLY.name, 'order_by': 'name'});
                         return options!.where((element) => true);
                       } else {
-                        var options = await widget.viewModel.loadDomains({
-                          'list_options': ListOptions.ACTIVE_ONLY.name,
-                          'order_by': 'name',
-                          'name': '%${textEditingValue.text}%'
-                        });
+                        var options = await widget.viewModel
+                            .loadDomains({'list_options': ListOptions.ACTIVE_ONLY.name, 'order_by': 'name', 'name': '%${textEditingValue.text}%'});
                         return options!.where((element) => true);
                       }
                     },
@@ -61,8 +55,7 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
                       alignment: Alignment.topLeft,
                       child: Material(
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                              bottom: Radius.circular(4.0)),
+                          borderRadius: BorderRadius.vertical(bottom: Radius.circular(4.0)),
                         ),
                         child: SizedBox(
                           height: 52.0 * options.length,
@@ -72,8 +65,7 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
                             itemCount: options.length,
                             shrinkWrap: false,
                             itemBuilder: (BuildContext context, int index) {
-                              final DomainApiDto option =
-                                  options.elementAt(index);
+                              final DomainApiDto option = options.elementAt(index);
                               return InkWell(
                                 onTap: () => onSelected(option),
                                 child: Padding(
@@ -99,23 +91,21 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
                           floatingLabelAlignment: FloatingLabelAlignment.start,
                           border: const OutlineInputBorder(),
                           errorText: snapshot.error?.toString(),
-                          suffix:
-                              snapshot.data != null && snapshot.data!.isNotEmpty
-                                  ? OnHoverButton(
-                                    child: IconButton(
-                                        onPressed: () {
-                                          widget.viewModel.form.domainId
-                                              .onValueChange('');
-                                          controller.setText('');
-                                        },
-                                        icon: const Icon(
-                                          Icons.cancel_outlined,
-                                          size: 18,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                  )
-                                  : const Text(''),
+                          suffix: snapshot.data != null && snapshot.data!.isNotEmpty
+                              ? OnHoverButton(
+                                  child: IconButton(
+                                    onPressed: () {
+                                      widget.viewModel.form.domainId.onValueChange('');
+                                      controller.setText('');
+                                    },
+                                    icon: const Icon(
+                                      Icons.cancel_outlined,
+                                      size: 18,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                )
+                              : const Text(''),
                         ),
                         controller: controller,
                         focusNode: focusNode,
@@ -130,8 +120,8 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
                       );
                     },
                     onSelected: (DomainApiDto selection) {
-                      widget.viewModel.form.domainId
-                          .onValueChange(selection.id);
+                      widget.viewModel.form.domainId.onValueChange(selection.id);
+                      domainBck = selection;
                       setState(
                         () {
                           selected = true;
@@ -147,9 +137,7 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
               child: StreamBuilder<String>(
                 stream: widget.viewModel.form.domainId.field,
                 builder: (context, snapshot) {
-                  if (snapshot.data == null ||
-                      snapshot.data!.isEmpty ||
-                      !selected) {
+                  if (snapshot.data == null || snapshot.data!.isEmpty || !selected) {
                     return Center(
                       child: Text(
                         'Selecione um domínio!',
@@ -158,7 +146,7 @@ class _ListUsersDomainGridState extends State<ListUsersDomainGrid> {
                     );
                   } else {
                     return ListUsersGrid(
-                      domainId: snapshot.data!,
+                      domain: domainBck,
                     );
                   }
                 },

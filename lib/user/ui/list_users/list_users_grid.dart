@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
+import 'package:viggo_core_frontend/util/constants.dart';
 import 'package:viggo_core_frontend/util/list_options.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/header-search/ui/header_search_main.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/list-view-data/card/list_view_mode_card.dart';
@@ -14,15 +18,15 @@ import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 class ListUsersGrid extends StatefulWidget {
   ListUsersGrid({
     super.key,
-    domainId,
+    domain,
   }) {
-    if (domainId != null) {
-      this.domainId = domainId;
+    if (domain != null) {
+      this.domain = domain;
     }
   }
 
   // ignore: avoid_init_to_null
-  late String? domainId = null;
+  late DomainApiDto? domain = null;
 
   @override
   State<ListUsersGrid> createState() => _ListUsersGridState();
@@ -97,9 +101,9 @@ class _ListUsersGridState extends State<ListUsersGrid> {
       <String, String>{'order_by': 'name'}.entries,
     );
 
-    if (widget.domainId != null) {
+    if (widget.domain != null) {
       filters.addEntries(
-        <String, String>{'domain_id': widget.domainId!}.entries,
+        <String, String>{'domain_id': widget.domain!.id}.entries,
       );
     }
 
@@ -107,17 +111,75 @@ class _ListUsersGridState extends State<ListUsersGrid> {
   }
 
   onReload() {
-    if (widget.domainId != null) {
+    if (widget.domain != null) {
       filters.addEntries(
-        <String, String>{'domain_id': widget.domainId!}.entries,
+        <String, String>{'domain_id': widget.domain!.id}.entries,
       );
     }
     viewModel.loadData(filters);
   }
 
+  disabledToSysadmin(List<Map<String, dynamic>> selected) {
+    if (selected.length == 1) {
+      var selectedSysadmin = selected.where((e) => e['name'].toLowerCase() == 'sysadmin').toList();
+      if (selectedSysadmin.isNotEmpty) {
+        showInfoMessage(
+          context,
+          2,
+          Colors.red,
+          'Não é permitido realizar ações com usuário sysadmin!',
+          'X',
+          () {},
+          Colors.white,
+        );
+        return !selectedSysadmin.isNotEmpty;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  disabledActions(List<Map<String, dynamic>> selected) {
+    if (selected.isNotEmpty) {
+      String? userJson = viewModel.sharedPrefs.getString(CoreUserPreferences.USER);
+      UserApiDto user = UserApiDto.fromJson(jsonDecode(userJson!));
+      var selectedSysadmin = selected.where((e) => e['name'].toLowerCase() == 'sysadmin').toList();
+      var selectedIsUser = selected.where((e) => e['id'] == user.id).toList();
+      if (selectedSysadmin.isNotEmpty) {
+        showInfoMessage(
+          context,
+          2,
+          Colors.red,
+          'Não é permitido realizar ações com usuário sysadmin!',
+          'X',
+          () {},
+          Colors.white,
+        );
+        return !selectedSysadmin.isNotEmpty;
+      }
+      if (selectedIsUser.isNotEmpty) {
+        showInfoMessage(
+          context,
+          2,
+          Colors.red,
+          'Não é permitido realizar esse tipo de alteração no usuário logado!',
+          'X',
+          () {},
+          Colors.white,
+        );
+        return !selectedIsUser.isNotEmpty;
+      }
+      return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final dialogs = EditUsers(context: context);
+    final dialogs = EditUsers(
+      context: context,
+      domain: widget.domain,
+    );
     onReload();
 
     viewModel.errorMessage.listen(
@@ -185,6 +247,9 @@ class _ListUsersGridState extends State<ListUsersGrid> {
                               streamList: viewModel.users,
                               dialogs: dialogs,
                               initialFilters: filters,
+                              disabledActionFunction: (List<Map<String, dynamic>> selected) => disabledActions(selected),
+                              disabledChangeActiveFunction: (List<Map<String, dynamic>> selected) => disabledActions(selected),
+                              disabledEditFunction: (List<Map<String, dynamic>> selected) => disabledToSysadmin(selected),
                               columnsDef: const [
                                 DataColumn(
                                   label: Text(

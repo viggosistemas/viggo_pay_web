@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_core_frontend/application/domain/application_repository.dart';
 import 'package:viggo_core_frontend/application/domain/usecases/create_application_use_case.dart';
 import 'package:viggo_core_frontend/application/domain/usecases/get_application_by_id_use_case.dart';
@@ -50,6 +51,7 @@ class ApplicationLocator {
     );
     locator.registerFactory(
       () => EditCapabilityViewModel(
+        sharedPrefs: locator.get<SharedPreferences>(),
         addCapabilities: locator.get<AddCapabilityUseCase>(),
         removeCapabilities: locator.get<RemoveCapabilityUseCase>(),
         getCapabilities: locator.get<GetCapabilitiesByParamsUseCase>(),
@@ -61,6 +63,7 @@ class ApplicationLocator {
     );
     locator.registerFactory(
       () => EditPolicyViewModel(
+        sharedPrefs: locator.get<SharedPreferences>(),
         addPolicies: locator.get<AddPolicyUseCase>(),
         removePolicies: locator.get<RemovePolicyUseCase>(),
         getCapabilities: locator.get<GetCapabilitiesByParamsUseCase>(),

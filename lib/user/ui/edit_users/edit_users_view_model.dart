@@ -12,6 +12,7 @@ import 'package:viggo_core_frontend/grant/domain/usecases/add_grant_use_case.dar
 import 'package:viggo_core_frontend/grant/domain/usecases/delete_grant_use_case.dart';
 import 'package:viggo_core_frontend/grant/domain/usecases/get_grants_from_user_by_id_use_case.dart';
 import 'package:viggo_core_frontend/role/data/models/role_api_dto.dart';
+import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
 import 'package:viggo_core_frontend/user/domain/usecases/create_user_use_case.dart';
 import 'package:viggo_core_frontend/user/domain/usecases/update_user_use_case.dart';
 import 'package:viggo_core_frontend/util/constants.dart';
@@ -68,9 +69,17 @@ class EditUsersViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> loadRolesApplication() async {
-    String? domainJson = sharedPrefs.getString(CoreUserPreferences.DOMAIN);
-    DomainApiDto domain = DomainApiDto.fromJson(jsonDecode(domainJson!));
+  Future<void> loadRolesApplication(DomainApiDto? domainListUser) async {
+    DomainApiDto domain;
+    if (domainListUser != null) {
+      domain = domainListUser;
+    } else {
+      String? domainJson = sharedPrefs.getString(CoreUserPreferences.DOMAIN);
+      domain = DomainApiDto.fromJson(jsonDecode(domainJson!));
+    }
+    String? userJson = sharedPrefs.getString(CoreUserPreferences.USER);
+    UserApiDto user = UserApiDto.fromJson(jsonDecode(userJson!));
+    var isSysadmin = user.roles!.where((e) => e.name.toUpperCase() == 'SYSADMIN').toList().isNotEmpty;
 
     var result = await getRolesApplication.invoke(id: domain.applicationId);
     if (result.isRight) {
@@ -80,27 +89,29 @@ class EditUsersViewModel extends BaseViewModel {
           result.right[index].selected = true;
         }
       }
-      roles = result.right;
-      _streamControllerApplicationRoles.sink.add(result.right);
+      roles = !isSysadmin || (domainListUser != null && domainListUser.name.toLowerCase() != 'default')
+          ? result.right.where((e) => e.name.toUpperCase() != "SYSADMIN").toList()
+          : result.right;
+      _streamControllerApplicationRoles.sink.add(roles);
     } else if (result.isLeft) {
       postError(result.left.message);
     }
   }
 
-  Future<void> loadGrantsUser(String userId) async {
+  Future<void> loadGrantsUser(String userId, DomainApiDto? domain) async {
     var result = await getGrantsUser.invoke(
       id: userId,
       include: 'role',
     );
     if (result.isRight) {
       grants = result.right;
-      loadRolesApplication();
+      loadRolesApplication(domain);
     } else if (result.isLeft) {
       postError(result.left.message);
     }
   }
 
-  getGrantsRoles(String userId) {
+  Future<bool> getGrantsRoles(String userId) async {
     var rolesToAdd = roles.where((role) => role.selected).toList();
     var rolesToRemove = roles.where((role) => !role.selected).toList();
 
@@ -121,11 +132,14 @@ class EditUsersViewModel extends BaseViewModel {
         .toList();
 
     if (addRoles.isNotEmpty) {
-      insertRolesToUserGrant(addRoles);
+      await insertRolesToUserGrant(addRoles);
+      return true;
     }
     if (idsGrantsToRemove.isNotEmpty) {
-      removeRolesFromUserGrant(idsGrantsToRemove);
+      await removeRolesFromUserGrant(idsGrantsToRemove);
+      return true;
     }
+    return false;
   }
 
   Future<void> insertRolesToUserGrant(List<Map<String, dynamic>> grants) async {
@@ -146,7 +160,7 @@ class EditUsersViewModel extends BaseViewModel {
     _streamControllerSuccess.sink.add(count == grants.length);
   }
 
-  void submit(
+  Future<void> submit(
     String? id,
     Function showMsg,
     BuildContext context,
@@ -156,7 +170,7 @@ class EditUsersViewModel extends BaseViewModel {
     setLoading();
     var formFields = form.getValues();
     dynamic result;
-    var domain = jsonDecode(sharedPrefs.getString('DOMAIN')!);
+    var domain = jsonDecode(sharedPrefs.getString(CoreUserPreferences.DOMAIN)!);
 
     Map<String, dynamic> data = id != null && id.isNotEmpty
         ? {
@@ -185,7 +199,7 @@ class EditUsersViewModel extends BaseViewModel {
       postError(result.left.message);
     } else {
       if (!_streamControllerSuccess.isClosed) {
-        getGrantsRoles(result.value.id);
+        await getGrantsRoles(result.value.id);
         _streamControllerSuccess.sink.add(true);
       }
     }

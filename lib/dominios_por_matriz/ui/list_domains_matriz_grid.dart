@@ -44,6 +44,7 @@ class _ListDomainsMatrizGridState extends State<ListDomainsMatrizGrid> {
                       if (textEditingValue.text.isEmpty) {
                         var options = await widget.viewModel.loadDomains({
                           'parent_id': 'null',
+                          'tag': 'MATRIZ',
                           'list_options': ListOptions.ACTIVE_ONLY.name,
                           'order_by': 'name'
                         });
@@ -51,6 +52,7 @@ class _ListDomainsMatrizGridState extends State<ListDomainsMatrizGrid> {
                       } else {
                         var options = await widget.viewModel.loadDomains({
                           'parent_id': 'null',
+                          'tag': 'MATRIZ',
                           'list_options': ListOptions.ACTIVE_ONLY.name,
                           'order_by': 'name',
                           'name': '%${textEditingValue.text}%'

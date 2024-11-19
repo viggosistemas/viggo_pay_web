@@ -9,7 +9,7 @@ class ListUsersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppBuilder(
       child: ListUsersGrid(
-        domainId: null,
+        domain: null,
       ),
     );
   }
