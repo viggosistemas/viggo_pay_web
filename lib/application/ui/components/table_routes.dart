@@ -6,6 +6,7 @@ import 'package:viggo_pay_admin/utils/format_mask.dart';
 /// Flutter code sample for [PaginatedDataTable].
 
 class DataSourceRoutes extends DataTableSource {
+  late List<dynamic> mockSelectedList = [];
   late List<String> labelInclude = [];
   late int counter = 0;
   late List<dynamic> sortedData;
@@ -69,7 +70,10 @@ class DataSourceRoutes extends DataTableSource {
     return DataRow(
       onSelectChanged: (value) {
         row['selected'] = value;
+        viewModel.mockSelectedList = mockSelectedList;
         viewModel.addOrRemove(row);
+        viewModel.checkRouteSelected(row['id']);
+        row['selected'] = value;
         notifyListeners();
       },
       selected: row['selected'],
@@ -99,9 +103,13 @@ class DataTableRoutes extends StatefulWidget {
     required this.fieldsData,
     required this.title,
     labelInclude,
+    mockSelectedList,
   }) {
     if (labelInclude != null) {
       this.labelInclude = labelInclude;
+    }
+    if (mockSelectedList != null) {
+      this.mockSelectedList = mockSelectedList;
     }
   }
 
@@ -109,6 +117,7 @@ class DataTableRoutes extends StatefulWidget {
   late dynamic viewModel;
   late dynamic labelInclude = [''];
   late List<dynamic> items;
+  late List<dynamic> mockSelectedList = [];
   late List<String> fieldsData;
 
   @override
@@ -123,6 +132,7 @@ class _DataTableRoutesState extends State<DataTableRoutes> {
     dataSource.setData(widget.items);
     dataSource.fieldsData = widget.fieldsData;
     dataSource.labelInclude = widget.labelInclude;
+    dataSource.mockSelectedList = widget.mockSelectedList;
     dataSource.viewModel = widget.viewModel;
 
     return PaginatedDataTable(

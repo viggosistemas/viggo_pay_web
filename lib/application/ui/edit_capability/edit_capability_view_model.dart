@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:viggo_core_frontend/base/base_view_model.dart';
 import 'package:viggo_core_frontend/capability/data/models/capability_api_dto.dart';
 import 'package:viggo_core_frontend/capability/domain/usecases/add_capability_use_case.dart';
@@ -16,6 +17,7 @@ import 'package:viggo_core_frontend/route/domain/usecases/get_routes_by_params_u
 import 'package:viggo_core_frontend/util/list_options.dart';
 
 class EditCapabilityViewModel extends BaseViewModel {
+  final SharedPreferences sharedPrefs;
   final GetCapabilitiesByParamsUseCase getCapabilities;
   final AddCapabilityUseCase addCapabilities;
   final RemoveCapabilityUseCase removeCapabilities;
@@ -25,21 +27,23 @@ class EditCapabilityViewModel extends BaseViewModel {
   final GetRoutesByParamsUseCase getRoutes;
 
   List<CapabilityApiDto> selectedItemsList = [];
+  List<RouteApiDto> selectedRoutesList = [];
 
   final ListDomainFormFields form = ListDomainFormFields();
   List<CapabilityApiDto> _items = List.empty(growable: true);
 
-  final StreamController<List<CapabilityApiDto>> capabilitiesController =
-      StreamController.broadcast();
-  Stream<List<CapabilityApiDto>> get capabilities =>
-      capabilitiesController.stream;
+  List<RouteApiDto> mockSelectedList = List.empty(growable: true);
 
-  final StreamController<bool> _streamControllerSuccess =
-      StreamController<bool>.broadcast();
+  final StreamController<List<CapabilityApiDto>> capabilitiesController = StreamController.broadcast();
+  Stream<List<CapabilityApiDto>> get capabilities => capabilitiesController.stream;
+
+  final StreamController<List<RouteApiDto>> routesSelectedController = StreamController.broadcast();
+  Stream<List<RouteApiDto>> get routesSelected => routesSelectedController.stream;
+
+  final StreamController<bool> _streamControllerSuccess = StreamController<bool>.broadcast();
   Stream<bool> get isSuccess => _streamControllerSuccess.stream;
 
-  final StreamController<List<RouteApiDto>> routesController =
-      StreamController.broadcast();
+  final StreamController<List<RouteApiDto>> routesController = StreamController.broadcast();
   Stream<List<RouteApiDto>> get routesSistema => routesController.stream;
 
   final BehaviorSubject<List<RouteApiDto>> capabilitiesSelectedController = BehaviorSubject<List<RouteApiDto>>();
@@ -47,6 +51,7 @@ class EditCapabilityViewModel extends BaseViewModel {
   Stream<bool> get capabilitiesSelectedValid => capabilitiesSelectedController.stream.transform(validar());
 
   EditCapabilityViewModel({
+    required this.sharedPrefs,
     required this.getCapabilities,
     required this.addCapabilities,
     required this.removeCapabilities,
@@ -83,12 +88,9 @@ class EditCapabilityViewModel extends BaseViewModel {
       }
     }
 
-    var listOptions = ListOptions.values
-        .where((element) => element.name == filters['list_options'])
-        .first;
+    var listOptions = ListOptions.values.where((element) => element.name == filters['list_options']).first;
 
-    var result = await getCapabilities.invoke(
-        filters: filters, listOptions: listOptions, include: 'route');
+    var result = await getCapabilities.invoke(filters: filters, listOptions: listOptions, include: 'route');
 
     setLoading();
     if (result.isRight) {
@@ -116,6 +118,8 @@ class EditCapabilityViewModel extends BaseViewModel {
     setLoading();
     if (result.isRight) {
       routesController.sink.add(result.right.routes);
+      mockSelectedList = result.right.routes;
+      clearRouteSelected();
     } else if (result.isLeft) {
       postError(result.left.message);
     }
@@ -192,6 +196,52 @@ class EditCapabilityViewModel extends BaseViewModel {
       list.add(value);
     }
     capabilitiesSelectedController.sink.add(list);
+  }
+
+  void clearRouteSelected() {
+    mockSelectedList = mockSelectedList.map((e) {
+      e.selected = false;
+      return e;
+    }).toList();
+    sharedPrefs.setStringList('ROUTES_SELECTED', List.empty(growable: true));
+  }
+
+  void checkRouteSelected(String id) {
+    updateSelectedRoute(id);
+    _updateRouteList(mockSelectedList);
+  }
+
+  List<RouteApiDto> _mapSelectedRoutes(
+    List<RouteApiDto> routes,
+    List<String> selected,
+  ) =>
+      routes..forEach((e) => e.selected = selected.contains(e.id));
+
+  void _updateRouteList(List<RouteApiDto> routes) {
+    if (!routesSelectedController.isClosed) {
+      mockSelectedList = routes;
+      selectedRoutesList = _mapSelectedRoutes(routes, getSelectedRoutes());
+      routesSelectedController.sink.add(selectedRoutesList);
+    }
+  }
+
+  List<String> getSelectedRoutes() {
+    List<String>? selected = sharedPrefs.getStringList('ROUTES_SELECTED');
+    return selected ?? List.empty();
+  }
+
+  void updateSelectedRoute(String item) {
+    List<String>? selected = sharedPrefs.getStringList('ROUTES_SELECTED') ?? List.empty(growable: true);
+    if (selected.contains(item)) {
+      selected.remove(item);
+    } else {
+      selected.add(item);
+    }
+    sharedPrefs.setStringList('ROUTES_SELECTED', selected);
+
+    // if (!_selectedItemsStreamController.isClosed) {
+    //   _selectedItemsStreamController.sink.add(selected);
+    // }
   }
 
   StreamTransformer<List<RouteApiDto>, bool> validar() {

@@ -12,12 +12,14 @@ class TableListPolicy extends StatefulWidget {
     required this.viewModel,
     required this.disponiveis,
     required this.bckDisponiveis,
+    required this.mockSelectedList,
     required this.width,
   });
 
   final EditPolicyViewModel viewModel;
   late List<CapabilityApiDto> disponiveis = [];
   late List<CapabilityApiDto> bckDisponiveis = disponiveis;
+  late List<CapabilityApiDto> mockSelectedList = [];
   final double width;
 
   final routesRowValues = ['route', 'route', 'route', 'route', 'route'];
@@ -62,11 +64,15 @@ class _TableListPolicyState extends State<TableListPolicy> {
           controller: searchFieldController,
           onFieldSubmitted: (value) {
             setState(() {
-              if (widget.disponiveis.isEmpty) {
+              if (value.isEmpty) {
                 widget.disponiveis = widget.bckDisponiveis;
+              } else {
+                if (widget.disponiveis.isEmpty) {
+                  widget.disponiveis = widget.bckDisponiveis;
+                }
+                var filteredEntities = widget.bckDisponiveis.where((element) => element.route!.url.contains(value)).toList();
+                widget.disponiveis = filteredEntities;
               }
-              var filteredEntities = widget.disponiveis.where((element) => element.route!.url.contains(value)).toList();
-              widget.disponiveis = filteredEntities;
             });
           },
         ),
@@ -89,6 +95,7 @@ class _TableListPolicyState extends State<TableListPolicy> {
                 const Icon(Icons.policy_outlined),
               ],
             ),
+            mockSelectedList: widget.mockSelectedList,
             viewModel: widget.viewModel,
             fieldsData: widget.routesRowValues,
             labelInclude: widget.routesListLabelInclude,

@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:viggo_core_frontend/domain/data/models/domain_api_dto.dart';
 import 'package:viggo_core_frontend/user/data/models/user_api_dto.dart';
-import 'package:viggo_pay_admin/components/hover_button.dart';
 import 'package:viggo_pay_admin/di/locator.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users_form/edit_users_form.dart';
 import 'package:viggo_pay_admin/user/ui/edit_users/edit_users_view_model.dart';
 import 'package:viggo_pay_admin/utils/show_msg_snackbar.dart';
 
 class EditUsers {
-  EditUsers({required this.context});
+  EditUsers({
+    required this.context,
+    domain,
+  }) {
+    if (domain != null) {
+      this.domain = domain;
+    }
+  }
 
+  // ignore: avoid_init_to_null
+  late DomainApiDto? domain = null;
   final BuildContext context;
   final viewModel = locator.get<EditUsersViewModel>();
 
   Future addDialog() {
-    onSubmit() {
-      viewModel.submit(null, showInfoMessage, context);
-      // Navigator.of(context).pop(true);
+    onSubmit(ctx) async {
+      await viewModel.submit(null, showInfoMessage, ctx);
+      Navigator.of(ctx).pop(true);
     }
 
     viewModel.isSuccess.listen((value) {
@@ -28,7 +37,7 @@ class EditUsers {
         () {},
         Colors.white,
       );
-      Navigator.pop(context, true);
+      // Navigator.pop(context, true);
     });
 
     viewModel.errorMessage.listen(
@@ -78,59 +87,22 @@ class EditUsers {
                     children: [
                       EditUsersForm(
                         viewModel: viewModel,
+                        domain: domain,
+                        onSubmit: () => onSubmit(ctx),
                       )
                     ],
                   ),
                 ),
               ),
-              actions: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    OnHoverButton(
-                      child: TextButton.icon(
-                        icon: const Icon(
-                          Icons.cancel_outlined,
-                          size: 20,
-                        ),
-                        label: const Text('Cancelar'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.red,
-                        ),
-                      ),
-                    ),
-                    OnHoverButton(
-                      child: Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: TextButton.icon(
-                          icon: const Icon(
-                            Icons.save_alt_outlined,
-                            size: 20,
-                          ),
-                          label: const Text('Salvar'),
-                          onPressed: () => onSubmit(),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.green,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ),
           );
         });
   }
 
   Future editDialog(UserApiDto entity) {
-    onSubmit() {
-      viewModel.submit(entity.id, showInfoMessage, context);
-      Navigator. pop(context, true);
+    onSubmit(ctx) async {
+      await viewModel.submit(entity.id, showInfoMessage, ctx);
+      Navigator.pop(ctx, true);
     }
 
     viewModel.isSuccess.listen((value) {
@@ -200,50 +172,13 @@ class EditUsers {
                       EditUsersForm(
                         entity: entity,
                         viewModel: viewModel,
+                        domain: domain,
+                        onSubmit: () => onSubmit(ctx),
                       )
                     ],
                   ),
                 ),
               ),
-              actions: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    OnHoverButton(
-                      child: TextButton.icon(
-                        icon: const Icon(
-                          Icons.cancel_outlined,
-                          size: 20,
-                        ),
-                        label: const Text('Cancelar'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.red,
-                        ),
-                      ),
-                    ),
-                    OnHoverButton(
-                      child: Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: TextButton.icon(
-                          icon: const Icon(
-                            Icons.save_alt_outlined,
-                            size: 20,
-                          ),
-                          label: const Text('Salvar'),
-                          onPressed: () => onSubmit(),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.green,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ),
           );
         });

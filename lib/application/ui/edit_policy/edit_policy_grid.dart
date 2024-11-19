@@ -400,10 +400,13 @@ class _EditPolicyGridState extends State<EditPolicyGrid> {
                                         var result = await EditPolicyDialog(
                                           context: context,
                                           disponiveis: widget.viewModel.avaliableCapabilities,
+                                          mockSelectedList: widget.viewModel.mockSelectedList,
                                           roleId: roleSelected!.id,
                                         ).addDialog();
                                         if (result != null && result == true) {
                                           onReload();
+                                        } else {
+                                          widget.viewModel.clearRouteSelected();
                                         }
                                       }
                                     },
