@@ -30,3 +30,15 @@
 * Foi adicionado uma validação para caso usuários SUPORTE queiram editar o SYSADMIN seja bloqueado e também só consigam criar usuários de outros papéis sem ser SYSADMIN
 
 * Adicionando uma validação para repassar o domínio selecionado no menu de usuários por domínio para puxar os papéis corretamente
+
+## [PRÓXIMA VERSÃO] - yyyy-mm-dd
+
+### Adicionado
+
+### Modificado
+
+### Corrigido
+
+- [#EM-4167](https://viggosistemas.atlassian.net/browse/EM-4167) Mapeia papéis que o usuário já possui para evitar replicar grants
+
+### Removido
