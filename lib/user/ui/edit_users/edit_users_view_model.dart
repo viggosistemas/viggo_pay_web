@@ -112,7 +112,8 @@ class EditUsersViewModel extends BaseViewModel {
   }
 
   Future<bool> getGrantsRoles(String userId) async {
-    var rolesToAdd = roles.where((role) => role.selected).toList();
+    var userRoles = grants.map((g) => g.roleId).toList();
+    var rolesToAdd = roles.where((role) => role.selected && !userRoles.contains(role.id)).toList();
     var rolesToRemove = roles.where((role) => !role.selected).toList();
 
     var idsRolesToAdd = rolesToAdd.map((role) => role.id).toList();
