@@ -40,5 +40,6 @@
 ### Corrigido
 
 - [#EM-4167](https://viggosistemas.atlassian.net/browse/EM-4167) Mapeia papéis que o usuário já possui para evitar replicar grants
+- [#EM-4167](https://viggosistemas.atlassian.net/browse/EM-4167) Altera natureza da criação de usuários para 'WEB', removendo a atribuição automática do papel Admin
 
 ### Removido
