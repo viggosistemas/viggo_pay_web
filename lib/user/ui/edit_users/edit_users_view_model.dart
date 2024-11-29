@@ -184,7 +184,7 @@ class EditUsersViewModel extends BaseViewModel {
             'name': formFields!['name'],
             'email': formFields['email'],
             'domain_id': domain['name'] == 'default' ? formFields['domain_id'] : domain['id'],
-            'natureza': 'MOBILE'
+            'natureza': 'WEB'
           };
 
     if (id != null && id.isNotEmpty) {
