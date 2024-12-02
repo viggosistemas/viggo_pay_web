@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pair/pair.dart';
 import 'package:viggo_core_frontend/route/data/models/route_api_dto.dart';
 import 'package:viggo_core_frontend/user/domain/usecases/get_user_use_case.dart';
 import 'package:viggo_pay_admin/app_builder/ui/app_components/menu/models/destination.dart';
@@ -63,29 +64,29 @@ class MenuViewModel {
     List<Destination> itens,
   ) {
     List<Destination> menu = [];
-    List<String> grantURLs = getGrantURLs(
+    List<Pair<String, String>> grantURLs = getGrantURLs(
       routes,
       itens.map((v) => v.backEndUrl).toList(),
       false,
     );
     for (var rota in grantURLs) {
-      int itemIndex = itens.indexWhere((v) => v.backEndUrl!.contains(rota));
+      int itemIndex = itens.indexWhere((v) => v.backEndUrl!.contains(rota.key) && v.methodUrl!.contains(rota.value));
       if (itemIndex >= 0) menu.add(itens[itemIndex]);
     }
     return menu;
   }
 
-  List<String> getGrantURLs(
+  List<Pair<String, String>> getGrantURLs(
     List<RouteApiDto> routes,
     List<dynamic> urls,
     bool checkRoutes,
   ) {
-    List<String> grantURLs = [];
+    List<Pair<String, String>> grantURLs = [];
     if (checkRoutes) {
       for (var route in routes) {
         for (var url in urls) {
           if (url.name == route.url && url.method == route.method) {
-            grantURLs.add(route.url);
+            grantURLs.add(Pair(route.url, '/${route.method.name}'));
           }
         }
       }
@@ -93,7 +94,7 @@ class MenuViewModel {
       for (var route in routes) {
         for (var urlCompare in urls) {
           if (urlCompare.contains(route.url) && !grantURLs.contains(route.url)) {
-            grantURLs.add(route.url);
+            grantURLs.add(Pair(route.url, '/${route.method.name}'));
           }
         }
       }
