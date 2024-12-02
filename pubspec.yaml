@@ -45,6 +45,7 @@ dependencies:
   decimal: ^2.3.3
   flutter_masked_text2: ^0.9.1
   dio: ^5.4.2+1
+  pair: 0.1.2
 
   viggo_core_frontend: ^1.0.7
 
